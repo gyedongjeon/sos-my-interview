@@ -1,0 +1,6 @@
+@import 'tailwindcss';
+
+/* daisyUI is the design system: use its component classes and theme colors. */
+@plugin "daisyui" {
+  themes: light --default, dark --prefersdark;
+}
