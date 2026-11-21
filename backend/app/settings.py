@@ -50,7 +50,7 @@ def save_settings(body: Settings) -> Settings:
 class LLMSettings(BaseModel):
     # "<provider>/<model>" as named by LiteLLM; None when no model is configured.
     model: str | None
-    # "app" when saved on the Settings page, "env" when it comes from a .env file.
+    # "app" when saved on the Settings page, "env" when it comes from the LLM_MODEL environment variable.
     source: Literal["app", "env"] | None
     # The key itself is never sent back to the page, only its last characters.
     key_hint: str | None

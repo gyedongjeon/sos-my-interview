@@ -30,13 +30,13 @@ you. It needs [uv](https://docs.astral.sh/uv/) and Node.js installed.
 ```bash
 cd desktop
 npm install
-npm run dev    # run from this checkout, using backend/data and backend/.env
+npm run dev    # run from this checkout, using backend/data
 npm run dist   # build desktop/release/Deep Dive Interview-<version>-arm64.dmg
 ```
 
 The built app installs its Python dependencies on the first launch (this can take a few
 minutes) and keeps its own data, separate from this checkout, in
-`~/Library/Application Support/Deep Dive Interview/data/`. Put the `.env` file there too. The
+`~/Library/Application Support/Deep Dive Interview/data/`. The
 build is not signed with a developer certificate, so it is meant for the machine that built it.
 
 ### AI model and API key
@@ -47,13 +47,10 @@ first time: choose a provider and model, paste that provider's API key, and it i
 checked with a test request. Change it any time under Settings. The key is stored in the local
 database (`app.db`), is never shown again in the UI, and is sent only to the chosen provider.
 
-For development, `backend/.env` (see `backend/.env.example`) can set `LLM_MODEL` and a provider
-key instead; values saved on the Settings page take priority.
-
 ### Speech-to-text
 Answers are transcribed locally with [Whisper](https://github.com/SYSTRAN/faster-whisper): no API
 key is needed and the audio never leaves your machine. The `small.en` model (~480 MB) is
-downloaded on the first transcription; set `WHISPER_MODEL` in `backend/.env` to use another one.
+downloaded on the first transcription; set the `WHISPER_MODEL` environment variable to use another one.
 
 While you speak, live captions are shown: from the browser's Web Speech API in Chrome, Edge,
 and Safari, and from the same local Whisper model in the desktop app and other browsers. Allow
@@ -62,7 +59,7 @@ camera and microphone access when asked.
 ### Text-to-speech
 Questions are read aloud with a local [Kokoro](https://github.com/thewh1teagle/kokoro-onnx) voice.
 Its model files (~350 MB) are downloaded on first use, and rendered clips are cached in
-`backend/data/tts/cache/`. Set `TTS_VOICE` in `backend/.env` to change the voice. If the backend
+`backend/data/tts/cache/`. Set the `TTS_VOICE` environment variable to change the voice. If the backend
 cannot produce audio, the browser's built-in voice is used instead.
 
 ### Feedback

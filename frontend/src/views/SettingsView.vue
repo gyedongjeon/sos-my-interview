@@ -140,7 +140,7 @@ onMounted(async () => {
         </p>
         <p v-else-if="saved?.source === 'env'" class="text-sm">
           Current: <span class="font-mono">{{ saved.model }}</span>
-          <span class="text-base-content/60"> · from the .env file. Saving here takes over from it.</span>
+          <span class="text-base-content/60"> · from the LLM_MODEL environment variable. Saving here takes over from it.</span>
         </p>
         <p v-else class="text-sm text-warning">No model is set up yet.</p>
 

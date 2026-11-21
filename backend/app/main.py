@@ -3,7 +3,6 @@
 from contextlib import asynccontextmanager
 from dataclasses import asdict
 
-from dotenv import load_dotenv
 from fastapi import FastAPI, Form, HTTPException, Response, UploadFile
 from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
@@ -14,16 +13,10 @@ from .db import get_connection, init_db
 from .evaluate import Feedback, SpeakingFeedback, evaluate, evaluate_speaking
 from .follow_up import generate_follow_up
 from .llm import LLMError
-from .paths import BACKEND_DIR, DATA_DIR, FRONTEND_DIST
+from .paths import FRONTEND_DIST
 from .settings import router as settings_router
 from .speech import synthesize
 from .transcribe import caption, to_wav, transcribe
-
-# Load local secrets (e.g. GEMINI_API_KEY) from backend/.env, which is git-ignored. The desktop
-# app keeps its own .env in the data directory; the first file to set a variable wins.
-load_dotenv(BACKEND_DIR / ".env")
-load_dotenv(DATA_DIR / ".env")
-
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
