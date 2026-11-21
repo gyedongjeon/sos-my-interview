@@ -1,5 +1,7 @@
 """Feedback language and model settings."""
 
+import importlib.util
+
 import litellm
 import pytest
 
@@ -105,6 +107,12 @@ def test_provider_failures_become_user_facing_errors(monkeypatch):
     monkeypatch.setattr(litellm, "completion", fail)
     with pytest.raises(LLMError, match="gemini/flash: boom"):
         complete("system", "user")
+
+
+def test_retries_have_the_package_they_need():
+    # LiteLLM retries a failed request (num_retries) with tenacity but does not install it.
+    # Without it, any failed request is reported as "tenacity import failed" instead of its cause.
+    assert importlib.util.find_spec("tenacity") is not None
 
 
 def test_json_reply_may_be_wrapped_in_a_code_fence():
