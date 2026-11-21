@@ -27,7 +27,8 @@ npm run dev
 The same app also runs in its own window (Electron), with the backend started and stopped for
 you. An installer for Apple Silicon Macs is attached to each
 [release](https://github.com/gyedongjeon/sos-my-interview/releases), with install steps in the release
-notes; it needs [uv](https://docs.astral.sh/uv/) installed.
+notes. Nothing else has to be installed: the app ships its own [uv](https://docs.astral.sh/uv/),
+which sets up Python and the Python packages on the first launch.
 
 To run or build it from this checkout, you need uv and Node.js:
 
@@ -37,6 +38,9 @@ npm install
 npm run dev    # run from this checkout, using backend/data
 npm run dist   # build desktop/release/SOS My Interview-<version>-arm64.dmg
 ```
+
+`npm run dist` first downloads the uv release pinned in `desktop/scripts/fetch-uv.mjs` (checked
+against its SHA-256) into `desktop/vendor/`, to bundle it into the app.
 
 The built app installs its Python dependencies on the first launch (this can take a few
 minutes) and keeps its own data, separate from this checkout, in
@@ -95,10 +99,11 @@ documents into account. Both are stored locally and their text is sent to the LL
 ```bash
 cd backend && uv run pytest     # API and logic, against a temporary data folder
 cd frontend && npm test         # unit tests (Vitest)
+cd desktop && npm test          # unit tests (Vitest)
 ```
 
 The backend tests never call a real LLM, Whisper, or Kokoro, and never reach the network. Opening a pull
-request into `main` runs both suites, the frontend build, and the desktop type check
+request into `main` runs all three suites, the frontend build, and the desktop type check
 (`.github/workflows/ci.yml`).
 
 ## Structure
