@@ -116,3 +116,10 @@ export interface AttemptDetail extends AttemptSummary {
 export type Difficulty = 'easy' | 'standard' | 'hard'
 
 export type Phase = 'idle' | 'recording' | 'transcribing' | 'thinking' | 'done'
+
+/** The AI model in use. The API key never reaches the page, only its last characters. */
+export interface LLMSettings {
+  model: string | null
+  source: 'app' | 'env' | null
+  key_hint: string | null
+}

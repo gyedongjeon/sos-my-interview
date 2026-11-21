@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { api } from '../api'
+import type { LLMSettings } from '../types'
 
 /** Languages feedback can be written in: the English name the LLM is told, and its own name. */
 export const LANGUAGES = [
@@ -30,6 +31,8 @@ export const useSettingsStore = defineStore('settings', {
   state: () => ({
     feedbackLanguage: 'English' as string,
     error: null as string | null,
+    // null until loaded.
+    llm: null as LLMSettings | null,
   }),
   actions: {
     async load() {
@@ -38,6 +41,13 @@ export const useSettingsStore = defineStore('settings', {
         if (saved.feedback_language) this.feedbackLanguage = saved.feedback_language
         // First visit: start from the browser's language; the user can change it any time.
         else await this.setFeedbackLanguage(browserLanguage())
+      } catch (e) {
+        this.error = (e as Error).message
+      }
+    },
+    async loadLLM() {
+      try {
+        this.llm = await api<LLMSettings>('/settings/llm')
       } catch (e) {
         this.error = (e as Error).message
       }

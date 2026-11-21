@@ -7,6 +7,7 @@ import CommonView from '../views/CommonView.vue'
 import PostingNewView from '../views/PostingNewView.vue'
 import PostingView from '../views/PostingView.vue'
 import ResumeView from '../views/ResumeView.vue'
+import SettingsView from '../views/SettingsView.vue'
 
 const idProp = (route: { params: Record<string, string | string[]> }) => ({ id: Number(route.params.id) })
 
@@ -17,6 +18,7 @@ export default createRouter({
     { path: '/questions/:id(\\d+)', name: 'interview', component: InterviewView, props: idProp },
     { path: '/history', name: 'history', component: HistoryView },
     { path: '/resume', name: 'resume', component: ResumeView },
+    { path: '/settings', name: 'settings', component: SettingsView },
     { path: '/common', name: 'common', component: CommonView },
     { path: '/postings/new', name: 'posting-new', component: PostingNewView },
     { path: '/postings/:id(\\d+)', name: 'posting', component: PostingView, props: idProp },

@@ -5,16 +5,30 @@ import os
 import litellm
 from pydantic import BaseModel, ValidationError
 
+from .db import get_connection
+
 # Skip request parameters a given provider does not support instead of failing.
 litellm.drop_params = True
 
-SETUP_HINT = (
-    "Set LLM_MODEL (e.g. gemini/<model>, openrouter/<vendor>/<model>) and that "
-    "provider's API key in backend/.env, then restart the backend."
-)
+SETUP_HINT = "Choose a model and enter its API key on the Settings page."
 
 class LLMError(Exception):
     """Raised with a user-facing message when the model cannot produce a reply."""
+
+
+def llm_config() -> tuple[str, str | None]:
+    """The model ("<provider>/<model>") and API key to use.
+
+    The model saved on the Settings page comes first, with its saved key. Otherwise LLM_MODEL
+    from the environment is used and LiteLLM reads that provider's key from the environment
+    too (returned here as None).
+    """
+    with get_connection() as conn:
+        rows = conn.execute("SELECT key, value FROM settings WHERE key IN ('llm_model', 'llm_api_key')")
+        saved = {row["key"]: row["value"] for row in rows}
+    if saved.get("llm_model"):
+        return saved["llm_model"], saved.get("llm_api_key")
+    return os.environ.get("LLM_MODEL", "").strip(), None
 
 
 def complete(system: str, user: str | list[dict], **params) -> str:
@@ -23,8 +37,9 @@ def complete(system: str, user: str | list[dict], **params) -> str:
     `user` is plain text, or a list of content parts when sending audio. Extra keyword
     arguments (e.g. response_format, timeout) are passed through to LiteLLM.
     """
-    # "<provider>/<model>"; LiteLLM reads the matching provider key from the environment.
-    model = os.environ.get("LLM_MODEL", "").strip()
+    model, api_key = llm_config()
+    if api_key:
+        params = {"api_key": api_key, **params}
     if not model:
         raise LLMError(f"No model is configured. {SETUP_HINT}")
 
