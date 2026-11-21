@@ -8,6 +8,7 @@ import { useSpeech } from '../composables/useSpeech'
 import { useCaptions } from '../composables/useCaptions'
 import { contentScores, englishScores, mean, total } from '../scores'
 import { useInterviewStore } from '../stores/interview'
+import { percent, useModelsStore } from '../stores/models'
 import type { AttemptSummary, Delivery, Feedback, LiveTurn, Phase, SpeakingFeedback } from '../types'
 import MorseSignal from '../components/MorseSignal.vue'
 
@@ -39,6 +40,15 @@ const attemptId = ref<number | null>(null)
 const previous = ref<AttemptSummary | null>(null)
 
 const isFollowUp = computed(() => followUps.value > 0)
+// Set while the speech recognition model is still downloading, which the first answer waits for.
+const models = useModelsStore()
+const recognitionDownload = computed(() => {
+  const model = models.byId('speech-to-text')
+  return model?.state === 'downloading' ? model : null
+})
+watch(phase, (now) => {
+  if (now === 'transcribing') void models.check()
+})
 // The list this question was picked from: its job posting's page or the common questions.
 const backTo = computed(() => {
   const postingId = question.value?.posting_id
@@ -334,7 +344,13 @@ onBeforeUnmount(() => {
             {{ recognition.transcript.value || 'Listening…' }}
           </p>
           <p v-if="phase === 'transcribing'" class="flex items-center gap-2 text-base-content/70">
-            <span class="loading loading-dots loading-sm"></span> Transcribing your answer…
+            <span class="loading loading-dots loading-sm"></span>
+            <template v-if="recognitionDownload">
+              Downloading the speech recognition model (first time only)<template v-if="percent(recognitionDownload) !== null">
+                — {{ percent(recognitionDownload) }}%</template
+              >… Your answer is transcribed as soon as it is done.
+            </template>
+            <template v-else>Transcribing your answer…</template>
           </p>
           <p v-if="phase === 'thinking'" class="flex items-center gap-2 text-base-content/70">
             <span class="loading loading-dots loading-sm"></span> Preparing a follow-up question…

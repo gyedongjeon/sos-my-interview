@@ -11,7 +11,10 @@ from typing import BinaryIO
 import numpy as np
 from faster_whisper import WhisperModel
 from faster_whisper.audio import decode_audio
+from faster_whisper.utils import _MODELS, download_model
+from huggingface_hub import HfApi
 
+from .downloads import Download
 from .paths import DATA_DIR
 
 # English-only model, downloaded from Hugging Face on first use (~480 MB for small.en).
@@ -37,12 +40,58 @@ class Transcript:
     words_per_minute: int | None = None
 
 
+def _model_name() -> str:
+    return os.environ.get("WHISPER_MODEL", "").strip() or DEFAULT_MODEL
+
+
+def _is_downloaded() -> bool:
+    try:
+        # Looks only at what is on disk; raises when a file of the model is missing.
+        download_model(_model_name(), cache_dir=str(MODEL_DIR), local_files_only=True)
+        return True
+    except Exception:
+        return False
+
+
+def _downloaded_bytes() -> int:
+    """Bytes of model files on disk, counting files that are still being downloaded."""
+    return sum(
+        os.path.getsize(os.path.join(folder, name))
+        for folder, _, names in os.walk(MODEL_DIR)
+        for name in names
+        # The cache also holds links to the same files; count each file once.
+        if not os.path.islink(os.path.join(folder, name))
+    )
+
+
+def _download() -> None:
+    name = _model_name()
+    try:
+        # Only for showing progress, so a failure here does not stop the download.
+        files = HfApi().model_info(_MODELS.get(name, name), files_metadata=True).siblings or []
+        model_download.total = sum(file.size or 0 for file in files) or None
+    except Exception:
+        model_download.total = None
+    download_model(name, cache_dir=str(MODEL_DIR))
+
+
+# The lambdas look the functions up when called, so tests can replace them.
+model_download = Download(
+    "speech-to-text",
+    "Speech recognition",
+    is_ready=lambda: _is_downloaded(),
+    fetch=lambda: _download(),
+    measure=lambda: _downloaded_bytes(),
+)
+
+
 def _get_model() -> WhisperModel:
     global _model
+    # Downloading can take minutes, so it happens outside the lock that guards the model.
+    model_download.wait()
     with _lock:
         if _model is None:
-            name = os.environ.get("WHISPER_MODEL", "").strip() or DEFAULT_MODEL
-            _model = WhisperModel(name, device="cpu", compute_type="int8", download_root=str(MODEL_DIR))
+            _model = WhisperModel(_model_name(), device="cpu", compute_type="int8", download_root=str(MODEL_DIR))
         return _model
 
 
