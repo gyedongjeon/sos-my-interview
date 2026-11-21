@@ -7,6 +7,7 @@ import { mkdir, rm } from 'node:fs/promises'
 import { createServer } from 'node:net'
 import { homedir } from 'node:os'
 import { join } from 'node:path'
+import { backendLaunch } from './backend'
 import {
   bundlePath,
   download,
@@ -31,13 +32,12 @@ let quitting = false
 function paths() {
   if (!app.isPackaged) {
     const root = join(__dirname, '..', '..')
-    return { backend: join(root, 'backend'), frontend: join(root, 'frontend', 'dist'), data: null }
+    return { project: join(root, 'backend'), frontend: join(root, 'frontend', 'dist'), userData: null }
   }
   return {
-    backend: join(process.resourcesPath, 'backend'),
+    project: join(process.resourcesPath, 'backend'),
     frontend: join(process.resourcesPath, 'frontend'),
-    // The app bundle is read-only, so the packaged app keeps its files in the user's profile.
-    data: join(app.getPath('userData'), 'data'),
+    userData: app.getPath('userData'),
   }
 }
 
@@ -53,21 +53,8 @@ function freePort(): Promise<number> {
 }
 
 function startBackend(uv: string, port: number) {
-  const { backend: project, frontend, data } = paths()
-  const env: NodeJS.ProcessEnv = {
-    ...process.env,
-    SOS_MY_INTERVIEW_FRONTEND_DIST: frontend,
-    // Keep Python from writing bytecode into the app bundle.
-    PYTHONDONTWRITEBYTECODE: '1',
-  }
-  const args = ['run', '--project', project]
-  if (data) {
-    env.SOS_MY_INTERVIEW_DATA_DIR = data
-    env.UV_PROJECT_ENVIRONMENT = join(app.getPath('userData'), 'venv')
-    // The packaged app needs only what runs the server, not the test tools.
-    args.push('--frozen', '--no-dev')
-  }
-  args.push('uvicorn', 'app.main:app', '--host', '127.0.0.1', '--port', String(port))
+  const { project, frontend, userData } = paths()
+  const { args, env } = backendLaunch({ project, frontend, userData, port, env: process.env })
 
   // Its own process group, so quitting can stop uv together with the Python server it runs.
   const child = spawn(uv, args, { cwd: project, env, detached: process.platform !== 'win32' })
