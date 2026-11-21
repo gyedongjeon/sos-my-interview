@@ -36,6 +36,29 @@ jobs:
       - name: Run tests
         run: uv run --frozen pytest
 
+  # A few requests to a real model. Separate from the backend job, so that a provider outage or
+  # a rate limit is not mistaken for a broken test. The key is not available to the release
+  # workflow or to pull requests from forks; there the tests skip themselves.
+  live:
+    name: Backend (live LLM)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    env:
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      LLM_MODEL: gemini/gemini-3.1-flash-lite
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-dependency-glob: backend/uv.lock
+      - name: Install dependencies
+        run: uv sync --frozen
+      - name: Run the live tests
+        run: uv run --frozen pytest -m live -rs
+
   frontend:
     name: Frontend (vitest, type check, build)
     runs-on: ubuntu-latest
