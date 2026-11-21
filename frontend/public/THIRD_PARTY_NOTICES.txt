@@ -3,6 +3,7 @@ Third-party notices
 
 SOS My Interview itself is released under the MIT License (see LICENSE in the
 repository). The built web app also contains the third-party work listed below.
+The desktop app additionally ships the uv program.
 
 Libraries (MIT License)
 -----------------------
@@ -11,6 +12,8 @@ Libraries (MIT License)
 - Pinia        Copyright (c) 2019-present Eduardo San Martin Morote
 - daisyUI      Copyright (c) 2020 Pouya Saadeghi
 - Tailwind CSS Copyright (c) Tailwind Labs, Inc.
+- uv           Copyright (c) 2025 Astral Software Inc. (desktop app only; offered under
+               the MIT License or the Apache License 2.0, used here under MIT)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

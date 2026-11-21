@@ -106,8 +106,15 @@ const SPLASH = `data:text/html;charset=utf-8,${encodeURIComponent(`<!doctype htm
 <p>Help is on the way… the first launch sets things up and can take a few minutes.</p></div></body>`)}`
 
 async function main() {
-  const uv = findUv({ path: process.env.PATH, home: homedir(), platform: process.platform, exists: existsSync })
+  const uv = findUv({
+    path: process.env.PATH,
+    home: homedir(),
+    platform: process.platform,
+    exists: existsSync,
+    bundledDir: app.isPackaged ? join(process.resourcesPath, 'uv') : null,
+  })
   if (!uv) {
+    // Only when running from a checkout: the packaged app ships its own uv.
     dialog.showErrorBox('uv is required', 'Install uv (https://docs.astral.sh/uv/) and open the app again.')
     return app.quit()
   }
