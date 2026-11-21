@@ -42,11 +42,12 @@ export function useCamera() {
     if (!stream.value || !audioTracks.length) return false
     chunks = []
     audioChunks = []
-    recorder = new MediaRecorder(stream.value)
+    // Low bitrates keep saved recordings small (roughly 2 MB per minute).
+    recorder = new MediaRecorder(stream.value, { videoBitsPerSecond: 250_000, audioBitsPerSecond: 48_000 })
     recorder.ondataavailable = (e) => {
       if (e.data.size) chunks.push(e.data)
     }
-    audioRecorder = new MediaRecorder(new MediaStream(audioTracks))
+    audioRecorder = new MediaRecorder(new MediaStream(audioTracks), { audioBitsPerSecond: 48_000 })
     audioRecorder.ondataavailable = (e) => {
       if (e.data.size) audioChunks.push(e.data)
     }
@@ -66,13 +67,13 @@ export function useCamera() {
     })
   }
 
-  // Resolves with a playable URL for the recording and the audio-only blob to transcribe.
-  async function stopRecording(): Promise<{ url: string | null; audio: Blob | null }> {
-    const [full, audio] = await Promise.all([
+  // Resolves with the full recording (to replay and save) and the audio-only one (to analyze).
+  async function stopRecording(): Promise<{ recording: Blob | null; audio: Blob | null }> {
+    const [recording, audio] = await Promise.all([
       finish(recorder, () => chunks),
       finish(audioRecorder, () => audioChunks),
     ])
-    return { url: full ? URL.createObjectURL(full) : null, audio }
+    return { recording, audio }
   }
 
   // False when only the microphone could be opened, so recordings have no picture.

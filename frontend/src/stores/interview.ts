@@ -1,13 +1,14 @@
 import { defineStore } from 'pinia'
-import type { Question } from '../types'
+import { api } from '../api'
+import type { AttemptSummary, Question } from '../types'
 
 interface State {
   questions: Question[]
   loaded: boolean
   loading: boolean
   error: string | null
-  /** Ids of questions answered at least once in this browser session. */
-  answeredIds: number[]
+  /** Saved attempts, newest first. */
+  attempts: AttemptSummary[]
 }
 
 export const useInterviewStore = defineStore('interview', {
@@ -16,21 +17,23 @@ export const useInterviewStore = defineStore('interview', {
     loaded: false,
     loading: false,
     error: null,
-    answeredIds: [],
+    attempts: [],
   }),
   getters: {
+    common: (s): Question[] => s.questions.filter((q) => q.posting_id === null),
+    forPosting: (s) => (postingId: number): Question[] => s.questions.filter((q) => q.posting_id === postingId),
     byId: (s) => (id: number): Question | null => s.questions.find((q) => q.id === id) ?? null,
-    isAnswered: (s) => (id: number): boolean => s.answeredIds.includes(id),
+    attemptsFor: (s) => (questionId: number): AttemptSummary[] =>
+      s.attempts.filter((a) => a.question_id === questionId),
   },
   actions: {
-    async load(category = 'common') {
-      if (this.loaded || this.loading) return
-      this.loading = true
+    // Questions change when job postings do, so pages that list them pass force = true.
+    async load(force = false) {
+      if (this.loading || (this.loaded && !force)) return
+      this.loading = !this.loaded
       this.error = null
       try {
-        const res = await fetch(`/api/questions?category=${encodeURIComponent(category)}`)
-        if (!res.ok) throw new Error(`HTTP ${res.status}`)
-        this.questions = (await res.json()) as Question[]
+        this.questions = await api<Question[]>('/questions')
         this.loaded = true
       } catch (e) {
         this.error = `Failed to load questions: ${(e as Error).message}`
@@ -38,8 +41,12 @@ export const useInterviewStore = defineStore('interview', {
         this.loading = false
       }
     },
-    markAnswered(id: number) {
-      if (!this.answeredIds.includes(id)) this.answeredIds.push(id)
+    async loadAttempts() {
+      try {
+        this.attempts = await api<AttemptSummary[]>('/attempts')
+      } catch (e) {
+        this.error = `Failed to load history: ${(e as Error).message}`
+      }
     },
   },
 })

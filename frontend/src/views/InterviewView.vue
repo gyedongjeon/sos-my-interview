@@ -1,10 +1,14 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import { useInterviewStore } from '../stores/interview'
-import { useSpeech } from '../composables/useSpeech'
+import { api } from '../api'
+import FeedbackPanel from '../components/FeedbackPanel.vue'
+import TurnList from '../components/TurnList.vue'
 import { useCamera } from '../composables/useCamera'
+import { useSpeech } from '../composables/useSpeech'
 import { useSpeechRecognition } from '../composables/useSpeechRecognition'
-import type { Phase, Turn } from '../types'
+import { contentScores, englishScores, mean, total } from '../scores'
+import { useInterviewStore } from '../stores/interview'
+import type { AttemptSummary, Delivery, Feedback, LiveTurn, Phase, SpeakingFeedback } from '../types'
 
 const MAX_FOLLOW_UPS = 2
 
@@ -18,13 +22,31 @@ const recognition = useSpeechRecognition()
 
 const videoEl = ref<HTMLVideoElement | null>(null)
 const prompt = ref('') // Question currently being asked (the picked one or a follow-up).
-const turns = ref<Turn[]>([]) // Finished answers for the picked question.
+const turns = ref<LiveTurn[]>([]) // Finished answers of the attempt in progress.
 const followUps = ref(0)
 const phase = ref<Phase>('idle')
 const error = ref('')
+const notice = ref('') // Non-blocking problems, e.g. a part of the feedback that is missing.
+const feedback = ref<Feedback | null>(null)
+const speaking = ref<SpeakingFeedback | null>(null)
+const feedbackLoading = ref(false)
+// The saved attempt these answers belong to; created with the first answer.
+const attemptId = ref<number | null>(null)
+// The latest scored attempt at this question before the current one, for comparison.
+const previous = ref<AttemptSummary | null>(null)
 
 const isFollowUp = computed(() => followUps.value > 0)
+// The list this question was picked from: its job posting's page or the common questions.
+const backTo = computed(() => {
+  const postingId = question.value?.posting_id
+  return postingId ? { name: 'posting', params: { id: postingId } } : { name: 'common' }
+})
 const busy = computed(() => ['recording', 'transcribing', 'thinking'].includes(phase.value))
+const answered = computed(() => turns.value.filter((t) => t.answer))
+const clarity = computed(() => {
+  const scores = turns.value.flatMap((t) => (t.delivery ? [t.delivery.clarity] : []))
+  return scores.length ? mean(scores) : null
+})
 
 function resetThread() {
   turns.value.forEach((t) => t.recordingUrl && URL.revokeObjectURL(t.recordingUrl))
@@ -32,6 +54,10 @@ function resetThread() {
   followUps.value = 0
   phase.value = 'idle'
   error.value = ''
+  notice.value = ''
+  feedback.value = null
+  speaking.value = null
+  attemptId.value = null
 }
 
 function ask(text: string) {
@@ -39,8 +65,27 @@ function ask(text: string) {
   speech.speak(text)
 }
 
-async function startAnswer() {
+async function loadPrevious() {
+  await store.loadAttempts()
+  previous.value =
+    store.attemptsFor(props.id).find((a) => a.id !== attemptId.value && a.english_score !== null) ?? null
+}
+
+// Starts a new attempt at the same question, to compare against the one just scored.
+async function retry() {
+  const q = question.value
+  if (!q) return
+  resetThread()
+  await loadPrevious()
+  ask(q.text)
+}
+
+function startAnswer() {
   error.value = ''
+  notice.value = ''
+  // Feedback covers the whole attempt, so a new answer makes it stale.
+  feedback.value = null
+  speaking.value = null
   speech.stop()
   if (!camera.startRecording()) {
     error.value = 'The microphone is not available, so the answer cannot be recorded.'
@@ -51,32 +96,67 @@ async function startAnswer() {
 }
 
 // Transcribes the answer with the local Whisper model on the backend.
-async function transcribe(audio: Blob): Promise<string> {
+async function transcribe(audio: Blob): Promise<{ text: string; delivery: Delivery | null }> {
   const form = new FormData()
   form.append('file', audio, 'answer.webm')
-  const res = await fetch('/api/transcribe', { method: 'POST', body: form })
-  const data = (await res.json()) as { text?: string; detail?: string }
-  if (!res.ok) throw new Error(data.detail ?? `HTTP ${res.status}`)
-  return data.text ?? ''
+  const data = await api<{
+    text: string
+    clarity: number | null
+    unclear_words: string[]
+    words_per_minute: number | null
+  }>('/transcribe', { method: 'POST', body: form })
+  const delivery =
+    data.clarity === null
+      ? null
+      : { clarity: data.clarity, unclearWords: data.unclear_words, wordsPerMinute: data.words_per_minute }
+  return { text: data.text, delivery }
+}
+
+// Saves the answer and its recording so it shows up in History.
+async function saveTurn(turn: LiveTurn, recording: Blob | null) {
+  attemptId.value ??= (await api<AttemptSummary>('/attempts', { method: 'POST', json: { question_id: props.id } })).id
+  const form = new FormData()
+  form.append('question', turn.question)
+  form.append('answer', turn.answer)
+  form.append('has_video', String(turn.hasVideo))
+  if (turn.delivery) {
+    form.append('clarity', String(turn.delivery.clarity))
+    form.append('unclear_words', JSON.stringify(turn.delivery.unclearWords))
+    if (turn.delivery.wordsPerMinute !== null) form.append('words_per_minute', String(turn.delivery.wordsPerMinute))
+  }
+  if (recording) form.append('recording', recording, 'recording.webm')
+  await api(`/attempts/${attemptId.value}/turns`, { method: 'POST', body: form })
 }
 
 async function stopAnswer() {
   phase.value = 'transcribing'
-  const [recording, liveCaption] = await Promise.all([camera.stopRecording(), recognition.stop()])
+  const [{ recording, audio }, liveCaption] = await Promise.all([camera.stopRecording(), recognition.stop()])
 
   // Whisper is the accurate transcript; the browser's live caption is only a fallback.
   let answer = liveCaption
-  if (recording.audio) {
+  let delivery: Delivery | null = null
+  if (audio) {
     try {
-      answer = await transcribe(recording.audio)
+      ;({ text: answer, delivery } = await transcribe(audio))
     } catch (e) {
-      error.value = `${(e as Error).message}. Using the live caption instead.`
+      notice.value = `${(e as Error).message}. Using the live caption instead.`
     }
   }
-  turns.value.push({ question: prompt.value, answer, recordingUrl: recording.url, hasVideo: camera.hasVideo() })
-  phase.value = 'thinking'
+  const turn: LiveTurn = {
+    question: prompt.value,
+    answer,
+    delivery,
+    audio,
+    recordingUrl: recording ? URL.createObjectURL(recording) : null,
+    hasVideo: camera.hasVideo(),
+  }
+  turns.value.push(turn)
+  try {
+    await saveTurn(turn, recording)
+  } catch (e) {
+    notice.value = `This answer could not be saved to History: ${(e as Error).message}`
+  }
 
-  store.markAnswered(props.id)
   if (!answer) {
     error.value = 'No speech was recognized, so there is no follow-up. Try answering again.'
     phase.value = 'idle'
@@ -84,18 +164,18 @@ async function stopAnswer() {
   }
   if (followUps.value >= MAX_FOLLOW_UPS) {
     phase.value = 'done'
+    requestFeedback()
     return
   }
+  phase.value = 'thinking'
   try {
-    const res = await fetch('/api/follow-up', {
+    const data = await api<{ question: string }>('/follow-up', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        turns: turns.value.filter((t) => t.answer).map(({ question, answer }) => ({ question, answer })),
-      }),
+      json: {
+        question_id: props.id,
+        turns: answered.value.map(({ question, answer }) => ({ question, answer })),
+      },
     })
-    const data = (await res.json()) as { question?: string; detail?: string }
-    if (!res.ok || !data.question) throw new Error(data.detail ?? `HTTP ${res.status}`)
     followUps.value++
     phase.value = 'idle'
     ask(data.question)
@@ -105,7 +185,61 @@ async function stopAnswer() {
   }
 }
 
-// The picked question starts a fresh thread and is read aloud once it is available.
+// Scores how the answers sound, by sending the audio to a model that can listen.
+function evaluateSpeaking(): Promise<SpeakingFeedback> {
+  const form = new FormData()
+  for (const turn of answered.value) {
+    if (!turn.audio) continue
+    form.append('files', turn.audio, 'answer.webm')
+    form.append('questions', turn.question)
+    form.append('transcripts', turn.answer)
+  }
+  return api<SpeakingFeedback>('/evaluate/speaking', { method: 'POST', body: form })
+}
+
+async function requestFeedback() {
+  error.value = ''
+  notice.value = ''
+  feedbackLoading.value = true
+  try {
+    const hasAudio = answered.value.some((t) => t.audio)
+    const [text, spoken] = await Promise.allSettled([
+      api<Feedback>('/evaluate', {
+        method: 'POST',
+        json: {
+          question_id: props.id,
+          turns: answered.value.map(({ question, answer }) => ({ question, answer })),
+        },
+      }),
+      hasAudio ? evaluateSpeaking() : Promise.reject(new Error('no audio was recorded')),
+    ])
+    if (text.status === 'rejected') throw text.reason
+    feedback.value = text.value
+    if (spoken.status === 'fulfilled') {
+      speaking.value = spoken.value
+    } else {
+      // Not every model accepts audio; the sentence and content scores still stand.
+      notice.value = `Intonation and stress were not scored: ${(spoken.reason as Error).message}`
+    }
+    if (attemptId.value !== null) {
+      await api(`/attempts/${attemptId.value}/feedback`, {
+        method: 'PUT',
+        json: {
+          feedback: feedback.value,
+          speaking: speaking.value,
+          english_score: total(englishScores(feedback.value, speaking.value, clarity.value)),
+          content_score: total(contentScores(feedback.value)),
+        },
+      })
+    }
+  } catch (e) {
+    error.value = `Could not get feedback: ${(e as Error).message}`
+  } finally {
+    feedbackLoading.value = false
+  }
+}
+
+// The picked question starts a fresh attempt and is read aloud once it is available.
 watch(
   question,
   (q) => {
@@ -120,7 +254,8 @@ watch([videoEl, camera.stream], ([el, stream]) => {
 })
 
 onMounted(() => {
-  store.load()
+  store.load(true)
+  loadPrevious()
   camera.open()
 })
 
@@ -146,7 +281,7 @@ onBeforeUnmount(() => {
 
     <template v-else-if="question">
       <div class="mb-4 flex items-center justify-between">
-        <RouterLink class="btn btn-ghost btn-sm" to="/">← Questions</RouterLink>
+        <RouterLink class="btn btn-ghost btn-sm" :to="backTo">← Questions</RouterLink>
         <span class="badge" :class="isFollowUp ? 'badge-primary' : 'badge-neutral'">
           {{ isFollowUp ? `Follow-up ${followUps} / ${MAX_FOLLOW_UPS}` : 'Main question' }}
         </span>
@@ -192,60 +327,51 @@ onBeforeUnmount(() => {
             <span class="loading loading-dots loading-sm"></span> Preparing a follow-up question…
           </p>
           <div v-if="phase === 'done'" role="alert" class="alert alert-success alert-soft">
-            <span>That's all for this question.</span>
-            <RouterLink class="btn btn-sm" to="/">Pick another question</RouterLink>
+            <span>That's all for this question. Your answers are saved in History.</span>
+            <RouterLink class="btn btn-sm" :to="backTo">Pick another question</RouterLink>
           </div>
+          <div v-if="notice" role="alert" class="alert alert-warning alert-soft">{{ notice }}</div>
           <div v-if="error" role="alert" class="alert alert-error alert-soft">{{ error }}</div>
 
           <div class="card-actions mt-2 justify-end">
-              <button
-                class="btn"
-                :disabled="!speech.supported || busy"
-                @click="speech.speaking.value ? speech.stop() : speech.speak(prompt)"
-              >
-                {{ speech.speaking.value ? 'Stop voice' : 'Replay question' }}
-              </button>
-              <button v-if="phase === 'recording'" class="btn btn-error" @click="stopAnswer">Stop answer</button>
-              <button
-                v-else
-                class="btn btn-primary"
-                :disabled="phase !== 'idle' || !camera.stream.value"
-                @click="startAnswer"
-              >
-                Start answer
-              </button>
+            <button class="btn" :disabled="busy" @click="speech.speaking.value ? speech.stop() : speech.speak(prompt)">
+              {{ speech.speaking.value ? 'Stop voice' : 'Replay question' }}
+            </button>
+            <button
+              v-if="answered.length && !feedback"
+              class="btn"
+              :disabled="busy || feedbackLoading"
+              @click="requestFeedback"
+            >
+              <span v-if="feedbackLoading" class="loading loading-spinner loading-xs"></span>
+              {{ feedbackLoading ? 'Scoring…' : 'Get feedback' }}
+            </button>
+            <button v-if="feedback" class="btn" :disabled="busy" @click="retry">Try again</button>
+            <button v-if="phase === 'recording'" class="btn btn-error" @click="stopAnswer">Stop answer</button>
+            <button
+              v-else
+              class="btn btn-primary"
+              :disabled="phase !== 'idle' || !camera.stream.value"
+              @click="startAnswer"
+            >
+              Start answer
+            </button>
           </div>
         </div>
       </div>
 
-      <div v-if="turns.length" class="mt-4 grid gap-3">
-        <div v-for="(turn, i) in turns" :key="i" class="card bg-base-100 shadow-sm">
-          <div class="card-body gap-2">
-            <p class="font-semibold">{{ turn.question }}</p>
-            <p class="text-base-content/70">{{ turn.answer || '(no speech recognized)' }}</p>
-            <div v-if="turn.recordingUrl && turn.hasVideo" class="collapse collapse-arrow bg-base-200">
-              <input type="checkbox" />
-              <div class="collapse-title text-sm">Watch recording</div>
-              <div class="collapse-content">
-                <video class="w-full max-w-lg rounded-box" :src="turn.recordingUrl" controls playsinline></video>
-                <a
-                  class="btn btn-sm mt-2"
-                  :href="turn.recordingUrl"
-                  :download="`answer-q${id}-${i + 1}.webm`"
-                >
-                  Download
-                </a>
-              </div>
-            </div>
-            <div v-else-if="turn.recordingUrl" class="flex flex-wrap items-center gap-2">
-              <audio class="h-10 grow" :src="turn.recordingUrl" controls></audio>
-              <a class="btn btn-sm" :href="turn.recordingUrl" :download="`answer-q${id}-${i + 1}.webm`">
-                Download
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
+      <FeedbackPanel
+        v-if="feedback"
+        class="mt-4"
+        :feedback="feedback"
+        :speaking="speaking"
+        :clarity="clarity"
+        :previous-english="previous?.english_score"
+        :previous-content="previous?.content_score"
+        @listen="speech.speak"
+      />
+
+      <TurnList v-if="turns.length" class="mt-4" :turns="turns" :download-prefix="`answer-q${id}`" />
     </template>
   </main>
 </template>

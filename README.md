@@ -3,8 +3,8 @@
 A web-based mock interview service for personal use.
 
 ## Overview
-- **Frontend**: Video-call style web UI that reads questions aloud, records your answer from the webcam, and transcribes it — Vue 3, TypeScript, Vite, Vue Router, Pinia, Tailwind CSS + daisyUI.
-- **Backend**: API server that serves questions, transcribes answers with a local Whisper model, and generates follow-up questions — FastAPI (Python).
+- **Frontend**: Video-call style web UI that reads questions aloud, records your answer from the webcam, and shows scored feedback and history — Vue 3, TypeScript, Vite, Vue Router, Pinia, Tailwind CSS + daisyUI.
+- **Backend**: API server that serves questions, transcribes answers (Whisper) and reads questions aloud (Kokoro) locally, and uses an LLM for tailored questions, follow-up questions, and scored feedback — FastAPI (Python).
 - **Database**: SQLite (local, single-user).
 
 The service is intended to run locally; no deployment or multi-user support is planned for now.
@@ -37,6 +37,36 @@ downloaded on the first transcription; set `WHISPER_MODEL` in `backend/.env` to 
 While you speak, the browser's Web Speech API shows live captions (Chrome, Edge, Safari). Allow
 camera and microphone access when asked.
 
+### Text-to-speech
+Questions are read aloud with a local [Kokoro](https://github.com/thewh1teagle/kokoro-onnx) voice.
+Its model files (~350 MB) are downloaded on first use, and rendered clips are cached in
+`backend/data/tts/cache/`. Set `TTS_VOICE` in `backend/.env` to change the voice. If the backend
+cannot produce audio, the browser's built-in voice is used instead.
+
+### Feedback
+After answering, "Get feedback" scores the attempt in two parts (0-100 each):
+- **English**: grammar, vocabulary, and naturalness from the answer text, plus pronunciation,
+  intonation, and stress from the audio. The audio scores need an LLM that accepts audio input
+  (e.g. Gemini), and the answer audio is sent to that provider. With other models, Whisper's
+  confidence in the words it heard is used as the pronunciation score instead.
+- **Content**: relevance, structure, and specificity.
+
+Written feedback is in English; set `FEEDBACK_LANGUAGE` in `backend/.env` for another language.
+
+### History
+Every answer is saved with its transcript, scores, feedback, and a low-bitrate recording
+(about 2 MB per minute) under `backend/data/`. The History page lists attempts by date and shows
+how the scores changed against the previous attempt at the same question.
+
+### Résumé and job postings
+Upload a résumé (PDF, `.txt`, `.md`, or pasted text) and add job postings by link or pasted
+text. For a link, the posting text is extracted from the page; pages that need a login or render
+with JavaScript have to be pasted. Each posting has its own page with interview
+questions generated for it at a chosen difficulty (easy, standard, or hard). A posting can use the
+common résumé or its own (for applications tailored per company), plus an optional cover
+letter. Follow-up questions and feedback for those questions take the posting and these
+documents into account. Both are stored locally and their text is sent to the LLM for those requests.
+
 ## Structure
-- `backend/` — FastAPI app; SQLite file is created at `backend/data/app.db` on first start.
+- `backend/` — FastAPI app. Everything it stores lives in `backend/data/` (git-ignored): the SQLite file `app.db`, `recordings/`, and the `tts/` voice model and cache.
 - `frontend/` — Vue 3 app; `/api` requests are proxied to the backend by Vite.
