@@ -2,12 +2,16 @@
 import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import BrandMark from './components/BrandMark.vue'
+import ModelDownloads from './components/ModelDownloads.vue'
+import { useModelsStore } from './stores/models'
 import { useSettingsStore } from './stores/settings'
 
 const settings = useSettingsStore()
 const router = useRouter()
 const LINK = 'hover:bg-neutral-content/10'
 onMounted(async () => {
+  // Fetch the speech models in the background, so they are there before the first answer.
+  void useModelsStore().start()
   settings.load()
   await settings.loadLLM()
   // First launch: nothing works well without a model, so start on the setup page.
@@ -31,6 +35,7 @@ onMounted(async () => {
         </ul>
       </div>
     </nav>
+    <ModelDownloads />
     <div v-if="settings.error" role="alert" class="alert alert-error alert-soft mx-auto mt-4 max-w-3xl">
       {{ settings.error }}
     </div>

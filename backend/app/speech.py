@@ -13,6 +13,7 @@ import certifi
 import numpy as np
 from kokoro_onnx import Kokoro
 
+from .downloads import Download
 from .paths import DATA_DIR
 
 TTS_DIR = DATA_DIR / "tts"
@@ -22,9 +23,21 @@ RELEASE_URL = "https://github.com/thewh1teagle/kokoro-onnx/releases/download/mod
 MODEL_FILES = ("kokoro-v1.0.onnx", "voices-v1.0.bin")
 DEFAULT_VOICE = "af_heart"
 
+# Size of the two files of the pinned release, for showing download progress.
+EXPECTED_BYTES = 325_532_387 + 28_214_398
+
 _kokoro: Kokoro | None = None
-_download: threading.Thread | None = None
 _lock = threading.Lock()
+
+
+def _is_downloaded() -> bool:
+    return all((TTS_DIR / name).exists() for name in MODEL_FILES)
+
+
+def _downloaded_bytes() -> int:
+    """Bytes of the model files on disk, counting a file that is still being downloaded."""
+    names = [candidate for name in MODEL_FILES for candidate in (name, f"{name}.part")]
+    return sum((TTS_DIR / name).stat().st_size for name in names if (TTS_DIR / name).exists())
 
 
 def _download_models() -> None:
@@ -42,16 +55,25 @@ def _download_models() -> None:
             partial.rename(path)
 
 
+# The lambdas look the functions up when called, so tests can replace them.
+model_download = Download(
+    "voice",
+    "Interviewer's voice",
+    is_ready=lambda: _is_downloaded(),
+    fetch=lambda: _download_models(),
+    measure=lambda: _downloaded_bytes(),
+    total=EXPECTED_BYTES,
+)
+
+
 def _get_kokoro() -> Kokoro:
     """Return the loaded voice model. Raises while its files are still being downloaded."""
-    global _kokoro, _download
+    global _kokoro
     if _kokoro is None:
-        if not all((TTS_DIR / name).exists() for name in MODEL_FILES):
+        if not _is_downloaded():
             # The download takes minutes, so it runs in the background instead of holding the
             # request; the caller reports the failure and the UI uses the browser voice meanwhile.
-            if _download is None or not _download.is_alive():
-                _download = threading.Thread(target=_download_models, daemon=True)
-                _download.start()
+            model_download.start()
             raise RuntimeError("the voice model is still downloading")
         _kokoro = Kokoro(str(TTS_DIR / MODEL_FILES[0]), str(TTS_DIR / MODEL_FILES[1]))
     return _kokoro

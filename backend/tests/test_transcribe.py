@@ -20,6 +20,8 @@ def fake_model(monkeypatch):
     FakeWhisperModel.loads = []
     monkeypatch.setattr(transcribe, "WhisperModel", FakeWhisperModel)
     monkeypatch.setattr(transcribe, "_model", None)
+    # The model files are already "downloaded".
+    monkeypatch.setattr(transcribe, "_is_downloaded", lambda: True)
     monkeypatch.delenv("WHISPER_MODEL", raising=False)
 
 
@@ -43,3 +45,11 @@ def test_another_model_can_be_chosen_with_the_environment(monkeypatch):
 def test_model_is_loaded_once():
     assert transcribe._get_model() is transcribe._get_model()
     assert len(FakeWhisperModel.loads) == 1
+
+
+def test_model_files_are_downloaded_straight_into_the_app_folder():
+    # Hugging Face's default (Xet) transfer first collects a large file in a cache under
+    # ~/.cache/huggingface, where its progress cannot be seen and where it is left behind.
+    from huggingface_hub import constants
+
+    assert constants.HF_HUB_DISABLE_XET is True

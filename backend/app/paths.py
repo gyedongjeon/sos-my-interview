@@ -10,3 +10,9 @@ DATA_DIR = Path(os.environ.get("SOS_MY_INTERVIEW_DATA_DIR") or BACKEND_DIR / "da
 
 # The built frontend (`npm run build`), served by the backend when it exists.
 FRONTEND_DIST = Path(os.environ.get("SOS_MY_INTERVIEW_FRONTEND_DIST") or BACKEND_DIR.parent / "frontend" / "dist")
+
+# Hugging Face's default (Xet) transfer first collects a large file in a cache of its own under
+# ~/.cache/huggingface. Plain downloads go straight into the folder they are asked to, which
+# keeps everything inside DATA_DIR and lets the download's progress be seen. This is read when
+# huggingface_hub is first imported, so it is set here, in the first module the app loads.
+os.environ.setdefault("HF_HUB_DISABLE_XET", "1")

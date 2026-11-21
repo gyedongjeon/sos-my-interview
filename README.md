@@ -85,7 +85,8 @@ database (`app.db`), is never shown again in the UI, and is sent only to the cho
 ### Speech-to-text
 Answers are transcribed locally with [Whisper](https://github.com/SYSTRAN/faster-whisper): no API
 key is needed and the audio never leaves your machine. The `small.en` model (~480 MB) is
-downloaded into the data folder (`whisper/`) on the first transcription; set the `WHISPER_MODEL` environment variable to use another one.
+downloaded into the data folder (`whisper/`) in the background when the app is first opened, with
+its progress shown at the top of the page; an answer given before it is there waits for it; set the `WHISPER_MODEL` environment variable to use another one.
 
 While you speak, live captions are shown: from the browser's Web Speech API in Chrome, Edge,
 and Safari, and from the same local Whisper model in the desktop app and other browsers. Allow
@@ -94,7 +95,7 @@ camera and microphone access when asked.
 ### Text-to-speech
 Questions are read aloud with a local [Kokoro](https://github.com/thewh1teagle/kokoro-onnx) voice.
 The question text stays hidden until you press "Show question", so each question is listening practice first.
-Its model files (~350 MB) are downloaded in the background on first use, and rendered clips are cached in
+Its model files (~350 MB) are downloaded in the background when the app is first opened, and rendered clips are cached in
 `backend/data/tts/cache/`. Set the `TTS_VOICE` environment variable to change the voice. While the
 download is running, or if the backend cannot produce audio, the browser's built-in voice is used instead.
 

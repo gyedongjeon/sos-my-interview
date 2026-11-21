@@ -13,6 +13,7 @@ from .db import get_connection, init_db
 from .evaluate import Feedback, SpeakingFeedback, evaluate, evaluate_speaking
 from .follow_up import generate_follow_up
 from .llm import LLMError
+from .models import router as models_router
 from .paths import FRONTEND_DIST
 from .settings import router as settings_router
 from .speech import synthesize
@@ -27,6 +28,7 @@ async def lifespan(_: FastAPI):
 app = FastAPI(title="sos-my-interview", lifespan=lifespan)
 app.include_router(attempts_router)
 app.include_router(background_router)
+app.include_router(models_router)
 app.include_router(settings_router)
 
 
