@@ -31,7 +31,8 @@
         "filter": [
           "app/**/*.py",
           "pyproject.toml",
-          "uv.lock"
+          "uv.lock",
+          ".python-version"
         ]
       },
       {
