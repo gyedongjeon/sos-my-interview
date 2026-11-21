@@ -24,7 +24,7 @@ async def lifespan(_: FastAPI):
     yield
 
 
-app = FastAPI(title="deep-dive-interview", lifespan=lifespan)
+app = FastAPI(title="sos-my-interview", lifespan=lifespan)
 app.include_router(attempts_router)
 app.include_router(background_router)
 app.include_router(settings_router)

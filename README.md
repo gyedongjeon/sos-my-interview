@@ -1,4 +1,4 @@
-# deep-dive-interview
+# sos-my-interview
 
 A web-based mock interview service for personal use.
 
@@ -31,12 +31,12 @@ you. It needs [uv](https://docs.astral.sh/uv/) and Node.js installed.
 cd desktop
 npm install
 npm run dev    # run from this checkout, using backend/data
-npm run dist   # build desktop/release/Deep Dive Interview-<version>-arm64.dmg
+npm run dist   # build desktop/release/SOS My Interview-<version>-arm64.dmg
 ```
 
 The built app installs its Python dependencies on the first launch (this can take a few
 minutes) and keeps its own data, separate from this checkout, in
-`~/Library/Application Support/Deep Dive Interview/data/`. The
+`~/Library/Application Support/SOS My Interview/data/`. The
 build is not signed with a developer certificate, so it is meant for the machine that built it.
 
 ### AI model and API key

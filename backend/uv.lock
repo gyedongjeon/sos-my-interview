@@ -518,7 +518,7 @@ wheels = [
 ]
 
 [[package]]
-name = "deep-dive-interview-backend"
+name = "sos-my-interview-backend"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [

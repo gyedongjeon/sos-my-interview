@@ -1,6 +1,6 @@
 # Agent Instructions
 
-This file provides specific context and operational rules for AI assistants working within the `deep-dive-interview` project.
+This file provides specific context and operational rules for AI assistants working within the `sos-my-interview` project.
 
 ## Core Directives
 - **Source of Truth**: Always refer to the following documents for project rules and conventions:
@@ -21,7 +21,7 @@ This file provides specific context and operational rules for AI assistants work
 - Never modify another branch's worklog file.
 
 ## Project Mission
-- **Project**: `deep-dive-interview` — a web-based mock interview service for personal use.
+- **Project**: `sos-my-interview` — a web-based mock interview service for personal use.
 - **Architecture**: Separate frontend and backend.
     - **Backend**: FastAPI (Python) with SQLite as the database.
     - **Frontend**: Vue 3 + TypeScript + Vite, with Vue Router and Pinia. Styling uses Tailwind CSS with daisyUI as the design system; prefer daisyUI component classes and theme colors over custom CSS.

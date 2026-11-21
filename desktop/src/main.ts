@@ -56,13 +56,13 @@ function startBackend(uv: string, port: number) {
   const { backend: project, frontend, data } = paths()
   const env: NodeJS.ProcessEnv = {
     ...process.env,
-    DEEP_DIVE_FRONTEND_DIST: frontend,
+    SOS_MY_INTERVIEW_FRONTEND_DIST: frontend,
     // Keep Python from writing bytecode into the app bundle.
     PYTHONDONTWRITEBYTECODE: '1',
   }
   const args = ['run', '--project', project]
   if (data) {
-    env.DEEP_DIVE_DATA_DIR = data
+    env.SOS_MY_INTERVIEW_DATA_DIR = data
     env.UV_PROJECT_ENVIRONMENT = join(app.getPath('userData'), 'venv')
     args.push('--frozen')
   }
@@ -112,7 +112,7 @@ async function waitForBackend(url: string) {
 
 const SPLASH = `data:text/html;charset=utf-8,${encodeURIComponent(`<!doctype html>
 <body style="margin:0;height:100vh;display:grid;place-items:center;font:16px system-ui;color:#555;background:#f4f4f5">
-<div style="text-align:center"><p style="font-size:20px;color:#222">Deep Dive Interview</p>
+<div style="text-align:center"><p style="font-size:20px;color:#222">SOS My Interview</p>
 <p>Starting… the first launch sets things up and can take a few minutes.</p></div></body>`)}`
 
 async function main() {
@@ -131,7 +131,7 @@ async function main() {
       .then(() => systemPreferences.askForMediaAccess('camera'))
   }
 
-  window = new BrowserWindow({ width: 1280, height: 860, minWidth: 800, minHeight: 600, title: 'Deep Dive Interview' })
+  window = new BrowserWindow({ width: 1280, height: 860, minWidth: 800, minHeight: 600, title: 'SOS My Interview' })
   window.on('closed', () => (window = null))
   // Links to job postings open in the regular browser, not inside the app.
   window.webContents.setWindowOpenHandler(({ url }) => {
