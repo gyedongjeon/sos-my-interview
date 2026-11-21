@@ -11,6 +11,7 @@ This file provides specific context and operational rules for AI assistants work
     - [README.md](README.md) - Project overview and structure.
 - **Commits**: Use Conventional Commits as defined in [docs/git-workflow/commit-convention.md](docs/git-workflow/commit-convention.md).
 - **Language**: Documentation and code comments should be in **English**. User interaction can be in Korean or English as per user preference.
+    - Exception: [README.ko.md](README.ko.md) is the Korean README for users. It covers what the app does, installing, and first setup only, and links to [README.md](README.md) for everything else. When a change affects those parts of `README.md`, update `README.ko.md` in the same PR.
 - **Security & Data Protection**: Never add secrets, API keys, credentials, or personal data to the repository. Worklog/PR text also follows the anonymization rules in **Worklog**.
 
 ## Development Method
