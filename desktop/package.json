@@ -17,6 +17,7 @@
   },
   "build": {
     "appId": "local.sos-my-interview",
+    "publish": null,
     "directories": {
       "output": "release"
     },

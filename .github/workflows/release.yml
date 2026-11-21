@@ -22,7 +22,6 @@ jobs:
     permissions:
       contents: write
     env:
-      GH_TOKEN: ${{ github.token }}
       TAG: ${{ github.ref_name }}
     steps:
       - uses: actions/checkout@v4
@@ -45,13 +44,16 @@ jobs:
 
       - name: Build the installer
         working-directory: desktop
-        # electron-builder would otherwise try to publish by itself on a tagged CI build.
+        # electron-builder must not publish by itself: `--publish never` here, `"publish": null`
+        # in package.json, and no GitHub token in this step's environment.
         run: npm run dist -- --publish never
 
       - name: Write the release notes
         run: .github/scripts/release-notes.sh "$TAG" desktop/release/*.dmg > release-notes.md
 
       - name: Publish the release
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           # A re-run for the same tag replaces the installer instead of failing.
           if gh release view "$TAG" > /dev/null 2>&1; then
