@@ -50,6 +50,7 @@ const CREDITS = [
   { name: 'Pinia', copyright: '© 2019-present Eduardo San Martin Morote', license: 'MIT' },
   { name: 'daisyUI', copyright: '© 2020 Pouya Saadeghi', license: 'MIT' },
   { name: 'Tailwind CSS', copyright: '© Tailwind Labs, Inc.', license: 'MIT' },
+  { name: 'uv (desktop app)', copyright: '© 2025 Astral Software Inc.', license: 'MIT' },
 ]
 
 const store = useSettingsStore()

@@ -9,9 +9,11 @@
   "scripts": {
     "frontend": "npm --prefix ../frontend install && npm --prefix ../frontend run build",
     "compile": "tsc",
+    "test": "vitest run",
     "dev": "npm run frontend && npm run compile && electron .",
-    "package": "npm run frontend && npm run compile && electron-builder --dir",
-    "dist": "npm run frontend && npm run compile && electron-builder"
+    "uv": "node scripts/fetch-uv.mjs",
+    "package": "npm run uv && npm run frontend && npm run compile && electron-builder --dir",
+    "dist": "npm run uv && npm run frontend && npm run compile && electron-builder"
   },
   "build": {
     "appId": "local.sos-my-interview",
@@ -34,6 +36,13 @@
       {
         "from": "../frontend/dist",
         "to": "frontend"
+      },
+      {
+        "from": "vendor/uv",
+        "to": "uv",
+        "filter": [
+          "uv"
+        ]
       }
     ],
     "mac": {
@@ -51,6 +60,7 @@
     "@types/node": "^26.6.6",
     "electron": "^45.4.1",
     "electron-builder": "^26.18.0",
-    "typescript": "^7.0.2"
+    "typescript": "^7.0.2",
+    "vitest": "^5.1.1"
   }
 }

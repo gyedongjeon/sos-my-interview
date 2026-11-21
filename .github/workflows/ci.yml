@@ -56,7 +56,7 @@ jobs:
         run: npm run build
 
   desktop:
-    name: Desktop (type check)
+    name: Desktop (vitest, type check)
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -72,5 +72,7 @@ jobs:
           cache: npm
           cache-dependency-path: desktop/package-lock.json
       - run: npm ci
+      - name: Run tests
+        run: npm test
       - name: Type check
         run: npx tsc --noEmit

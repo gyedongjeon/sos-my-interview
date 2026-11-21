@@ -30,7 +30,7 @@ Follow Kent Beck's Test-Driven Development and Tidy First.
 - **Running the tests**:
     - Backend: `cd backend && uv run pytest`. Tests use a temporary data folder and block network access; mock the LLM, Whisper, and Kokoro instead of calling them.
     - Frontend: `cd frontend && npm test` (Vitest), and `npm run build` for the type check.
-    - Desktop: `cd desktop && npx tsc --noEmit`.
+    - Desktop: `cd desktop && npm test` (Vitest), and `npx tsc --noEmit` for the type check.
     - `.github/workflows/ci.yml` runs all of these when a pull request into `main` is opened. It does not run again on later pushes, so run the tests locally before pushing a fix (it can also be started by hand from the Actions tab).
 
 ## Worklog (MANDATORY for every PR)
