@@ -75,6 +75,7 @@ def init_db() -> None:
         for column in ("resume_text", "resume_filename", "cover_letter_text", "cover_letter_filename"):
             if column not in columns:
                 conn.execute(f"ALTER TABLE job_postings ADD COLUMN {column} TEXT")
+        conn.execute("CREATE TABLE IF NOT EXISTS settings (key TEXT PRIMARY KEY, value TEXT NOT NULL)")
         # One attempt = answering one question once, including its follow-ups.
         conn.execute(
             """

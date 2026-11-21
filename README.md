@@ -51,7 +51,7 @@ After answering, "Get feedback" scores the attempt in two parts (0-100 each):
   confidence in the words it heard is used as the pronunciation score instead.
 - **Content**: relevance, structure, and specificity.
 
-Written feedback is in English; set `FEEDBACK_LANGUAGE` in `backend/.env` for another language.
+Written feedback is in the language picked in the navigation bar ("Feedback in"). On first visit it starts from the browser's language.
 
 ### History
 Every answer is saved with its transcript, scores, feedback, and a low-bitrate recording

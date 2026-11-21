@@ -1,19 +1,14 @@
 """Scores an interview thread on English, content, and (from the audio) speaking."""
 
 import base64
-import os
 
 from pydantic import BaseModel, Field
 
 from .background import candidate_background
 from .llm import complete, format_interview, parse_json_reply
+from .settings import feedback_language
 
 Score = Field(ge=0, le=100)
-
-
-def feedback_language() -> str:
-    """The language to write feedback in: FEEDBACK_LANGUAGE, else English."""
-    return os.environ.get("FEEDBACK_LANGUAGE", "").strip() or "English"
 
 
 class Correction(BaseModel):
