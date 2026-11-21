@@ -1,0 +1,56 @@
+{
+  "name": "sos-my-interview",
+  "productName": "SOS My Interview",
+  "description": "Mock interview practice that runs on your own machine.",
+  "private": true,
+  "license": "MIT",
+  "version": "0.1.0",
+  "main": "dist/main.js",
+  "scripts": {
+    "frontend": "npm --prefix ../frontend install && npm --prefix ../frontend run build",
+    "compile": "tsc",
+    "dev": "npm run frontend && npm run compile && electron .",
+    "package": "npm run frontend && npm run compile && electron-builder --dir",
+    "dist": "npm run frontend && npm run compile && electron-builder"
+  },
+  "build": {
+    "appId": "local.sos-my-interview",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**"
+    ],
+    "extraResources": [
+      {
+        "from": "../backend",
+        "to": "backend",
+        "filter": [
+          "app/**/*.py",
+          "pyproject.toml",
+          "uv.lock"
+        ]
+      },
+      {
+        "from": "../frontend/dist",
+        "to": "frontend"
+      }
+    ],
+    "mac": {
+      "target": "dmg",
+      "category": "public.app-category.education",
+      "identity": "-",
+      "hardenedRuntime": false,
+      "extendInfo": {
+        "NSCameraUsageDescription": "The camera shows and records you while you answer interview questions.",
+        "NSMicrophoneUsageDescription": "The microphone records your answers so they can be transcribed and scored."
+      }
+    }
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "electron": "^45.4.1",
+    "electron-builder": "^26.18.0",
+    "typescript": "^7.0.2"
+  }
+}
