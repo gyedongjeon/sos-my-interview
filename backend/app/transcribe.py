@@ -69,6 +69,17 @@ def transcribe(audio: BinaryIO) -> Transcript:
     return Transcript(text, clarity, unclear[:MAX_UNCLEAR_WORDS], wpm)
 
 
+def caption(audio: BinaryIO) -> str:
+    """Quick, rough transcript of a short chunk of speech, for live captions."""
+    model = _get_model()
+    with _lock:
+        # Greedy decoding and no word timings: speed matters more than accuracy here.
+        segments, _ = model.transcribe(
+            audio, language="en", vad_filter=True, beam_size=1, condition_on_previous_text=False
+        )
+        return " ".join(segment.text.strip() for segment in segments).strip()
+
+
 def to_wav(audio: BinaryIO, sample_rate: int = 16000) -> bytes:
     """Convert any audio (or video) file to mono 16-bit WAV, a format every model accepts."""
     samples = decode_audio(audio, sampling_rate=sample_rate)

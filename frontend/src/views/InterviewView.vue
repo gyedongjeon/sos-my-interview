@@ -5,7 +5,7 @@ import FeedbackPanel from '../components/FeedbackPanel.vue'
 import TurnList from '../components/TurnList.vue'
 import { useCamera } from '../composables/useCamera'
 import { useSpeech } from '../composables/useSpeech'
-import { useSpeechRecognition } from '../composables/useSpeechRecognition'
+import { useCaptions } from '../composables/useCaptions'
 import { contentScores, englishScores, mean, total } from '../scores'
 import { useInterviewStore } from '../stores/interview'
 import type { AttemptSummary, Delivery, Feedback, LiveTurn, Phase, SpeakingFeedback } from '../types'
@@ -18,7 +18,7 @@ const store = useInterviewStore()
 const question = computed(() => store.byId(props.id))
 const speech = useSpeech()
 const camera = useCamera()
-const recognition = useSpeechRecognition()
+const recognition = useCaptions()
 
 const videoEl = ref<HTMLVideoElement | null>(null)
 const prompt = ref('') // Question currently being asked (the picked one or a follow-up).
@@ -91,7 +91,8 @@ function startAnswer() {
     error.value = 'The microphone is not available, so the answer cannot be recorded.'
     return
   }
-  recognition.start()
+  // Captions are optional; the answer is still recorded and transcribed without them.
+  void Promise.resolve(recognition.start(camera.stream.value)).catch(() => {})
   phase.value = 'recording'
 }
 

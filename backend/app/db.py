@@ -1,9 +1,10 @@
 """SQLite access and seed data."""
 
 import sqlite3
-from pathlib import Path
 
-DB_PATH = Path(__file__).resolve().parent.parent / "data" / "app.db"
+from .paths import DATA_DIR
+
+DB_PATH = DATA_DIR / "app.db"
 
 SEED_QUESTIONS = [
     ("common", "Tell me about yourself."),

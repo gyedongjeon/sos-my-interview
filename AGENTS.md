@@ -25,6 +25,7 @@ This file provides specific context and operational rules for AI assistants work
 - **Architecture**: Separate frontend and backend.
     - **Backend**: FastAPI (Python) with SQLite as the database.
     - **Frontend**: Vue 3 + TypeScript + Vite, with Vue Router and Pinia. Styling uses Tailwind CSS with daisyUI as the design system; prefer daisyUI component classes and theme colors over custom CSS.
+    - **Desktop**: Electron shell (`desktop/`, TypeScript) that runs the backend, which serves the built frontend.
 - **Scope**: Runs locally for a single user. Do not add deployment, authentication, or multi-user features unless explicitly requested.
 
 ## Operational Preferences

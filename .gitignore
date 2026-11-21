@@ -48,3 +48,6 @@ temp/
 
 # Local database
 backend/data/
+
+# Desktop app builds
+desktop/release/

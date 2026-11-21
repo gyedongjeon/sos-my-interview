@@ -3,15 +3,19 @@
 import hashlib
 import io
 import os
+import shutil
+import ssl
 import threading
 import urllib.request
 import wave
-from pathlib import Path
 
+import certifi
 import numpy as np
 from kokoro_onnx import Kokoro
 
-TTS_DIR = Path(__file__).resolve().parent.parent / "data" / "tts"
+from .paths import DATA_DIR
+
+TTS_DIR = DATA_DIR / "tts"
 CACHE_DIR = TTS_DIR / "cache"
 # Model files (~350 MB in total), downloaded on first use.
 RELEASE_URL = "https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0"
@@ -31,7 +35,11 @@ def _get_kokoro() -> Kokoro:
             if not path.exists():
                 # Download to a temporary name so an interrupted download is not reused.
                 partial = path.with_suffix(path.suffix + ".part")
-                urllib.request.urlretrieve(f"{RELEASE_URL}/{name}", partial)
+                # certifi's CA bundle: some Python installs ship without root certificates.
+                tls = ssl.create_default_context(cafile=certifi.where())
+                with urllib.request.urlopen(f"{RELEASE_URL}/{name}", context=tls) as response:
+                    with partial.open("wb") as out:
+                        shutil.copyfileobj(response, out)
                 partial.rename(path)
         _kokoro = Kokoro(str(TTS_DIR / MODEL_FILES[0]), str(TTS_DIR / MODEL_FILES[1]))
     return _kokoro

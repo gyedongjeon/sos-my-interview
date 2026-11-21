@@ -2,10 +2,10 @@
 
 from contextlib import asynccontextmanager
 from dataclasses import asdict
-from pathlib import Path
 
 from dotenv import load_dotenv
 from fastapi import FastAPI, Form, HTTPException, Response, UploadFile
+from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 
 from .attempts import router as attempts_router
@@ -14,12 +14,15 @@ from .db import get_connection, init_db
 from .evaluate import Feedback, SpeakingFeedback, evaluate, evaluate_speaking
 from .follow_up import generate_follow_up
 from .llm import LLMError
+from .paths import BACKEND_DIR, DATA_DIR, FRONTEND_DIST
 from .settings import router as settings_router
 from .speech import synthesize
-from .transcribe import to_wav, transcribe
+from .transcribe import caption, to_wav, transcribe
 
-# Load local secrets (e.g. GEMINI_API_KEY) from backend/.env, which is git-ignored.
-load_dotenv(Path(__file__).resolve().parent.parent / ".env")
+# Load local secrets (e.g. GEMINI_API_KEY) from backend/.env, which is git-ignored. The desktop
+# app keeps its own .env in the data directory; the first file to set a variable wins.
+load_dotenv(BACKEND_DIR / ".env")
+load_dotenv(DATA_DIR / ".env")
 
 
 @asynccontextmanager
@@ -64,6 +67,10 @@ class TranscriptResponse(BaseModel):
     words_per_minute: int | None
 
 
+class CaptionResponse(BaseModel):
+    text: str
+
+
 class SpeechRequest(BaseModel):
     text: str = Field(min_length=1, max_length=2000)
 
@@ -71,6 +78,12 @@ class SpeechRequest(BaseModel):
 class EvaluateRequest(BaseModel):
     turns: list[Turn] = Field(min_length=1)
     question_id: int | None = None
+
+
+@app.get("/api/health")
+def health() -> dict[str, str]:
+    """Lets the desktop shell know the server is ready."""
+    return {"status": "ok"}
 
 
 @app.get("/api/questions", response_model=list[Question])
@@ -101,6 +114,15 @@ def transcribe_answer(file: UploadFile) -> TranscriptResponse:
         # Undecodable upload or a failed model download/load; report it to the UI.
         raise HTTPException(status_code=502, detail=f"Transcription failed: {e}") from e
     return TranscriptResponse(**asdict(result))
+
+
+@app.post("/api/captions", response_model=CaptionResponse)
+def caption_chunk(file: UploadFile) -> CaptionResponse:
+    """Quick transcript of a few seconds of speech, for live captions while recording."""
+    try:
+        return CaptionResponse(text=caption(file.file))
+    except Exception as e:
+        raise HTTPException(status_code=502, detail=f"Captioning failed: {e}") from e
 
 
 @app.post("/api/evaluate", response_model=Feedback)
@@ -142,3 +164,15 @@ def speech(body: SpeechRequest) -> Response:
         raise HTTPException(status_code=502, detail=f"Speech synthesis failed: {e}") from e
     return Response(content=audio, media_type="audio/wav")
 
+
+@app.get("/{path:path}", include_in_schema=False)
+def frontend(path: str) -> FileResponse:
+    """Serve the built frontend, so the whole app runs from this one server."""
+    index = FRONTEND_DIST / "index.html"
+    if path.startswith("api/") or not index.is_file():
+        raise HTTPException(status_code=404, detail="Not found")
+    file = (FRONTEND_DIST / path).resolve()
+    if file.is_file() and file.is_relative_to(FRONTEND_DIST.resolve()):
+        return FileResponse(file)
+    # Any other path is a client-side route; the Vue router takes it from here.
+    return FileResponse(index)

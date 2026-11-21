@@ -23,6 +23,22 @@ npm install
 npm run dev
 ```
 
+### Desktop app
+The same app also runs in its own window (Electron), with the backend started and stopped for
+you. It needs [uv](https://docs.astral.sh/uv/) and Node.js installed.
+
+```bash
+cd desktop
+npm install
+npm run dev    # run from this checkout, using backend/data and backend/.env
+npm run dist   # build desktop/release/Deep Dive Interview-<version>-arm64.dmg
+```
+
+The built app installs its Python dependencies on the first launch (this can take a few
+minutes) and keeps its own data, separate from this checkout, in
+`~/Library/Application Support/Deep Dive Interview/data/`. Put the `.env` file there too. The
+build is not signed with a developer certificate, so it is meant for the machine that built it.
+
 ### AI model and API key
 Tailored questions, follow-up questions, and feedback are written by an LLM through
 [LiteLLM](https://docs.litellm.ai/docs/providers), so any supported provider works (Gemini,
@@ -39,7 +55,8 @@ Answers are transcribed locally with [Whisper](https://github.com/SYSTRAN/faster
 key is needed and the audio never leaves your machine. The `small.en` model (~480 MB) is
 downloaded on the first transcription; set `WHISPER_MODEL` in `backend/.env` to use another one.
 
-While you speak, the browser's Web Speech API shows live captions (Chrome, Edge, Safari). Allow
+While you speak, live captions are shown: from the browser's Web Speech API in Chrome, Edge,
+and Safari, and from the same local Whisper model in the desktop app and other browsers. Allow
 camera and microphone access when asked.
 
 ### Text-to-speech
@@ -74,4 +91,5 @@ documents into account. Both are stored locally and their text is sent to the LL
 
 ## Structure
 - `backend/` — FastAPI app. Everything it stores lives in `backend/data/` (git-ignored): the SQLite file `app.db`, `recordings/`, and the `tts/` voice model and cache.
-- `frontend/` — Vue 3 app; `/api` requests are proxied to the backend by Vite.
+- `frontend/` — Vue 3 app; `/api` requests are proxied to the backend by Vite. Once built (`npm run build`), the backend serves it too, so http://127.0.0.1:8000 alone runs the whole app.
+- `desktop/` — Electron shell that starts the backend and shows the app in a window.
