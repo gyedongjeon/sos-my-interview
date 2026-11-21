@@ -40,7 +40,19 @@ Nothing else has to be installed, because the app ships its own [uv](https://doc
 
 On Intel Macs, Windows, and Linux there is no installer yet; [run it from source](#run-from-source).
 
-The app keeps its data in `~/Library/Application Support/SOS My Interview/data/`.
+### Where files are kept, and uninstalling
+Everything the installed app puts on disk is in one folder,
+`~/Library/Application Support/SOS My Interview/`:
+
+- `data/` — your interviews, recordings, settings, and the speech models
+- `venv/`, `uv-cache/`, `python/` — the Python packages and Python itself, set up on the first launch
+
+To back up or move your interviews, copy `data/`. Deleting the app leaves this folder in place,
+so to uninstall completely, move the app to the Trash and then delete that folder.
+
+Versions up to 0.3.0 also used two shared caches. If you ran one of them, you can delete
+`~/.cache/huggingface/hub/models--Systran--faster-whisper-small.en` and, if no other tool on your
+Mac uses uv, `~/.cache/uv`.
 
 ### Updates
 From version 0.3.0 on, the app asks GitHub for the latest release when it starts. When there is a
@@ -73,7 +85,7 @@ database (`app.db`), is never shown again in the UI, and is sent only to the cho
 ### Speech-to-text
 Answers are transcribed locally with [Whisper](https://github.com/SYSTRAN/faster-whisper): no API
 key is needed and the audio never leaves your machine. The `small.en` model (~480 MB) is
-downloaded on the first transcription; set the `WHISPER_MODEL` environment variable to use another one.
+downloaded into the data folder (`whisper/`) on the first transcription; set the `WHISPER_MODEL` environment variable to use another one.
 
 While you speak, live captions are shown: from the browser's Web Speech API in Chrome, Edge,
 and Safari, and from the same local Whisper model in the desktop app and other browsers. Allow
@@ -152,7 +164,7 @@ request into `main` runs all three suites, the frontend build, and the desktop t
 (`.github/workflows/ci.yml`).
 
 ## Structure
-- `backend/` — FastAPI app. Everything it stores lives in `backend/data/` (git-ignored): the SQLite file `app.db`, `recordings/`, and the `tts/` voice model and cache.
+- `backend/` — FastAPI app. Everything it stores lives in `backend/data/` (git-ignored): the SQLite file `app.db`, `recordings/`, the `whisper/` speech-to-text model, and the `tts/` voice model and cache.
 - `frontend/` — Vue 3 app; `/api` requests are proxied to the backend by Vite. Once built (`npm run build`), the backend serves it too, so http://127.0.0.1:8000 alone runs the whole app.
 - `desktop/` — Electron shell that starts the backend and shows the app in a window.
 

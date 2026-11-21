@@ -63,7 +63,16 @@ API 키는 내 컴퓨터에만 저장되고, 저장한 뒤에는 화면에 다�
 - **첫 답변 인식이 오래 걸려요.** 음성 인식 모델(약 480MB)을 처음 한 번 내려받기 때문입니다.
 - **발음 점수가 Pronunciation 하나만 나와요.** 음성 입력을 지원하지 않는 모델에서는 억양과 강세를 채점하지 못합니다. Gemini 모델을 쓰면 세 가지가 모두 나옵니다.
 - **화면이 영어예요.** 영어 면접 연습용이라 화면은 영어로 두었습니다. 피드백 설명은 Settings에서 고른 언어로 나옵니다.
-- **내 데이터는 어디에 있나요?** `~/Library/Application Support/SOS My Interview/data/`에 저장됩니다.
+- **내 데이터는 어디에 있나요?** `~/Library/Application Support/SOS My Interview/data/`에 저장됩니다. 백업하거나 다른 Mac으로 옮길 때는 이 폴더를 복사하면 됩니다.
+
+## 완전히 삭제하기
+앱을 휴지통에 넣어도 앱이 만든 파일은 남습니다. 완전히 지우려면 앱을 삭제한 뒤 아래 폴더를 지워 주세요. 면접 기록, 녹화, 음성 모델, Python 패키지가 모두 이 폴더 하나에 들어 있습니다.
+
+```
+~/Library/Application Support/SOS My Interview/
+```
+
+0.3.0 이하 버전을 쓴 적이 있다면 공용 캐시 폴더에도 파일이 남아 있을 수 있습니다. `~/.cache/huggingface/hub/models--Systran--faster-whisper-small.en`을 지우고, 다른 프로그램이 uv를 쓰지 않는다면 `~/.cache/uv`도 지워도 됩니다.
 
 ## 개발과 기여
 소스에서 실행하는 방법, 테스트, 프로젝트 구조는 [영어 README](README.md)를 참고해 주세요.
