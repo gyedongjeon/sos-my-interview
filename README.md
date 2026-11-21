@@ -137,6 +137,12 @@ npm install
 npm run dev
 ```
 
+To set the model and API key from a file instead of the Settings page (handy with a fresh data
+folder, or for trying another provider), copy `backend/.env.example` to `backend/.env`, fill it
+in, and start the backend with `uv run --env-file .env uvicorn app.main:app --reload`. `.env` is
+git-ignored; a model saved on the Settings page takes priority over it. (LiteLLM also loads
+`backend/.env` by itself when the backend is started in `backend/`.)
+
 ### Desktop app
 The desktop app is an Electron window that starts and stops the backend for you.
 
@@ -159,8 +165,16 @@ cd frontend && npm test         # unit tests (Vitest)
 cd desktop && npm test          # unit tests (Vitest)
 ```
 
-The backend tests never call a real LLM, Whisper, or Kokoro, and never reach the network. Opening a pull
-request into `main` runs all three suites, the frontend build, and the desktop type check
+The backend tests never call a real LLM, Whisper, or Kokoro, and never reach the network. The
+exception is three "live" tests that send real requests to a model and check the shape of its
+replies; they run only when asked for, with a key in `backend/.env`:
+
+```bash
+cd backend && uv run --env-file .env pytest -m live
+```
+ Opening a pull
+request into `main` runs all three suites, the live tests (with a key kept as a repository secret),
+the frontend build, and the desktop type check
 (`.github/workflows/ci.yml`).
 
 ## Structure

@@ -30,6 +30,7 @@ Follow Kent Beck's Test-Driven Development and Tidy First.
     - Tidy only what makes the next change easier; keep each tidying small.
 - **Running the tests**:
     - Backend: `cd backend && uv run pytest`. Tests use a temporary data folder and block network access; mock the LLM, Whisper, and Kokoro instead of calling them.
+    - Live LLM tests: `cd backend && uv run --env-file .env pytest -m live` sends a few real requests (marked `live`, skipped without a key). Keep them few, and assert the shape of a reply, never its wording. Never print, log, or commit the key.
     - Frontend: `cd frontend && npm test` (Vitest), and `npm run build` for the type check.
     - Desktop: `cd desktop && npm test` (Vitest), and `npx tsc --noEmit` for the type check.
     - `.github/workflows/ci.yml` runs all of these when a pull request into `main` is opened. It does not run again on later pushes, so run the tests locally before pushing a fix (it can also be started by hand from the Actions tab).
