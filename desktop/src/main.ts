@@ -5,7 +5,8 @@ import { type ChildProcess, spawn } from 'node:child_process'
 import { existsSync } from 'node:fs'
 import { createServer } from 'node:net'
 import { homedir } from 'node:os'
-import { delimiter, join } from 'node:path'
+import { join } from 'node:path'
+import { findUv } from './uv'
 
 // Installing the Python dependencies on the first launch can take a few minutes.
 const STARTUP_TIMEOUT_MS = 10 * 60 * 1000
@@ -26,19 +27,6 @@ function paths() {
     // The app bundle is read-only, so the packaged app keeps its files in the user's profile.
     data: join(app.getPath('userData'), 'data'),
   }
-}
-
-// Apps opened from Finder do not get the shell's PATH, so look where uv usually lives.
-function findUv(): string | null {
-  const name = process.platform === 'win32' ? 'uv.exe' : 'uv'
-  const folders = [
-    ...(process.env.PATH ?? '').split(delimiter),
-    join(homedir(), '.local', 'bin'),
-    join(homedir(), '.cargo', 'bin'),
-    '/opt/homebrew/bin',
-    '/usr/local/bin',
-  ]
-  return folders.map((folder) => join(folder, name)).find((file) => existsSync(file)) ?? null
 }
 
 function freePort(): Promise<number> {
@@ -118,7 +106,7 @@ const SPLASH = `data:text/html;charset=utf-8,${encodeURIComponent(`<!doctype htm
 <p>Help is on the way… the first launch sets things up and can take a few minutes.</p></div></body>`)}`
 
 async function main() {
-  const uv = findUv()
+  const uv = findUv({ path: process.env.PATH, home: homedir(), platform: process.platform, exists: existsSync })
   if (!uv) {
     dialog.showErrorBox('uv is required', 'Install uv (https://docs.astral.sh/uv/) and open the app again.')
     return app.quit()
