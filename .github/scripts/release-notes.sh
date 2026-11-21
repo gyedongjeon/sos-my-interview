@@ -18,6 +18,8 @@ cat <<NOTES
    \`\`\`
 3. The first launch after installing or updating downloads Python and the Python packages, so it needs an internet connection and can take a few minutes. Nothing else has to be installed.
 
+Already have the app? From version 0.3.0 on it offers new versions by itself at startup (or choose **SOS My Interview → Check for Updates…**), so there is no need to download anything here. The \`.zip\` file is what the app uses for that.
+
 Intel Macs, Windows, and Linux have no installer yet; the app can be run from source there (see the README).
 
 SHA-256 of \`$asset\`: \`$sha256\`

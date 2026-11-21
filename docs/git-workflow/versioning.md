@@ -65,8 +65,10 @@ Versions are raised at release time, not in every PR.
    ```
 
 4. Pushing the tag starts `.github/workflows/release.yml`. It checks that the tag matches the
-   version in the three files, runs the tests, builds the macOS installer (`.dmg`), and
-   publishes a GitHub Release with the installer attached and generated release notes. If the
+   version in the three files, runs the tests, builds the macOS installer (`.dmg`) and the
+   archive the app updates itself from (`.zip`), and publishes a GitHub Release with both
+   attached and generated release notes. Installed apps offer the new version to their users
+   once the release is marked as the latest. If the
    check or a test fails, nothing is published; fix it on `main` and release a new version.
 
 Tags are never moved or reused. A mistake in a release is fixed by a new version.

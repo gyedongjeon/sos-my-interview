@@ -42,6 +42,18 @@ On Intel Macs, Windows, and Linux there is no installer yet; [run it from source
 
 The app keeps its data in `~/Library/Application Support/SOS My Interview/data/`.
 
+### Updates
+From version 0.3.0 on, the app asks GitHub for the latest release when it starts. When there is a
+newer one, it offers to update: one click downloads it, replaces the app, and opens it again, with
+your interviews and settings kept. You can also choose **SOS My Interview → Check for Updates…**.
+
+- The download is checked against the SHA-256 that GitHub reports for the release file, and only
+  files from this repository's releases are accepted. The app is not signed by Apple, so that
+  check, not an Apple signature, is what the update relies on.
+- After an update macOS may ask for camera and microphone access again.
+- If the app cannot replace itself (for example, it was not moved to Applications), it opens the
+  download page instead.
+
 ## First setup
 The app opens on the Settings page the first time.
 
