@@ -4,7 +4,7 @@
   "description": "Mock interview practice that runs on your own machine.",
   "private": true,
   "license": "MIT",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "main": "dist/main.js",
   "scripts": {
     "frontend": "npm --prefix ../frontend install && npm --prefix ../frontend run build",
@@ -17,6 +17,7 @@
   },
   "build": {
     "appId": "local.sos-my-interview",
+    "publish": null,
     "directories": {
       "output": "release"
     },
