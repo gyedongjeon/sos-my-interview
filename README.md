@@ -87,6 +87,16 @@ common résumé or its own (for applications tailored per company), plus an opti
 letter. Follow-up questions and feedback for those questions take the posting and these
 documents into account. Both are stored locally and their text is sent to the LLM for those requests.
 
+## Tests
+```bash
+cd backend && uv run pytest     # API and logic, against a temporary data folder
+cd frontend && npm test         # unit tests (Vitest)
+```
+
+The backend tests never call a real LLM, Whisper, or Kokoro, and never reach the network. Opening a pull
+request into `main` runs both suites, the frontend build, and the desktop type check
+(`.github/workflows/ci.yml`).
+
 ## Structure
 - `backend/` — FastAPI app. Everything it stores lives in `backend/data/` (git-ignored): the SQLite file `app.db`, `recordings/`, and the `tts/` voice model and cache.
 - `frontend/` — Vue 3 app; `/api` requests are proxied to the backend by Vite. Once built (`npm run build`), the backend serves it too, so http://127.0.0.1:8000 alone runs the whole app.

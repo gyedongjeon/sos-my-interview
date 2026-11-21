@@ -13,6 +13,26 @@ This file provides specific context and operational rules for AI assistants work
 - **Language**: Documentation and code comments should be in **English**. User interaction can be in Korean or English as per user preference.
 - **Security & Data Protection**: Never add secrets, API keys, credentials, or personal data to the repository. Worklog/PR text also follows the anonymization rules in **Worklog**.
 
+## Development Method
+Follow Kent Beck's Test-Driven Development and Tidy First.
+
+- **TDD (Red → Green → Refactor)**:
+    - Write one small failing test first, and run it to see it fail for the expected reason.
+    - Write the least code that makes it pass, then refactor with all tests passing.
+    - Add one test at a time. Name a test after the behavior it describes (e.g. `test_saved_key_is_never_sent_back`).
+    - For a bug, first write a test that reproduces it, then fix it.
+    - Run the whole suite before every commit; never commit with a failing test.
+- **Tidy First (separate structural from behavioral changes)**:
+    - A **structural** change rearranges code without changing what it does (rename, extract, move, reorder). A **behavioral** change adds or alters functionality.
+    - Never mix the two in one commit. When both are needed, tidy first: make the structural change, confirm the tests still pass, commit it, then make the behavioral change.
+    - Commit structural changes as `refactor:` and behavioral ones as `feat:` or `fix:`, per the commit convention.
+    - Tidy only what makes the next change easier; keep each tidying small.
+- **Running the tests**:
+    - Backend: `cd backend && uv run pytest`. Tests use a temporary data folder and block network access; mock the LLM, Whisper, and Kokoro instead of calling them.
+    - Frontend: `cd frontend && npm test` (Vitest), and `npm run build` for the type check.
+    - Desktop: `cd desktop && npx tsc --noEmit`.
+    - `.github/workflows/ci.yml` runs all of these when a pull request into `main` is opened. It does not run again on later pushes, so run the tests locally before pushing a fix (it can also be started by hand from the Actions tab).
+
 ## Worklog (MANDATORY for every PR)
 - Every PR must include exactly one branch-specific worklog file named `docs/worklog/YYYY-MM-DD-<branch-slug>.md`. This count excludes [docs/worklog/_template.md](docs/worklog/_template.md).
 - Create the worklog file on the same branch as the change and commit it **before opening the PR**.
