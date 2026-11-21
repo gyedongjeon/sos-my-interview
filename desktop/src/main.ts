@@ -64,7 +64,8 @@ function startBackend(uv: string, port: number) {
   if (data) {
     env.SOS_MY_INTERVIEW_DATA_DIR = data
     env.UV_PROJECT_ENVIRONMENT = join(app.getPath('userData'), 'venv')
-    args.push('--frozen')
+    // The packaged app needs only what runs the server, not the test tools.
+    args.push('--frozen', '--no-dev')
   }
   args.push('uvicorn', 'app.main:app', '--host', '127.0.0.1', '--port', String(port))
 
