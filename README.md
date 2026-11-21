@@ -25,7 +25,11 @@ npm run dev
 
 ### Desktop app
 The same app also runs in its own window (Electron), with the backend started and stopped for
-you. It needs [uv](https://docs.astral.sh/uv/) and Node.js installed.
+you. An installer for Apple Silicon Macs is attached to each
+[release](https://github.com/gyedongjeon/sos-my-interview/releases), with install steps in the release
+notes; it needs [uv](https://docs.astral.sh/uv/) installed.
+
+To run or build it from this checkout, you need uv and Node.js:
 
 ```bash
 cd desktop

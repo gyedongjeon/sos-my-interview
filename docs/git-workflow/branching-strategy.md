@@ -1,10 +1,10 @@
 # Branching Strategy: GitHub Flow
 
-Our project follows the **GitHub Flow** strategy to ensure simplicity, speed, and continuous delivery.
+Our project follows the **GitHub Flow** strategy to ensure simplicity and speed. Releases are cut from `main` by tagging, as described in [versioning.md](versioning.md).
 
 ## Core Principles
 
-1.  **The `main` branch is always deployable.**
+1.  **The `main` branch is always releasable.**
     *   Avoid committing directly to `main`.
     *   All code in `main` must be tested and stable.
 
@@ -23,8 +23,12 @@ Our project follows the **GitHub Flow** strategy to ensure simplicity, speed, an
     *   Merge only after all checks pass and at least one team member has approved the PR.
     *   **Always create a merge commit when merging into `main` (use `--no-ff` / No Fast-Forward).** Do not perform fast-forward merges to preserve the branching history.
 
-6.  **Deploy immediately after merging to `main`.**
-    *   Delete the feature branch once it has been merged.
+6.  **Delete the feature branch once it has been merged.**
+
+7.  **Release by tagging `main`, not by merging.**
+    *   Merged work collects on `main` until it is worth releasing; a merge does not release anything by itself.
+    *   A release is a `v`-prefixed version tag on a merge commit of `main`. Pushing the tag builds and publishes the installer. See [versioning.md](versioning.md).
+    *   There are no `develop`, `release`, or `hotfix` branches. An urgent fix is a `fix/` branch merged into `main` and released as the next patch version.
 
 ## Branch Naming Convention
 

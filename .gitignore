@@ -33,6 +33,9 @@ yarn-error.log*
 # Python
 __pycache__/
 .pytest_cache/
+
+# Vitest cache
+.vite/
 *.py[cod]
 *$py.class
 venv/
