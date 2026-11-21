@@ -12,8 +12,13 @@ import numpy as np
 from faster_whisper import WhisperModel
 from faster_whisper.audio import decode_audio
 
+from .paths import DATA_DIR
+
 # English-only model, downloaded from Hugging Face on first use (~480 MB for small.en).
 DEFAULT_MODEL = "small.en"
+# Kept with the app's other files instead of Hugging Face's shared cache in the home folder,
+# so that removing the data folder removes the model too.
+MODEL_DIR = DATA_DIR / "whisper"
 # Words Whisper recognized with less confidence than this are reported as unclear.
 UNCLEAR_BELOW = 0.5
 MAX_UNCLEAR_WORDS = 8
@@ -37,7 +42,7 @@ def _get_model() -> WhisperModel:
     with _lock:
         if _model is None:
             name = os.environ.get("WHISPER_MODEL", "").strip() or DEFAULT_MODEL
-            _model = WhisperModel(name, device="cpu", compute_type="int8")
+            _model = WhisperModel(name, device="cpu", compute_type="int8", download_root=str(MODEL_DIR))
         return _model
 
 
