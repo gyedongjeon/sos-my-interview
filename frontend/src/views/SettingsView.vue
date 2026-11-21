@@ -42,6 +42,16 @@ const PROVIDERS = [
   { id: 'other', label: 'Other (LiteLLM)', prefix: '', model: '', example: 'mistral/mistral-small-latest', keyUrl: '' },
 ] as const
 
+// Third-party work shipped in the built app; the full texts are in public/THIRD_PARTY_NOTICES.txt.
+const CREDITS = [
+  { name: 'Bricolage Grotesque (heading font)', copyright: '© 2022 The Bricolage Grotesque Project Authors', license: 'SIL OFL 1.1' },
+  { name: 'Vue', copyright: '© 2018-present Yuxi (Evan) You', license: 'MIT' },
+  { name: 'Vue Router', copyright: '© 2019-present Eduardo San Martin Morote', license: 'MIT' },
+  { name: 'Pinia', copyright: '© 2019-present Eduardo San Martin Morote', license: 'MIT' },
+  { name: 'daisyUI', copyright: '© 2020 Pouya Saadeghi', license: 'MIT' },
+  { name: 'Tailwind CSS', copyright: '© Tailwind Labs, Inc.', license: 'MIT' },
+]
+
 const store = useSettingsStore()
 const providerId = ref<(typeof PROVIDERS)[number]['id']>('gemini')
 const model = ref<string>(PROVIDERS[0].model)
@@ -225,6 +235,29 @@ onMounted(async () => {
           </button>
         </div>
       </form>
+    </section>
+
+    <section class="card mt-4 bg-base-100 shadow-sm">
+      <div class="card-body gap-4">
+        <div>
+          <h2 class="card-title">Open source</h2>
+          <p class="text-sm text-base-content/70">
+            SOS My Interview is open source under the MIT License. It is built with the work below.
+          </p>
+        </div>
+        <ul class="list">
+          <li v-for="c in CREDITS" :key="c.name" class="list-row items-center px-0">
+            <div class="list-col-grow">
+              <p class="font-medium">{{ c.name }}</p>
+              <p class="text-xs text-base-content/60">{{ c.copyright }}</p>
+            </div>
+            <span class="badge badge-soft badge-sm">{{ c.license }}</span>
+          </li>
+        </ul>
+        <a class="link text-sm" href="/THIRD_PARTY_NOTICES.txt" target="_blank" rel="noreferrer">
+          Full license texts
+        </a>
+      </div>
     </section>
   </main>
 </template>

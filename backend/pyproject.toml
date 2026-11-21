@@ -1,6 +1,7 @@
 [project]
 name = "sos-my-interview-backend"
 version = "0.1.0"
+license = "MIT"
 requires-python = ">=3.12"
 dependencies = [
     # faster-whisper 1.2 passes an av.open() argument that PyAV 17+ removed.

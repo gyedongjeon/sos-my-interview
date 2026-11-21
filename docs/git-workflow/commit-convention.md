@@ -1,6 +1,6 @@
 # Commit Message Convention
 
-This project follows the **Conventional Commits** specification for clear and automated versioning.
+This project follows the **Conventional Commits** specification for clear and automated versioning. How commit types map to version numbers is described in [versioning.md](versioning.md).
 
 ## Format
 ```text
@@ -41,3 +41,4 @@ This project follows the **Conventional Commits** specification for clear and au
 2. **Limit the subject line to 50 characters.**
 3. **Do not end the subject line with a period.**
 4. Use the body to explain **what** and **why** vs. **how**.
+5. **Mark breaking changes** with `!` after the type (e.g., `feat!: change the recording format`) or a `BREAKING CHANGE:` footer.

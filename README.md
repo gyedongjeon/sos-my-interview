@@ -91,3 +91,9 @@ documents into account. Both are stored locally and their text is sent to the LL
 - `backend/` — FastAPI app. Everything it stores lives in `backend/data/` (git-ignored): the SQLite file `app.db`, `recordings/`, and the `tts/` voice model and cache.
 - `frontend/` — Vue 3 app; `/api` requests are proxied to the backend by Vite. Once built (`npm run build`), the backend serves it too, so http://127.0.0.1:8000 alone runs the whole app.
 - `desktop/` — Electron shell that starts the backend and shows the app in a window.
+
+## License
+[MIT](LICENSE). Third-party work shipped in the built app — the libraries and the heading font, Bricolage
+Grotesque (SIL Open Font License 1.1) — is credited in
+[frontend/public/THIRD_PARTY_NOTICES.txt](frontend/public/THIRD_PARTY_NOTICES.txt), which is also served by the app at
+`/THIRD_PARTY_NOTICES.txt`.

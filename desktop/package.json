@@ -3,6 +3,7 @@
   "productName": "SOS My Interview",
   "description": "Mock interview practice that runs on your own machine.",
   "private": true,
+  "license": "MIT",
   "version": "0.1.0",
   "main": "dist/main.js",
   "scripts": {

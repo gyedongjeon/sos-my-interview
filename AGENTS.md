@@ -7,6 +7,7 @@ This file provides specific context and operational rules for AI assistants work
     - [docs/git-workflow/commit-convention.md](docs/git-workflow/commit-convention.md) - Rules for commit messages.
     - [docs/git-workflow/branching-strategy.md](docs/git-workflow/branching-strategy.md) - Branch naming and GitHub Flow / merge strategy.
     - [docs/git-workflow/pr-convention.md](docs/git-workflow/pr-convention.md) - PR title, description, and process conventions.
+    - [docs/git-workflow/versioning.md](docs/git-workflow/versioning.md) - Semantic Versioning rules, version files, and release tags.
     - [README.md](README.md) - Project overview and structure.
 - **Commits**: Use Conventional Commits as defined in [docs/git-workflow/commit-convention.md](docs/git-workflow/commit-convention.md).
 - **Language**: Documentation and code comments should be in **English**. User interaction can be in Korean or English as per user preference.
