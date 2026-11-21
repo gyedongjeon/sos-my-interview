@@ -119,6 +119,9 @@ async function main() {
     return app.quit()
   }
 
+  // The packaged app gets its icon from the bundle; from a checkout the Dock would show Electron's.
+  if (!app.isPackaged) app.dock?.setIcon(join(__dirname, '..', 'assets', 'icon.png'))
+
   // The page records answers with the webcam and microphone.
   session.defaultSession.setPermissionRequestHandler((_contents, permission, allow) => allow(permission === 'media'))
   if (process.platform === 'darwin') {
