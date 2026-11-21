@@ -37,7 +37,6 @@ An installer for **Apple Silicon Macs** is attached to each
    and can take a few minutes. Allow camera and microphone access when asked.
 
 Nothing else has to be installed, because the app ships its own [uv](https://docs.astral.sh/uv/).
-The exception is **v0.1.0**, which needs uv installed first.
 
 On Intel Macs, Windows, and Linux there is no installer yet; [run it from source](#run-from-source).
 
