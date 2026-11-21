@@ -57,8 +57,9 @@ jobs:
         run: |
           # A re-run for the same tag replaces the installer instead of failing.
           if gh release view "$TAG" > /dev/null 2>&1; then
-            gh release upload "$TAG" desktop/release/*.dmg --clobber
+            gh release upload "$TAG" desktop/release/*.dmg desktop/release/*-mac.zip --clobber
           else
-            gh release create "$TAG" desktop/release/*.dmg \
+            # The dmg is for installing by hand; the zip is what the app downloads to update itself.
+            gh release create "$TAG" desktop/release/*.dmg desktop/release/*-mac.zip \
               --verify-tag --title "$TAG" --notes-file release-notes.md --generate-notes
           fi
