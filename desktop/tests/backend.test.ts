@@ -31,10 +31,18 @@ describe('backendLaunch', () => {
     expect(args).toContain('--no-dev')
   })
 
+  it("keeps uv's downloads in the same folder, so removing that folder removes everything", () => {
+    const { env } = backendLaunch(options)
+    expect(env.UV_CACHE_DIR).toBe('/Users/me/Library/Application Support/SOS My Interview/uv-cache')
+    expect(env.UV_PYTHON_INSTALL_DIR).toBe('/Users/me/Library/Application Support/SOS My Interview/python')
+  })
+
   it('leaves a checkout to its own defaults', () => {
     const { args, env } = backendLaunch({ ...options, userData: null })
     expect(env.SOS_MY_INTERVIEW_DATA_DIR).toBeUndefined()
     expect(env.UV_PROJECT_ENVIRONMENT).toBeUndefined()
+    expect(env.UV_CACHE_DIR).toBeUndefined()
+    expect(env.UV_PYTHON_INSTALL_DIR).toBeUndefined()
     expect(args).not.toContain('--frozen')
     expect(args).not.toContain('--no-dev')
   })

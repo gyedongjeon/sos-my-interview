@@ -24,6 +24,10 @@ export function backendLaunch({ project, frontend, userData, port, env }: Backen
     // The app bundle is read-only, so the packaged app keeps its files in the user's profile.
     launchEnv.SOS_MY_INTERVIEW_DATA_DIR = join(userData, 'data')
     launchEnv.UV_PROJECT_ENVIRONMENT = join(userData, 'venv')
+    // uv's download cache and the Python it installs would otherwise go to shared folders in
+    // the home folder; here, removing the app's folder removes everything the app put on disk.
+    launchEnv.UV_CACHE_DIR = join(userData, 'uv-cache')
+    launchEnv.UV_PYTHON_INSTALL_DIR = join(userData, 'python')
     // The packaged app needs only what runs the server, not the test tools.
     args.push('--frozen', '--no-dev')
   }
