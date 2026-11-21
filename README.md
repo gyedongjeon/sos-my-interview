@@ -1,60 +1,64 @@
-# sos-my-interview
+# SOS My Interview
 
-A web-based mock interview service for personal use.
+**English** | [한국어](README.ko.md)
 
-## Overview
-- **Frontend**: Video-call style web UI that reads questions aloud, records your answer from the webcam, and shows scored feedback and history — Vue 3, TypeScript, Vite, Vue Router, Pinia, Tailwind CSS + daisyUI.
-- **Backend**: API server that serves questions, transcribes answers (Whisper) and reads questions aloud (Kokoro) locally, and uses an LLM for tailored questions, follow-up questions, and scored feedback — FastAPI (Python).
-- **Database**: SQLite (local, single-user).
+[![Release](https://img.shields.io/github/v/release/gyedongjeon/sos-my-interview)](https://github.com/gyedongjeon/sos-my-interview/releases/latest)
+[![CI](https://github.com/gyedongjeon/sos-my-interview/actions/workflows/ci.yml/badge.svg)](https://github.com/gyedongjeon/sos-my-interview/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
-The service is intended to run locally; no deployment or multi-user support is planned for now.
+Interview coming up? A mock interview app for practising job interviews **in English**, running on
+your own machine. It asks the questions aloud, records your answer, and scores both your English
+and what you said.
 
-## Getting Started
-Run the backend and frontend in separate terminals, then open http://localhost:5173.
+![The home page of SOS My Interview](docs/images/home.png)
 
-```bash
-# Backend (http://127.0.0.1:8000)
-cd backend
-uv run uvicorn app.main:app --reload
+## Features
+- **Listening first**: the interviewer reads each question aloud, and its text stays hidden until you ask for it.
+- **Follow-up questions**: up to two follow-ups dig into what you just said, as a real interviewer would.
+- **Two separate scores**: English (grammar, vocabulary, naturalness, pronunciation, intonation, stress) and content (relevance, structure, specificity), with corrected sentences and a stronger version of your answer.
+- **Feedback in your language**: explanations in Korean, Japanese, Chinese, Spanish, and more; questions and model answers stay in English.
+- **Questions for the job you want**: add a job posting (link or text) and your résumé to get questions written for that role.
+- **History**: every answer is kept with its transcript, scores, and recording, so you can see how you improve.
+- **Private by default**: speech-to-text and the interviewer's voice run locally, and your data stays on your computer. Only what the feedback needs goes to the LLM provider you choose, with your own API key: your answers (text, and audio for pronunciation scoring) and the résumé and job postings you add.
 
-# Frontend (http://localhost:5173)
-cd frontend
-npm install
-npm run dev
-```
+The app runs locally for a single user; there is no account, server, or deployment.
 
-### Desktop app
-The same app also runs in its own window (Electron), with the backend started and stopped for
-you. An installer for Apple Silicon Macs is attached to each
-[release](https://github.com/gyedongjeon/sos-my-interview/releases), with install steps in the release
-notes. Nothing else has to be installed: the app ships its own [uv](https://docs.astral.sh/uv/),
-which sets up Python and the Python packages on the first launch.
+## Install
+An installer for **Apple Silicon Macs** is attached to each
+[release](https://github.com/gyedongjeon/sos-my-interview/releases/latest).
 
-To run or build it from this checkout, you need uv and Node.js:
+1. Download the `.dmg`, open it, and drag the app to Applications.
+2. The build is not signed with an Apple developer certificate, so macOS blocks it at first. Run
+   this once in Terminal, then open the app:
+   ```bash
+   xattr -cr "/Applications/SOS My Interview.app"
+   ```
+3. The first launch downloads Python and the Python packages, so it needs an internet connection
+   and can take a few minutes. Allow camera and microphone access when asked.
 
-```bash
-cd desktop
-npm install
-npm run dev    # run from this checkout, using backend/data
-npm run dist   # build desktop/release/SOS My Interview-<version>-arm64.dmg
-```
+Nothing else has to be installed, because the app ships its own [uv](https://docs.astral.sh/uv/).
+The exception is **v0.1.0**, which needs uv installed first.
 
-`npm run dist` first downloads the uv release pinned in `desktop/scripts/fetch-uv.mjs` (checked
-against its SHA-256) into `desktop/vendor/`, to bundle it into the app.
+On Intel Macs, Windows, and Linux there is no installer yet; [run it from source](#run-from-source).
 
-The built app installs its Python dependencies on the first launch (this can take a few
-minutes) and keeps its own data, separate from this checkout, in
-`~/Library/Application Support/SOS My Interview/data/`. The
-build is not signed with a developer certificate, so it is meant for the machine that built it.
+The app keeps its data in `~/Library/Application Support/SOS My Interview/data/`.
 
-### AI model and API key
+## First setup
+The app opens on the Settings page the first time.
+
+1. **Feedback language**: pick the language your feedback is explained in. It starts from your
+   system language.
+2. **AI model and API key**: choose a provider and model and paste that provider's API key. It is
+   saved and checked with a test request.
+
 Tailored questions, follow-up questions, and feedback are written by an LLM through
 [LiteLLM](https://docs.litellm.ai/docs/providers), so any supported provider works (Gemini,
-Claude, OpenAI, OpenRouter, a local Ollama model, ...). The app opens on the Settings page the
-first time: choose a provider and model, paste that provider's API key, and it is saved and
-checked with a test request. Change it any time under Settings. The key is stored in the local
+Claude, OpenAI, OpenRouter, a local Ollama model, ...). Gemini is a good first choice: it has a
+free tier, and it accepts audio, which the pronunciation scores need. Both settings can be
+changed any time under Settings. The key is stored in the local
 database (`app.db`), is never shown again in the UI, and is sent only to the chosen provider.
 
+## How it works
 ### Speech-to-text
 Answers are transcribed locally with [Whisper](https://github.com/SYSTRAN/faster-whisper): no API
 key is needed and the audio never leaves your machine. The `small.en` model (~480 MB) is
@@ -95,6 +99,36 @@ common résumé or its own (for applications tailored per company), plus an opti
 letter. Follow-up questions and feedback for those questions take the posting and these
 documents into account. Both are stored locally and their text is sent to the LLM for those requests.
 
+## Run from source
+You need [uv](https://docs.astral.sh/uv/) and Node.js. Run the backend and frontend in separate
+terminals, then open http://localhost:5173.
+
+```bash
+# Backend (http://127.0.0.1:8000)
+cd backend
+uv run uvicorn app.main:app --reload
+
+# Frontend (http://localhost:5173)
+cd frontend
+npm install
+npm run dev
+```
+
+### Desktop app
+The desktop app is an Electron window that starts and stops the backend for you.
+
+```bash
+cd desktop
+npm install
+npm run dev    # run from this checkout, using backend/data
+npm run dist   # build desktop/release/SOS My Interview-<version>-arm64.dmg
+```
+
+`npm run dist` first downloads the uv release pinned in `desktop/scripts/fetch-uv.mjs` (checked
+against its SHA-256) into `desktop/vendor/`, to bundle it into the app. Releases are built and
+published by GitHub Actions when a version tag is pushed; see
+[docs/git-workflow/versioning.md](docs/git-workflow/versioning.md).
+
 ## Tests
 ```bash
 cd backend && uv run pytest     # API and logic, against a temporary data folder
@@ -110,6 +144,9 @@ request into `main` runs all three suites, the frontend build, and the desktop t
 - `backend/` — FastAPI app. Everything it stores lives in `backend/data/` (git-ignored): the SQLite file `app.db`, `recordings/`, and the `tts/` voice model and cache.
 - `frontend/` — Vue 3 app; `/api` requests are proxied to the backend by Vite. Once built (`npm run build`), the backend serves it too, so http://127.0.0.1:8000 alone runs the whole app.
 - `desktop/` — Electron shell that starts the backend and shows the app in a window.
+
+Built with FastAPI and SQLite (backend), Vue 3, TypeScript, Vite, Pinia, and Tailwind CSS + daisyUI
+(frontend), and Electron (desktop).
 
 ## License
 [MIT](LICENSE). Third-party work shipped in the built app — the libraries and the heading font, Bricolage
