@@ -9,6 +9,7 @@ import { useCaptions } from '../composables/useCaptions'
 import { contentScores, englishScores, mean, total } from '../scores'
 import { useInterviewStore } from '../stores/interview'
 import type { AttemptSummary, Delivery, Feedback, LiveTurn, Phase, SpeakingFeedback } from '../types'
+import MorseSignal from '../components/MorseSignal.vue'
 
 const MAX_FOLLOW_UPS = 2
 
@@ -22,6 +23,8 @@ const recognition = useCaptions()
 
 const videoEl = ref<HTMLVideoElement | null>(null)
 const prompt = ref('') // Question currently being asked (the picked one or a follow-up).
+// The question is heard first, as in a real interview; its text is shown only on request.
+const showPrompt = ref(false)
 const turns = ref<LiveTurn[]>([]) // Finished answers of the attempt in progress.
 const followUps = ref(0)
 const phase = ref<Phase>('idle')
@@ -62,6 +65,7 @@ function resetThread() {
 
 function ask(text: string) {
   prompt.value = text
+  showPrompt.value = false
   speech.speak(text)
 }
 
@@ -271,7 +275,7 @@ onBeforeUnmount(() => {
 <template>
   <main class="mx-auto max-w-5xl p-4 sm:p-8">
     <div v-if="store.loading" class="flex justify-center py-24">
-      <span class="loading loading-spinner loading-lg"></span>
+      <MorseSignal animated />
     </div>
     <div v-else-if="store.error" role="alert" class="alert alert-error">{{ store.error }}</div>
 
@@ -291,32 +295,40 @@ onBeforeUnmount(() => {
       <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <div
           class="relative grid aspect-[4/3] place-items-center overflow-hidden rounded-box bg-neutral ring-4 transition"
-          :class="speech.speaking.value ? 'ring-success' : 'ring-transparent'"
+          :class="speech.speaking.value ? 'ring-primary' : 'ring-transparent'"
         >
           <svg class="w-2/5" viewBox="0 0 120 120" aria-hidden="true">
-            <circle cx="60" cy="60" r="60" fill="#3d4654" />
-            <circle cx="60" cy="46" r="20" fill="#c9d1d9" />
-            <path d="M22 104c4-22 20-32 38-32s34 10 38 32a60 60 0 0 1-76 0z" fill="#c9d1d9" />
+            <circle cx="60" cy="60" r="60" class="fill-neutral-content/10" />
+            <circle cx="60" cy="46" r="20" class="fill-neutral-content/70" />
+            <path d="M22 104c4-22 20-32 38-32s34 10 38 32a60 60 0 0 1-76 0z" class="fill-neutral-content/70" />
           </svg>
           <span class="badge badge-neutral absolute bottom-3 left-3">Interviewer</span>
         </div>
 
         <div
           class="relative grid aspect-[4/3] place-items-center overflow-hidden rounded-box bg-neutral ring-4 transition"
-          :class="phase === 'recording' ? 'ring-success' : 'ring-transparent'"
+          :class="phase === 'recording' ? 'ring-primary' : 'ring-transparent'"
         >
           <video ref="videoEl" class="h-full w-full -scale-x-100 object-cover" autoplay muted playsinline></video>
           <p v-if="camera.error.value" class="absolute inset-x-0 p-4 text-center text-neutral-content">
             {{ camera.error.value }}
           </p>
-          <span v-if="phase === 'recording'" class="badge badge-error absolute right-3 top-3">● REC</span>
+          <span v-if="phase === 'recording'" class="badge badge-error absolute right-3 top-3 font-semibold">
+            <span class="size-2 animate-pulse rounded-full bg-current"></span> REC
+          </span>
           <span class="badge badge-neutral absolute bottom-3 left-3">You</span>
         </div>
       </div>
 
       <div class="card mt-4 bg-base-100 shadow-sm">
         <div class="card-body">
-          <h2 class="text-2xl font-semibold leading-snug">{{ prompt }}</h2>
+          <div class="flex items-start justify-between gap-3">
+            <h2 v-if="showPrompt" class="text-2xl font-semibold leading-snug">{{ prompt }}</h2>
+            <p v-else class="text-lg text-base-content/60">Listen to the question, or show its text if you need it.</p>
+            <button class="btn btn-sm shrink-0" :aria-expanded="showPrompt" @click="showPrompt = !showPrompt">
+              {{ showPrompt ? 'Hide question' : 'Show question' }}
+            </button>
+          </div>
 
           <p v-if="phase === 'recording'" class="min-h-6 text-base-content/70">
             {{ recognition.transcript.value || 'Listening…' }}

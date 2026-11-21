@@ -23,24 +23,36 @@ MODEL_FILES = ("kokoro-v1.0.onnx", "voices-v1.0.bin")
 DEFAULT_VOICE = "af_heart"
 
 _kokoro: Kokoro | None = None
+_download: threading.Thread | None = None
 _lock = threading.Lock()
 
 
+def _download_models() -> None:
+    TTS_DIR.mkdir(parents=True, exist_ok=True)
+    for name in MODEL_FILES:
+        path = TTS_DIR / name
+        if not path.exists():
+            # Download to a temporary name so an interrupted download is not reused.
+            partial = path.with_suffix(path.suffix + ".part")
+            # certifi's CA bundle: some Python installs ship without root certificates.
+            tls = ssl.create_default_context(cafile=certifi.where())
+            with urllib.request.urlopen(f"{RELEASE_URL}/{name}", context=tls) as response:
+                with partial.open("wb") as out:
+                    shutil.copyfileobj(response, out)
+            partial.rename(path)
+
+
 def _get_kokoro() -> Kokoro:
-    global _kokoro
+    """Return the loaded voice model. Raises while its files are still being downloaded."""
+    global _kokoro, _download
     if _kokoro is None:
-        TTS_DIR.mkdir(parents=True, exist_ok=True)
-        for name in MODEL_FILES:
-            path = TTS_DIR / name
-            if not path.exists():
-                # Download to a temporary name so an interrupted download is not reused.
-                partial = path.with_suffix(path.suffix + ".part")
-                # certifi's CA bundle: some Python installs ship without root certificates.
-                tls = ssl.create_default_context(cafile=certifi.where())
-                with urllib.request.urlopen(f"{RELEASE_URL}/{name}", context=tls) as response:
-                    with partial.open("wb") as out:
-                        shutil.copyfileobj(response, out)
-                partial.rename(path)
+        if not all((TTS_DIR / name).exists() for name in MODEL_FILES):
+            # The download takes minutes, so it runs in the background instead of holding the
+            # request; the caller reports the failure and the UI uses the browser voice meanwhile.
+            if _download is None or not _download.is_alive():
+                _download = threading.Thread(target=_download_models, daemon=True)
+                _download.start()
+            raise RuntimeError("the voice model is still downloading")
         _kokoro = Kokoro(str(TTS_DIR / MODEL_FILES[0]), str(TTS_DIR / MODEL_FILES[1]))
     return _kokoro
 

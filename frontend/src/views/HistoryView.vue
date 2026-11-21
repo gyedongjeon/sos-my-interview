@@ -3,6 +3,7 @@ import { computed, onMounted, ref } from 'vue'
 import { dayKey, formatDay, formatTime } from '../dates'
 import { useInterviewStore } from '../stores/interview'
 import type { AttemptSummary } from '../types'
+import MorseSignal from '../components/MorseSignal.vue'
 
 const store = useInterviewStore()
 const loading = ref(true)
@@ -45,7 +46,7 @@ const scores: { key: ScoreKey; label: string }[] = [
     <h1 class="mb-4 text-2xl font-bold">History</h1>
 
     <div v-if="loading" class="flex justify-center py-16">
-      <span class="loading loading-spinner loading-lg"></span>
+      <MorseSignal animated />
     </div>
     <div v-else-if="store.error" role="alert" class="alert alert-error">{{ store.error }}</div>
     <div v-else-if="!days.length" class="card bg-base-100 shadow-sm">

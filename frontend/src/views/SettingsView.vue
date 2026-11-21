@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { api } from '../api'
-import { useSettingsStore } from '../stores/settings'
+import { LANGUAGES, useSettingsStore } from '../stores/settings'
 import type { LLMSettings } from '../types'
 
 // `prefix` is the provider name LiteLLM expects in front of the model.
@@ -118,11 +118,36 @@ onMounted(async () => {
 
 <template>
   <main class="mx-auto max-w-3xl p-4 sm:p-6">
-    <h1 class="text-2xl font-semibold">{{ saved && !saved.model ? 'Welcome — set up your AI model' : 'Settings' }}</h1>
+    <h1 class="text-2xl font-semibold">{{ saved && !saved.model ? 'Welcome — let\'s get you set up' : 'Settings' }}</h1>
     <p v-if="saved && !saved.model" class="mt-1 text-base-content/70">
-      One step before your first interview. You can change this any time under Settings.
+      Two things before your first interview: the language for your feedback and an AI model. You can change both
+      any time under Settings.
       <RouterLink class="link" to="/">Skip for now</RouterLink>
     </p>
+
+    <section class="card mt-4 bg-base-100 shadow-sm">
+      <div class="card-body gap-4">
+        <div>
+          <h2 class="card-title">Feedback language</h2>
+          <p class="text-sm text-base-content/70">
+            Scores and written feedback are explained in this language. Questions and model answers stay in English.
+          </p>
+        </div>
+        <label class="flex flex-col gap-1">
+          <span class="text-sm font-medium">Language</span>
+          <select
+            class="select w-full"
+            :value="store.feedbackLanguage"
+            @change="store.setFeedbackLanguage(($event.target as HTMLSelectElement).value)"
+          >
+            <option v-for="l in LANGUAGES" :key="l.name" :value="l.name">{{ l.label }}</option>
+          </select>
+          <span class="text-xs text-base-content/60">
+            Starts from your browser's language. Saved as soon as you pick one.
+          </span>
+        </label>
+      </div>
+    </section>
 
     <section class="card mt-4 bg-base-100 shadow-sm">
       <form class="card-body gap-4" @submit.prevent="save">

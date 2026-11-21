@@ -8,6 +8,7 @@ import { useSpeech } from '../composables/useSpeech'
 import { formatDay, formatTime } from '../dates'
 import { mean } from '../scores'
 import type { AttemptDetail, Turn } from '../types'
+import MorseSignal from '../components/MorseSignal.vue'
 
 const props = defineProps<{ id: number }>()
 
@@ -71,7 +72,7 @@ onBeforeUnmount(speech.stop)
 
     <div v-if="error" role="alert" class="alert alert-error">{{ error }}</div>
     <div v-else-if="!attempt" class="flex justify-center py-16">
-      <span class="loading loading-spinner loading-lg"></span>
+      <MorseSignal animated />
     </div>
 
     <template v-else>

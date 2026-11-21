@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { LANGUAGES, useSettingsStore } from './stores/settings'
+import BrandMark from './components/BrandMark.vue'
+import { useSettingsStore } from './stores/settings'
 
 const settings = useSettingsStore()
 const router = useRouter()
+const LINK = 'hover:bg-neutral-content/10'
 onMounted(async () => {
   settings.load()
   await settings.loadLLM()
@@ -15,25 +17,18 @@ onMounted(async () => {
 
 <template>
   <div class="min-h-screen bg-base-200 text-base-content">
-    <nav class="navbar bg-base-100 shadow-sm">
+    <nav class="navbar bg-neutral text-neutral-content">
       <div class="mx-auto flex w-full max-w-5xl flex-wrap items-center gap-2 px-2">
-        <RouterLink class="btn btn-ghost text-lg" to="/">SOS My Interview</RouterLink>
+        <RouterLink class="flex items-center gap-2 px-2 font-display text-xl" to="/">
+          <BrandMark class="size-7" />
+          <span><span class="font-extrabold text-primary">SOS</span> <span class="font-medium">My Interview</span></span>
+        </RouterLink>
         <ul class="menu menu-horizontal ml-auto gap-1 px-0">
-          <li><RouterLink to="/" exact-active-class="menu-active">Interviews</RouterLink></li>
-          <li><RouterLink to="/history" active-class="menu-active">History</RouterLink></li>
-          <li><RouterLink to="/resume" active-class="menu-active">Résumé</RouterLink></li>
-          <li><RouterLink to="/settings" active-class="menu-active">Settings</RouterLink></li>
+          <li><RouterLink :class="LINK" to="/" exact-active-class="bg-primary text-primary-content hover:bg-primary">Interviews</RouterLink></li>
+          <li><RouterLink :class="LINK" to="/history" active-class="bg-primary text-primary-content hover:bg-primary">History</RouterLink></li>
+          <li><RouterLink :class="LINK" to="/resume" active-class="bg-primary text-primary-content hover:bg-primary">Résumé</RouterLink></li>
+          <li><RouterLink :class="LINK" to="/settings" active-class="bg-primary text-primary-content hover:bg-primary">Settings</RouterLink></li>
         </ul>
-        <label class="flex items-center gap-2 text-sm">
-          <span class="text-base-content/60">Feedback in</span>
-          <select
-            class="select select-sm w-auto"
-            :value="settings.feedbackLanguage"
-            @change="settings.setFeedbackLanguage(($event.target as HTMLSelectElement).value)"
-          >
-            <option v-for="l in LANGUAGES" :key="l.name" :value="l.name">{{ l.label }}</option>
-          </select>
-        </label>
       </div>
     </nav>
     <div v-if="settings.error" role="alert" class="alert alert-error alert-soft mx-auto mt-4 max-w-3xl">

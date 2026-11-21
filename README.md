@@ -58,9 +58,10 @@ camera and microphone access when asked.
 
 ### Text-to-speech
 Questions are read aloud with a local [Kokoro](https://github.com/thewh1teagle/kokoro-onnx) voice.
-Its model files (~350 MB) are downloaded on first use, and rendered clips are cached in
-`backend/data/tts/cache/`. Set the `TTS_VOICE` environment variable to change the voice. If the backend
-cannot produce audio, the browser's built-in voice is used instead.
+The question text stays hidden until you press "Show question", so each question is listening practice first.
+Its model files (~350 MB) are downloaded in the background on first use, and rendered clips are cached in
+`backend/data/tts/cache/`. Set the `TTS_VOICE` environment variable to change the voice. While the
+download is running, or if the backend cannot produce audio, the browser's built-in voice is used instead.
 
 ### Feedback
 After answering, "Get feedback" scores the attempt in two parts (0-100 each):
@@ -70,7 +71,7 @@ After answering, "Get feedback" scores the attempt in two parts (0-100 each):
   confidence in the words it heard is used as the pronunciation score instead.
 - **Content**: relevance, structure, and specificity.
 
-Written feedback is in the language picked in the navigation bar ("Feedback in"). On first visit it starts from the browser's language.
+Written feedback is in the language picked under Settings ("Feedback language"). On first visit it starts from the browser's language.
 
 ### History
 Every answer is saved with its transcript, scores, feedback, and a low-bitrate recording

@@ -3,6 +3,7 @@ import { onMounted, ref } from 'vue'
 import { api } from '../api'
 import { formatDay } from '../dates'
 import type { Resume } from '../types'
+import MorseSignal from '../components/MorseSignal.vue'
 
 const resume = ref<Resume | null>(null)
 const text = ref('')
@@ -80,7 +81,7 @@ onMounted(async () => {
     </header>
 
     <div v-if="loading" class="flex justify-center py-16">
-      <span class="loading loading-spinner loading-lg"></span>
+      <MorseSignal animated />
     </div>
 
     <div v-else class="card bg-base-100 shadow-sm">

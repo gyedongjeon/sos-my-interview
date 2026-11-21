@@ -153,7 +153,7 @@ def speech(body: SpeechRequest) -> Response:
     try:
         audio = synthesize(body.text)
     except Exception as e:
-        # Failed model download/load or synthesis; the UI falls back to the browser voice.
+        # Model still downloading, failed to load, or synthesis failed; the UI falls back to the browser voice.
         raise HTTPException(status_code=502, detail=f"Speech synthesis failed: {e}") from e
     return Response(content=audio, media_type="audio/wav")
 

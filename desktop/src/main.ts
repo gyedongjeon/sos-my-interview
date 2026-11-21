@@ -111,9 +111,10 @@ async function waitForBackend(url: string) {
 }
 
 const SPLASH = `data:text/html;charset=utf-8,${encodeURIComponent(`<!doctype html>
-<body style="margin:0;height:100vh;display:grid;place-items:center;font:16px system-ui;color:#555;background:#f4f4f5">
-<div style="text-align:center"><p style="font-size:20px;color:#222">SOS My Interview</p>
-<p>Starting… the first launch sets things up and can take a few minutes.</p></div></body>`)}`
+<body style="margin:0;height:100vh;display:grid;place-items:center;font:16px system-ui;color:#5b6477;background:#fbf8f3">
+<div style="text-align:center"><p style="font-size:14px;letter-spacing:4px;color:#f4541d;margin:0">&middot;&middot;&middot; &ndash;&ndash;&ndash; &middot;&middot;&middot;</p>
+<p style="font-size:28px;color:#14213d;margin:8px 0"><b style="color:#f4541d">SOS</b> My Interview</p>
+<p>Help is on the way… the first launch sets things up and can take a few minutes.</p></div></body>`)}`
 
 async function main() {
   const uv = findUv()

@@ -2,6 +2,7 @@
 import { onMounted } from 'vue'
 import QuestionList from '../components/QuestionList.vue'
 import { useInterviewStore } from '../stores/interview'
+import MorseSignal from '../components/MorseSignal.vue'
 
 const store = useInterviewStore()
 
@@ -20,7 +21,7 @@ onMounted(() => {
     </header>
 
     <div v-if="store.loading" class="flex justify-center py-16">
-      <span class="loading loading-spinner loading-lg"></span>
+      <MorseSignal animated />
     </div>
     <div v-else-if="store.error" role="alert" class="alert alert-error">{{ store.error }}</div>
     <QuestionList v-else title="Questions" :questions="store.common" />

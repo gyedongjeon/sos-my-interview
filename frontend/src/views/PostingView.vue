@@ -8,6 +8,7 @@ import QuestionList from '../components/QuestionList.vue'
 import { formatDay } from '../dates'
 import { useInterviewStore } from '../stores/interview'
 import type { Difficulty, Posting } from '../types'
+import MorseSignal from '../components/MorseSignal.vue'
 
 const props = defineProps<{ id: number }>()
 
@@ -113,7 +114,7 @@ onMounted(async () => {
     <div v-if="notice" role="status" class="alert alert-info alert-soft my-4">{{ notice }}</div>
 
     <div v-if="!posting && !error" class="flex justify-center py-16">
-      <span class="loading loading-spinner loading-lg"></span>
+      <MorseSignal animated />
     </div>
 
     <template v-if="posting">
