@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { api } from '../api'
-import type { LLMSettings } from '../types'
+import type { LLMSettings, VoiceStatus } from '../types'
 
 /** Languages feedback can be written in: the English name the LLM is told, and its own name. */
 export const LANGUAGES = [
@@ -40,7 +40,12 @@ export const useSettingsStore = defineStore('settings', {
     error: null as string | null,
     // null until loaded.
     llm: null as LLMSettings | null,
+    // The voices the interviewer can speak with; empty until loaded.
+    voices: [] as VoiceStatus[],
   }),
+  getters: {
+    voice: (s): string | null => s.voices.find((v) => v.chosen)?.id ?? null,
+  },
   actions: {
     async load() {
       try {
@@ -57,6 +62,24 @@ export const useSettingsStore = defineStore('settings', {
         this.llm = await api<LLMSettings>('/settings/llm')
       } catch (e) {
         this.error = (e as Error).message
+      }
+    },
+    async loadVoices() {
+      try {
+        this.voices = await api<VoiceStatus[]>('/voices')
+      } catch (e) {
+        this.error = (e as Error).message
+      }
+    },
+    /** Has the interviewer speak with another voice; resolves with whether it was saved. */
+    async setVoice(voice: string): Promise<boolean> {
+      this.error = null
+      try {
+        this.voices = await api<VoiceStatus[]>('/voice', { method: 'PUT', json: { voice } })
+        return true
+      } catch (e) {
+        this.error = `Could not change the voice: ${(e as Error).message}`
+        return false
       }
     },
     async setFeedbackLanguage(language: string) {

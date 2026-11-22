@@ -59,3 +59,51 @@ describe('feedback language', () => {
     expect(store.error).toBe('Could not save the language: disk full')
   })
 })
+
+describe('interviewer voice', () => {
+  const VOICES = [
+    { id: 'af_heart', label: 'Heart · American · female', chosen: true },
+    { id: 'bm_george', label: 'George · British · male', chosen: false },
+  ]
+
+  function voiceBackend(fail = false) {
+    const asked: string[] = []
+    vi.stubGlobal('fetch', async (url: string, init?: RequestInit) => {
+      asked.push(`${init?.method ?? 'GET'} ${url}`)
+      if (fail) return new Response(JSON.stringify({ detail: 'Unknown voice' }), { status: 422 })
+      if (init?.method === 'PUT') {
+        const wanted = JSON.parse(init.body as string).voice
+        return new Response(JSON.stringify(VOICES.map((v) => ({ ...v, chosen: v.id === wanted }))), { status: 200 })
+      }
+      return new Response(JSON.stringify(VOICES), { status: 200 })
+    })
+    return asked
+  }
+
+  it('lists the voices and which one is chosen', async () => {
+    voiceBackend()
+    const store = useSettingsStore()
+    await store.loadVoices()
+    expect(store.voices.map((v) => v.id)).toEqual(['af_heart', 'bm_george'])
+    expect(store.voice).toBe('af_heart')
+  })
+
+  it('chooses another voice', async () => {
+    const asked = voiceBackend()
+    const store = useSettingsStore()
+    await store.loadVoices()
+    expect(await store.setVoice('bm_george')).toBe(true)
+    expect(store.voice).toBe('bm_george')
+    expect(asked).toContain('PUT /api/voice')
+  })
+
+  it('keeps the voice and says why when choosing fails', async () => {
+    voiceBackend()
+    const store = useSettingsStore()
+    await store.loadVoices()
+    voiceBackend(true)
+    expect(await store.setVoice('bm_george')).toBe(false)
+    expect(store.voice).toBe('af_heart')
+    expect(store.error).toContain('Could not change the voice')
+  })
+})

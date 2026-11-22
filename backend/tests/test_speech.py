@@ -14,12 +14,14 @@ class FakeKokoro:
     """Stands in for the voice model: half a second of silence per request."""
 
     calls: list[str] = []
+    langs: list[str] = []
 
     def __init__(self, model_path, voices_path):
         pass
 
     def create(self, text, voice, speed, lang):
         FakeKokoro.calls.append(f"{voice}: {text}")
+        FakeKokoro.langs.append(lang)
         return np.zeros(12000, dtype=np.float32), 24000
 
 
@@ -30,6 +32,7 @@ def voice_model(monkeypatch):
     for name in speech.MODEL_FILES:
         (speech.TTS_DIR / name).write_bytes(b"model")
     FakeKokoro.calls = []
+    FakeKokoro.langs = []
     monkeypatch.setattr(speech, "Kokoro", FakeKokoro)
     return FakeKokoro
 

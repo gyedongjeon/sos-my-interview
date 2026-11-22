@@ -8,11 +8,13 @@ import ssl
 import threading
 import urllib.request
 import wave
+from dataclasses import dataclass
 
 import certifi
 import numpy as np
 from kokoro_onnx import Kokoro
 
+from .db import get_connection
 from .downloads import Download
 from .paths import DATA_DIR
 
@@ -21,6 +23,33 @@ CACHE_DIR = TTS_DIR / "cache"
 # Model files (~350 MB in total), downloaded on first use.
 RELEASE_URL = "https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0"
 MODEL_FILES = ("kokoro-v1.0.onnx", "voices-v1.0.bin")
+
+
+@dataclass(frozen=True)
+class Voice:
+    id: str
+    label: str
+
+
+# Kokoro's English voices that sound natural, best first within each accent. All of them are in
+# the one voices file, so choosing one downloads nothing. Another Kokoro voice can still be set
+# with TTS_VOICE; its prefix gives the accent: "a" American, "b" British.
+VOICES = {
+    voice.id: voice
+    for voice in (
+        Voice("af_heart", "Heart · American · female"),
+        Voice("af_bella", "Bella · American · female"),
+        Voice("af_nicole", "Nicole · American · female · soft"),
+        Voice("af_sarah", "Sarah · American · female"),
+        Voice("am_michael", "Michael · American · male"),
+        Voice("am_fenrir", "Fenrir · American · male"),
+        Voice("am_puck", "Puck · American · male"),
+        Voice("bf_emma", "Emma · British · female"),
+        Voice("bf_isabella", "Isabella · British · female"),
+        Voice("bm_george", "George · British · male"),
+        Voice("bm_fable", "Fable · British · male"),
+    )
+}
 DEFAULT_VOICE = "af_heart"
 
 # Size of the two files of the pinned release, for showing download progress.
@@ -28,6 +57,28 @@ EXPECTED_BYTES = 325_532_387 + 28_214_398
 
 _kokoro: Kokoro | None = None
 _lock = threading.Lock()
+
+
+def current_voice() -> str:
+    """The voice chosen on the Settings page, else TTS_VOICE, else the default."""
+    with get_connection() as conn:
+        row = conn.execute("SELECT value FROM settings WHERE key = 'voice'").fetchone()
+    if row and row["value"] in VOICES:
+        return row["value"]
+    return os.environ.get("TTS_VOICE", "").strip() or DEFAULT_VOICE
+
+
+def choose_voice(voice: str) -> None:
+    """Keep a listed voice as the interviewer's."""
+    if voice not in VOICES:
+        raise ValueError(f"Unknown voice: {voice}")
+    with get_connection() as conn:
+        conn.execute("INSERT OR REPLACE INTO settings (key, value) VALUES ('voice', ?)", (voice,))
+
+
+def _accent(voice: str) -> str:
+    """The English the voice speaks, from its prefix: British for "b", else American."""
+    return "en-gb" if voice.startswith("b") else "en-us"
 
 
 def _is_downloaded() -> bool:
@@ -81,7 +132,7 @@ def _get_kokoro() -> Kokoro:
 
 def synthesize(text: str) -> bytes:
     """Return WAV audio of the text spoken in English."""
-    voice = os.environ.get("TTS_VOICE", "").strip() or DEFAULT_VOICE
+    voice = current_voice()
     # Questions repeat across sessions, so keep each rendered clip on disk.
     key = hashlib.sha256(f"{voice}\n{text}".encode()).hexdigest()
     cached = CACHE_DIR / f"{key}.wav"
@@ -90,7 +141,7 @@ def synthesize(text: str) -> bytes:
 
     # One synthesis at a time: the model is loaded once and shared.
     with _lock:
-        samples, sample_rate = _get_kokoro().create(text, voice=voice, speed=1.0, lang="en-us")
+        samples, sample_rate = _get_kokoro().create(text, voice=voice, speed=1.0, lang=_accent(voice))
 
     pcm = (np.clip(samples, -1.0, 1.0) * 32767).astype(np.int16)
     buffer = io.BytesIO()
