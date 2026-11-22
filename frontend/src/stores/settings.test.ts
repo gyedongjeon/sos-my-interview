@@ -34,6 +34,7 @@ describe('feedback language', () => {
     ['zh-TW', 'Traditional Chinese'],
     ['zh-CN', 'Simplified Chinese'],
     ['pt-BR', 'Portuguese'],
+    ['ru-RU', 'Russian'],
     ['sv-SE', 'English'],
   ])('starts from the browser language on the first visit: %s -> %s', async (browser, expected) => {
     const backend = fakeBackend(null, browser)

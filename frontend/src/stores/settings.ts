@@ -13,6 +13,7 @@ export const LANGUAGES = [
   { name: 'French', label: 'Français', codes: ['fr'] },
   { name: 'German', label: 'Deutsch', codes: ['de'] },
   { name: 'Portuguese', label: 'Português', codes: ['pt'] },
+  { name: 'Russian', label: 'Русский', codes: ['ru'] },
   { name: 'Vietnamese', label: 'Tiếng Việt', codes: ['vi'] },
   { name: 'Indonesian', label: 'Bahasa Indonesia', codes: ['id'] },
   { name: 'Hindi', label: 'हिन्दी', codes: ['hi'] },
