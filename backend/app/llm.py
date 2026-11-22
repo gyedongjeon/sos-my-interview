@@ -1,14 +1,30 @@
 """One entry point for calling any LLM provider (via LiteLLM)."""
 
 import os
+import threading
 
-import litellm
 from pydantic import BaseModel, ValidationError
 
 from .db import get_connection
 
-# Skip request parameters a given provider does not support instead of failing.
-litellm.drop_params = True
+# LiteLLM downloads its model price list when it is loaded unless told to use the one it ships
+# with. Prices are not used here, and the download only slows down every start.
+os.environ.setdefault("LITELLM_LOCAL_MODEL_COST_MAP", "True")
+
+# Set once LiteLLM is loaded. Loading it takes seconds, so the server starts without it and
+# loads it in the background (see `load`); a request that needs it sooner waits for it.
+loaded = threading.Event()
+
+
+def load():
+    """LiteLLM, loaded on first use."""
+    import litellm
+
+    # Skip request parameters a given provider does not support instead of failing.
+    litellm.drop_params = True
+    loaded.set()
+    return litellm
+
 
 SETUP_HINT = "Choose a model and enter its API key on the Settings page."
 
@@ -43,6 +59,7 @@ def complete(system: str, user: str | list[dict], **params) -> str:
     if not model:
         raise LLMError(f"No model is configured. {SETUP_HINT}")
 
+    litellm = load()
     try:
         response = litellm.completion(
             model=model,
