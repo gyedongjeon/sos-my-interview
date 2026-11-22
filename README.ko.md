@@ -55,6 +55,7 @@ Intel Mac, Linux용 설치 파일은 아직 없습니다. 이 경우 [소스에�
 
 1. **Feedback language**: 피드백 설명을 받을 언어를 고릅니다. 시스템 언어가 한국어면 한국어가 미리 선택되어 있습니다.
 2. **AI model**: 사용할 AI 서비스(Provider)와 모델을 고르고, 그 서비스의 API 키를 붙여 넣은 뒤 "Save and test"를 누릅니다.
+3. **Interviewer's voice**(선택): 면접관 목소리를 미국/영국 억양, 남성/여성 중에서 고를 수 있습니다(예: Heart, Michael, Emma, George). 기본은 Heart이고, 모든 목소리가 처음 받은 음성 모델에 들어 있어 추가로 내려받을 것은 없습니다. "Hear it"으로 미리 들어 볼 수 있습니다.
 
 처음이라면 **Google Gemini**를 추천합니다. 무료 사용량이 있고, 발음·억양·강세 채점에 필요한 음성 입력을 지원합니다. API 키는 [Google AI Studio](https://aistudio.google.com/apikey)에서 발급받을 수 있습니다. Claude, OpenAI, OpenRouter 등 다른 서비스도 쓸 수 있습니다.
 

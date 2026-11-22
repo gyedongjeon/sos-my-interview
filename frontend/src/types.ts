@@ -134,3 +134,10 @@ export interface ModelStatus {
   total: number | null
   error: string | null
 }
+
+/** A voice the interviewer can speak with. */
+export interface VoiceStatus {
+  id: string
+  label: string
+  chosen: boolean
+}

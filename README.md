@@ -96,6 +96,9 @@ The app opens on the Settings page the first time.
 2. **AI model and API key**: choose a provider and model and paste that provider's API key. It is
    saved and checked with a test request.
 
+Under Settings you can also choose your interviewer's voice, American or British, male or female;
+see [Text-to-speech](#text-to-speech).
+
 Tailored questions, follow-up questions, and feedback are written by an LLM through
 [LiteLLM](https://docs.litellm.ai/docs/providers), so any supported provider works (Gemini,
 Claude, OpenAI, OpenRouter, a local Ollama model, ...). Gemini is a good first choice: it has a
@@ -118,8 +121,16 @@ camera and microphone access when asked.
 Questions are read aloud with a local [Kokoro](https://github.com/thewh1teagle/kokoro-onnx) voice.
 The question text stays hidden until you press "Show question", so each question is listening practice first.
 Its model files (~350 MB) are downloaded in the background when the app is first opened, and rendered clips are cached in
-`backend/data/tts/cache/`. Set the `TTS_VOICE` environment variable to change the voice. While the
-download is running, or if the backend cannot produce audio, the browser's built-in voice is used instead.
+`backend/data/tts/cache/`. While the download is running, or if the backend cannot produce audio,
+the browser's built-in voice is used instead.
+
+**Choosing the voice.** Under Settings, "Interviewer's voice" offers Kokoro's most natural English
+voices: Heart (the default), Bella, Nicole, and Sarah (American, female), Michael, Fenrir, and
+Puck (American, male), Emma and Isabella (British, female), and George and Fable (British, male).
+British voices speak with British pronunciation. All of them are in the same model files, so
+choosing one downloads nothing more, and "Hear it" plays a sample. Without a choice, the
+`TTS_VOICE` environment variable names the voice, which may be any Kokoro voice; a choice made
+under Settings comes first.
 
 ### Feedback
 After answering, "Get feedback" scores the attempt in two parts (0-100 each):

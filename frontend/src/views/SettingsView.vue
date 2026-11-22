@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { api } from '../api'
+import { useSpeech } from '../composables/useSpeech'
 import { LANGUAGES, useSettingsStore } from '../stores/settings'
 import type { LLMSettings } from '../types'
 
@@ -121,7 +122,17 @@ async function remove() {
   }
 }
 
+// The interviewer's voice: chosen from a few, heard before or after choosing it.
+const SAMPLE = "Hi, thanks for coming in today. Could you start by telling me a little about yourself?"
+const speech = useSpeech()
+
+async function chooseVoice(voice: string) {
+  speech.stop()
+  await store.setVoice(voice)
+}
+
 onMounted(async () => {
+  void store.loadVoices()
   await store.loadLLM()
   if (store.llm) show(store.llm)
 })
@@ -157,6 +168,34 @@ onMounted(async () => {
             Starts from your browser's language. Saved as soon as you pick one.
           </span>
         </label>
+      </div>
+    </section>
+
+    <section class="card mt-4 bg-base-100 shadow-sm">
+      <div class="card-body gap-4">
+        <div>
+          <h2 class="card-title">Interviewer's voice</h2>
+          <p class="text-sm text-base-content/70">
+            The voice your interviewer speaks with, American or British. Every voice runs on this computer and comes
+            with the voice download, so changing it downloads nothing more.
+          </p>
+        </div>
+        <div class="flex flex-wrap items-end gap-2">
+          <label class="flex min-w-64 flex-1 flex-col gap-1">
+            <span class="text-sm font-medium">Voice</span>
+            <select
+              class="select w-full"
+              :value="store.voice ?? ''"
+              :disabled="!store.voices.length"
+              @change="chooseVoice(($event.target as HTMLSelectElement).value)"
+            >
+              <option v-for="v in store.voices" :key="v.id" :value="v.id">{{ v.label }}</option>
+            </select>
+          </label>
+          <button class="btn" :disabled="!store.voice" @click="speech.speaking.value ? speech.stop() : speech.speak(SAMPLE)">
+            {{ speech.speaking.value ? 'Stop' : 'Hear it' }}
+          </button>
+        </div>
       </div>
     </section>
 
