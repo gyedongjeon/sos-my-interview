@@ -10,7 +10,7 @@ port=8765
 
 export SOS_MY_INTERVIEW_DATA_DIR="$work/data"
 export UV_PROJECT_ENVIRONMENT="$work/venv"
-export PYTHONDONTWRITEBYTECODE=1
+export PYTHONPYCACHEPREFIX="$work/pycache"
 
 cd "$root/backend"
 uv run --project "$root/backend" --frozen --no-dev uvicorn app.main:app --host 127.0.0.1 --port "$port" > "$work/server.log" 2>&1 &
