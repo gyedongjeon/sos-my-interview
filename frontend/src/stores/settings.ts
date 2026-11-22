@@ -13,10 +13,16 @@ export const LANGUAGES = [
   { name: 'French', label: 'Français', codes: ['fr'] },
   { name: 'German', label: 'Deutsch', codes: ['de'] },
   { name: 'Portuguese', label: 'Português', codes: ['pt'] },
+  { name: 'Italian', label: 'Italiano', codes: ['it'] },
+  { name: 'Polish', label: 'Polski', codes: ['pl'] },
   { name: 'Russian', label: 'Русский', codes: ['ru'] },
+  { name: 'Ukrainian', label: 'Українська', codes: ['uk'] },
+  { name: 'Turkish', label: 'Türkçe', codes: ['tr'] },
   { name: 'Vietnamese', label: 'Tiếng Việt', codes: ['vi'] },
   { name: 'Indonesian', label: 'Bahasa Indonesia', codes: ['id'] },
+  { name: 'Thai', label: 'ไทย', codes: ['th'] },
   { name: 'Hindi', label: 'हिन्दी', codes: ['hi'] },
+  { name: 'Bengali', label: 'বাংলা', codes: ['bn'] },
 ] as const
 
 // The listed language matching the browser's language, e.g. "ko-KR" -> Korean.
