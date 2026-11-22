@@ -1,12 +1,12 @@
-# Runs every test suite and build check when a pull request into main is opened.
-# Later pushes to the pull request do not run it again, to keep runs few; start it by hand
-# from the Actions tab ("Run workflow") when a re-run is wanted.
+# Runs every test suite and build check when a pull request into main is opened and again on
+# every push to it. A push cancels the run still going for the previous one (see concurrency).
+# It can also be started by hand from the Actions tab ("Run workflow").
 name: CI
 
 on:
   pull_request:
     branches: [main]
-    types: [opened, reopened]
+    types: [opened, synchronize, reopened]
   workflow_dispatch:
   # Lets the release workflow run the same checks before it builds an installer.
   workflow_call:
