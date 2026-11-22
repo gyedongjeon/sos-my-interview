@@ -24,8 +24,10 @@ and what you said.
 The app runs locally for a single user; there is no account, server, or deployment.
 
 ## Install
-An installer for **Apple Silicon Macs** is attached to each
+Installers for **Apple Silicon Macs** and **64-bit Windows** are attached to each
 [release](https://github.com/gyedongjeon/sos-my-interview/releases/latest).
+
+### macOS
 
 1. Download the `.dmg`, open it, and drag the app to Applications.
 2. The build is not signed with an Apple developer certificate, so macOS blocks it at first. Run
@@ -38,17 +40,33 @@ An installer for **Apple Silicon Macs** is attached to each
 
 Nothing else has to be installed, because the app ships its own [uv](https://docs.astral.sh/uv/).
 
-On Intel Macs, Windows, and Linux there is no installer yet; [run it from source](#run-from-source).
+### Windows
+1. Download `SOS-My-Interview-Setup-<version>.exe` and run it. It installs for your user account
+   only and needs no administrator rights.
+2. The installer is not signed, so Windows shows "Windows protected your PC". Choose
+   **More info**, then **Run anyway**.
+3. The first launch downloads the Python packages (Python itself is in the installer), so it
+   needs an internet connection and can take a few minutes. If the app cannot use the camera or
+   microphone, allow them for desktop apps in Windows' privacy settings; the app offers to open
+   that page.
+
+The Windows installer is built and checked by automated jobs only (the backend's tests, the
+server started as the app starts it, and the installer built); it has not been tried by hand
+on a Windows machine yet. Please open an issue if something does not work.
+
+On Intel Macs and Linux there is no installer yet; [run it from source](#run-from-source).
 
 ### Where files are kept, and uninstalling
 Everything the installed app puts on disk is in one folder,
-`~/Library/Application Support/SOS My Interview/`:
+`~/Library/Application Support/SOS My Interview/` (on Windows, `%APPDATA%\SOS My Interview\`):
 
 - `data/` — your interviews, recordings, settings, and the speech models
 - `venv/`, `uv-cache/`, `python/` — the Python packages and Python itself, set up on the first launch
+- `backend.log` — what the server wrote on the last launch, for when a start fails
 
 To back up or move your interviews, copy `data/`. Deleting the app leaves this folder in place,
 so to uninstall completely, move the app to the Trash and then delete that folder.
+On Windows, remove SOS My Interview in **Settings → Apps**, then delete that folder.
 
 Versions up to 0.3.0 also used two shared caches. If you ran one of them, you can delete
 `~/.cache/huggingface/hub/models--Systran--faster-whisper-small.en` and, if no other tool on your
@@ -65,6 +83,9 @@ your interviews and settings kept. You can also choose **SOS My Interview → Ch
 - After an update macOS may ask for camera and microphone access again.
 - If the app cannot replace itself (for example, it was not moved to Applications), it opens the
   download page instead.
+- On Windows the app tells you about a new version and opens the download page; run the new
+  installer over the old version. Your interviews and settings are kept. The check is under
+  **Help → Check for Updates…**.
 
 ## First setup
 The app opens on the Settings page the first time.
