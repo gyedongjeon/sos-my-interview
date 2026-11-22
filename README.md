@@ -62,6 +62,7 @@ Everything the installed app puts on disk is in one folder,
 
 - `data/` — your interviews, recordings, settings, and the speech models
 - `venv/`, `uv-cache/`, `python/` — the Python packages and Python itself, set up on the first launch
+- `pycache/` — compiled Python files, kept so that later launches start faster
 - `backend.log` — what the server wrote on the last launch, for when a start fails
 
 To back up or move your interviews, copy `data/`. Deleting the app leaves this folder in place,
