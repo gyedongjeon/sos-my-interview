@@ -21,7 +21,10 @@
 
 계정 가입이나 서버가 없는 1인용 앱입니다.
 
-## 설치 (Apple Silicon Mac)
+## 설치
+**Apple Silicon Mac**과 **64비트 Windows**용 설치 파일을 [최신 릴리스](https://github.com/gyedongjeon/sos-my-interview/releases/latest)에서 받을 수 있습니다.
+
+### macOS
 1. [최신 릴리스](https://github.com/gyedongjeon/sos-my-interview/releases/latest)에서 `.dmg` 파일을 내려받아 열고, 앱을 Applications 폴더로 끌어다 놓습니다.
 2. Apple 개발자 인증서로 서명되지 않은 앱이라 처음에는 macOS가 실행을 막습니다. 터미널에서 아래 명령을 한 번 실행한 뒤 앱을 엽니다.
    ```bash
@@ -31,13 +34,21 @@
 
 따로 설치할 프로그램은 없습니다.
 
-Intel Mac, Windows, Linux용 설치 파일은 아직 없습니다. 이 경우 [소스에서 실행](README.md#run-from-source)할 수 있습니다.
+### Windows
+1. `SOS-My-Interview-Setup-<버전>.exe`를 내려받아 실행합니다. 현재 사용자 계정에만 설치되며 관리자 권한이 필요 없습니다.
+2. 서명하지 않은 설치 파일이라 "Windows의 PC 보호" 창이 뜹니다. **추가 정보**를 누른 뒤 **실행**을 누릅니다.
+3. 첫 실행 때 필요한 패키지를 내려받습니다(Python은 설치 파일에 들어 있습니다). 인터넷 연결이 필요하고 몇 분 걸릴 수 있습니다. 앱이 카메라나 마이크를 쓰지 못하면 Windows 개인 정보 설정에서 데스크톱 앱의 사용을 허용해 주세요. 앱이 설정 화면을 열어 드립니다.
+
+Windows 설치 파일은 자동화된 검사(백엔드 테스트, 앱과 같은 방식의 서버 시작, 설치 파일 빌드)만 거쳤고, 아직 실제 Windows에서 직접 써 보지는 못했습니다. 문제가 있으면 이슈로 알려 주세요.
+
+Intel Mac, Linux용 설치 파일은 아직 없습니다. 이 경우 [소스에서 실행](README.md#run-from-source)할 수 있습니다.
 
 ## 업데이트
 0.3.0 버전부터는 앱을 열 때 새 버전이 있는지 확인합니다. 새 버전이 있으면 알림 창이 뜨고, "Update and Restart"를 누르면 앱이 새 버전을 내려받아 스스로 교체한 뒤 다시 열립니다. 면접 기록과 설정은 그대로 유지됩니다. 메뉴의 **SOS My Interview → Check for Updates…**로 직접 확인할 수도 있습니다.
 
 - 업데이트 뒤에 macOS가 카메라와 마이크 권한을 다시 물을 수 있습니다.
 - 앱을 Applications 폴더로 옮기지 않고 실행한 경우 등 스스로 교체할 수 없을 때는 다운로드 페이지를 열어 줍니다.
+- Windows에서는 새 버전을 알려 주고 다운로드 페이지를 엽니다. 새 설치 파일을 그대로 실행하면 되고, 면접 기록과 설정은 유지됩니다. 확인은 메뉴의 **Help → Check for Updates…**에 있습니다.
 
 ## 처음 설정
 앱을 처음 열면 Settings 화면이 나옵니다.
@@ -64,7 +75,7 @@ API 키는 내 컴퓨터에만 저장되고, 저장한 뒤에는 화면에 다�
 - **첫 답변이 "Downloading the speech recognition model"에서 기다려요.** 음성 인식 모델을 다 받기 전에 답변하면, 다운로드가 끝난 뒤에 자동으로 이어서 처리됩니다. 답변은 사라지지 않습니다.
 - **발음 점수가 Pronunciation 하나만 나와요.** 음성 입력을 지원하지 않는 모델에서는 억양과 강세를 채점하지 못합니다. Gemini 모델을 쓰면 세 가지가 모두 나옵니다.
 - **화면이 영어예요.** 영어 면접 연습용이라 화면은 영어로 두었습니다. 피드백 설명은 Settings에서 고른 언어로 나옵니다.
-- **내 데이터는 어디에 있나요?** `~/Library/Application Support/SOS My Interview/data/`에 저장됩니다. 백업하거나 다른 Mac으로 옮길 때는 이 폴더를 복사하면 됩니다.
+- **내 데이터는 어디에 있나요?** `~/Library/Application Support/SOS My Interview/data/`(Windows는 `%APPDATA%\SOS My Interview\data\`)에 저장됩니다. 백업하거나 다른 컴퓨터로 옮길 때는 이 폴더를 복사하면 됩니다.
 
 ## 완전히 삭제하기
 앱을 휴지통에 넣어도 앱이 만든 파일은 남습니다. 완전히 지우려면 앱을 삭제한 뒤 아래 폴더를 지워 주세요. 면접 기록, 녹화, 음성 모델, Python 패키지가 모두 이 폴더 하나에 들어 있습니다.
@@ -72,6 +83,8 @@ API 키는 내 컴퓨터에만 저장되고, 저장한 뒤에는 화면에 다�
 ```
 ~/Library/Application Support/SOS My Interview/
 ```
+
+Windows에서는 **설정 → 앱**에서 SOS My Interview를 제거한 뒤 `%APPDATA%\SOS My Interview\` 폴더를 지워 주세요.
 
 0.3.0 이하 버전을 쓴 적이 있다면 공용 캐시 폴더에도 파일이 남아 있을 수 있습니다. `~/.cache/huggingface/hub/models--Systran--faster-whisper-small.en`을 지우고, 다른 프로그램이 uv를 쓰지 않는다면 `~/.cache/uv`도 지워도 됩니다.
 

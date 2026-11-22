@@ -1,6 +1,8 @@
 """SQLite access and seed data."""
 
 import sqlite3
+from collections.abc import Iterator
+from contextlib import contextmanager
 
 from .paths import DATA_DIR
 
@@ -20,11 +22,19 @@ SEED_QUESTIONS = [
 ]
 
 
-def get_connection() -> sqlite3.Connection:
+@contextmanager
+def get_connection() -> Iterator[sqlite3.Connection]:
+    """A connection for one block of work: what the block changed is saved when it ends and
+    dropped when it fails, and the connection is closed either way. Leaving it open would
+    keep the database file locked on Windows."""
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA foreign_keys = ON")
-    return conn
+    try:
+        with conn:
+            yield conn
+    finally:
+        conn.close()
 
 
 def init_db() -> None:

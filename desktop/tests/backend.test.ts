@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { backendLaunch } from '../src/backend'
+import { backendLaunch, privacySettings, startupProgress, stopCommand } from '../src/backend'
 
 const options = {
   project: '/App/Resources/backend',
@@ -37,6 +37,11 @@ describe('backendLaunch', () => {
     expect(env.UV_PYTHON_INSTALL_DIR).toBe('/Users/me/Library/Application Support/SOS My Interview/python')
   })
 
+  it('leaves the choice of Python to the project, which pins it for every way of running', () => {
+    // backend/.python-version is shipped with the app; see tests/package.test.ts.
+    expect(backendLaunch(options).args).not.toContain('--python')
+  })
+
   it('leaves a checkout to its own defaults', () => {
     const { args, env } = backendLaunch({ ...options, userData: null })
     expect(env.SOS_MY_INTERVIEW_DATA_DIR).toBeUndefined()
@@ -45,5 +50,90 @@ describe('backendLaunch', () => {
     expect(env.UV_PYTHON_INSTALL_DIR).toBeUndefined()
     expect(args).not.toContain('--frozen')
     expect(args).not.toContain('--no-dev')
+    expect(args).not.toContain('--python')
+  })
+})
+
+describe('backendLaunch with a Python shipped in the app', () => {
+  const python = 'C:\\Programs\\sos\\resources\\python\\python.exe'
+
+  it('runs on that Python and downloads none, so the first launch does not depend on that download', () => {
+    const { env } = backendLaunch({ ...options, python })
+    expect(env.UV_PYTHON).toBe(python)
+    expect(env.UV_PYTHON_DOWNLOADS).toBe('never')
+  })
+
+  it('lets uv fetch the pinned Python where none is shipped', () => {
+    const { env } = backendLaunch(options)
+    expect(env.UV_PYTHON).toBeUndefined()
+    expect(env.UV_PYTHON_DOWNLOADS).toBeUndefined()
+  })
+})
+
+describe('stopCommand', () => {
+  it('ends the whole process tree on Windows, where uv and the Python server are separate processes', () => {
+    expect(stopCommand('win32', 4321)).toEqual({ command: 'taskkill', args: ['/pid', '4321', '/T', '/F'] })
+  })
+
+  it('needs no command elsewhere, where the process group is signalled', () => {
+    expect(stopCommand('darwin', 4321)).toBeNull()
+    expect(stopCommand('linux', 4321)).toBeNull()
+  })
+})
+
+describe('startupProgress', () => {
+  const python = 'Downloading cpython-3.14.10-windows-x86_64-none (download) (22.6MiB)\r\n'
+  const gotPython = ' Downloaded cpython-3.14.10-windows-x86_64-none (download)\r\n'
+
+  it('only says the app is starting when nothing has to be set up', () => {
+    expect(startupProgress('')).toEqual({ label: 'Starting…', fraction: null })
+    expect(startupProgress('INFO:     Started server process [1234]\n')).toEqual({ label: 'Starting…', fraction: null })
+  })
+
+  it('starts with Python, which is a small first part of the whole', () => {
+    expect(startupProgress(python)).toEqual({ label: 'Downloading Python…', fraction: 0 })
+    expect(startupProgress(python + gotPython)).toEqual({ label: 'Downloading packages…', fraction: 0.1 })
+  })
+
+  it('fills up by the size of the packages that have arrived', () => {
+    const log =
+      python +
+      gotPython +
+      'Downloading onnxruntime (100.0MiB)\nDownloading numpy (50.0MiB)\nDownloading tokenizers (512.0KiB)\n' +
+      ' Downloaded numpy\n Downloaded openai\n'
+    const { label, fraction } = startupProgress(log)
+    expect(label).toBe('Downloading packages… 50 of 151 MB')
+    // A third of the packages, which take the part between Python and installing.
+    expect(fraction).toBeCloseTo(0.1 + 0.75 * (50 / 150.5), 3)
+  })
+
+  it('reads the colour codes a terminal would get', () => {
+    const log = '\u001b[2mDownloading\u001b[0m numpy (10.0MiB)\n \u001b[2mDownloaded\u001b[0m numpy\n'
+    expect(startupProgress(log).label).toBe('Downloading packages… 10 of 10 MB')
+  })
+
+  it('goes on to installing and then to starting', () => {
+    const downloaded = 'Downloading numpy (10.0MiB)\n Downloaded numpy\nPrepared 84 packages in 1m 02s\n'
+    expect(startupProgress(downloaded)).toEqual({ label: 'Installing packages…', fraction: 0.85 })
+    expect(startupProgress(downloaded + 'Installed 84 packages in 12.3s\n')).toEqual({ label: 'Starting…', fraction: 0.95 })
+  })
+
+  it('counts a Python that was already there as done', () => {
+    expect(startupProgress('Downloading numpy (10.0MiB)\n').fraction).toBe(0.1)
+  })
+})
+
+describe('privacySettings', () => {
+  it('is the page of the system settings where access to the device is allowed', () => {
+    expect(privacySettings('win32', 'microphone')).toBe('ms-settings:privacy-microphone')
+    expect(privacySettings('win32', 'camera')).toBe('ms-settings:privacy-webcam')
+    expect(privacySettings('darwin', 'microphone')).toBe(
+      'x-apple.systempreferences:com.apple.preference.security?Privacy_Microphone',
+    )
+    expect(privacySettings('darwin', 'camera')).toBe('x-apple.systempreferences:com.apple.preference.security?Privacy_Camera')
+  })
+
+  it('is not known on other systems', () => {
+    expect(privacySettings('linux', 'microphone')).toBeNull()
   })
 })

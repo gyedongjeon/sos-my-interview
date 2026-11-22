@@ -12,8 +12,9 @@
     "test": "vitest run",
     "dev": "npm run frontend && npm run compile && electron .",
     "uv": "node scripts/fetch-uv.mjs",
-    "package": "npm run uv && npm run frontend && npm run compile && electron-builder --dir",
-    "dist": "npm run uv && npm run frontend && npm run compile && electron-builder"
+    "python": "node scripts/fetch-python.mjs",
+    "package": "npm run uv && npm run python && npm run frontend && npm run compile && electron-builder --dir",
+    "dist": "npm run uv && npm run python && npm run frontend && npm run compile && electron-builder"
   },
   "build": {
     "appId": "local.sos-my-interview",
@@ -43,7 +44,8 @@
         "from": "vendor/uv",
         "to": "uv",
         "filter": [
-          "uv"
+          "uv",
+          "uv.exe"
         ]
       }
     ],
@@ -60,6 +62,29 @@
         "NSCameraUsageDescription": "The camera shows and records you while you answer interview questions.",
         "NSMicrophoneUsageDescription": "The microphone records your answers so they can be transcribed and scored."
       }
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "assets/icon.png",
+      "extraResources": [
+        {
+          "from": "vendor/python",
+          "to": "python"
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false,
+      "deleteAppDataOnUninstall": false,
+      "artifactName": "SOS-My-Interview-Setup-${version}.${ext}"
     }
   },
   "devDependencies": {

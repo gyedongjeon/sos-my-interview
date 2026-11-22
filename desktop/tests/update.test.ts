@@ -105,7 +105,7 @@ describe('replaceBlocker', () => {
 
   it('explains why the app cannot replace itself', () => {
     expect(replaceBlocker({ ...installed, packaged: false })).toMatch(/checkout/)
-    expect(replaceBlocker({ ...installed, platform: 'win32' })).toMatch(/macOS/)
+    expect(replaceBlocker({ ...installed, platform: 'win32' })).toMatch(/installer/)
     expect(replaceBlocker({ ...installed, bundle: null })).toMatch(/app bundle/)
     // macOS runs a quarantined app that was never moved from a random read-only location.
     expect(replaceBlocker({ ...installed, bundle: '/private/var/folders/x/AppTranslocation/1234/d/SOS My Interview.app' })).toMatch(/Applications/)

@@ -2,12 +2,12 @@
 // it in a window. The backend is stopped when the app quits.
 import { app, BrowserWindow, dialog, Menu, session, shell, systemPreferences } from 'electron'
 import { type ChildProcess, spawn } from 'node:child_process'
-import { accessSync, constants, existsSync } from 'node:fs'
+import { accessSync, constants, createWriteStream, existsSync, mkdirSync } from 'node:fs'
 import { mkdir, rm } from 'node:fs/promises'
 import { createServer } from 'node:net'
 import { homedir } from 'node:os'
 import { join } from 'node:path'
-import { backendLaunch } from './backend'
+import { backendLaunch, privacySettings, startupProgress, stopCommand } from './backend'
 import {
   bundlePath,
   download,
@@ -28,17 +28,28 @@ let backend: ChildProcess | null = null
 let backendLog = ''
 let window: BrowserWindow | null = null
 let quitting = false
+// While the waiting screen is up: everything the backend has written, which says how far it is.
+let startupLog: string | null = null
+// The bar never moves back, though more downloads may be named after it has started to fill.
+let shown = 0
 
 function paths() {
   if (!app.isPackaged) {
     const root = join(__dirname, '..', '..')
-    return { project: join(root, 'backend'), frontend: join(root, 'frontend', 'dist'), userData: null }
+    return { project: join(root, 'backend'), frontend: join(root, 'frontend', 'dist'), userData: null, python: null }
   }
   return {
     project: join(process.resourcesPath, 'backend'),
     frontend: join(process.resourcesPath, 'frontend'),
     userData: app.getPath('userData'),
+    python: shippedPython(),
   }
+}
+
+/** The Python inside the packaged app; only the Windows installer ships one. */
+function shippedPython(): string | null {
+  const python = join(process.resourcesPath, 'python', 'python.exe')
+  return existsSync(python) ? python : null
 }
 
 function freePort(): Promise<number> {
@@ -53,13 +64,22 @@ function freePort(): Promise<number> {
 }
 
 function startBackend(uv: string, port: number) {
-  const { project, frontend, userData } = paths()
-  const { args, env } = backendLaunch({ project, frontend, userData, port, env: process.env })
+  const { project, frontend, userData, python } = paths()
+  const { args, env } = backendLaunch({ project, frontend, userData, port, env: process.env, python })
 
   // Its own process group, so quitting can stop uv together with the Python server it runs.
-  const child = spawn(uv, args, { cwd: project, env, detached: process.platform !== 'win32' })
+  const child = spawn(uv, args, { cwd: project, env, detached: process.platform !== 'win32', windowsHide: true })
+  // The packaged app keeps what the backend wrote, so a start that fails or hangs can be looked into.
+  let file: ReturnType<typeof createWriteStream> | null = null
+  if (userData) {
+    mkdirSync(userData, { recursive: true })
+    file = createWriteStream(join(userData, 'backend.log'))
+    file.on('error', () => (file = null))
+  }
   const keep = (chunk: Buffer) => {
     backendLog = (backendLog + chunk.toString()).slice(-4000)
+    file?.write(chunk)
+    if (startupLog !== null) showProgress((startupLog += chunk.toString()))
   }
   child.stdout?.on('data', keep)
   child.stderr?.on('data', keep)
@@ -72,12 +92,25 @@ function startBackend(uv: string, port: number) {
   backend = child
 }
 
+/** Show on the waiting screen how far the first launch has come. */
+function showProgress(log: string) {
+  const { label, fraction } = startupProgress(log)
+  if (fraction !== null) shown = Math.max(shown, fraction)
+  const width = fraction === null ? null : `${Math.round(shown * 100)}%`
+  const script = `document.getElementById('label').textContent = ${JSON.stringify(label)}
+    document.getElementById('bar').style.visibility = ${JSON.stringify(width ? 'visible' : 'hidden')}
+    document.getElementById('fill').style.width = ${JSON.stringify(width ?? '0')}`
+  // The page may be gone by now; then there is nothing to show it on.
+  window?.webContents.executeJavaScript(script).catch(() => {})
+}
+
 function stopBackend() {
   const child = backend
   backend = null
   if (!child?.pid) return
   try {
-    if (process.platform === 'win32') child.kill()
+    const stop = stopCommand(process.platform, child.pid)
+    if (stop) spawn(stop.command, stop.args, { stdio: 'ignore', windowsHide: true })
     else process.kill(-child.pid, 'SIGTERM')
   } catch {
     // Already gone.
@@ -102,7 +135,10 @@ const SPLASH = `data:text/html;charset=utf-8,${encodeURIComponent(`<!doctype htm
 <body style="margin:0;height:100vh;display:grid;place-items:center;font:16px system-ui;color:#5b6477;background:#fbf8f3">
 <div style="text-align:center"><p style="font-size:14px;letter-spacing:4px;color:#f4541d;margin:0">&middot;&middot;&middot; &ndash;&ndash;&ndash; &middot;&middot;&middot;</p>
 <p style="font-size:28px;color:#14213d;margin:8px 0"><b style="color:#f4541d">SOS</b> My Interview</p>
-<p>Help is on the way… the first launch sets things up and can take a few minutes.</p></div></body>`)}`
+<p>Help is on the way… the first launch sets things up and can take a few minutes.</p>
+<div id="bar" style="visibility:hidden;width:320px;height:6px;margin:20px auto 10px;border-radius:3px;background:#e8e2d8;overflow:hidden">
+<div id="fill" style="width:0;height:100%;border-radius:3px;background:#f4541d;transition:width .4s"></div></div>
+<p id="label" style="font-size:13px;min-height:18px;margin:0">Starting…</p></div></body>`)}`
 
 // --- Updates --------------------------------------------------------------------------
 // The app is not signed with an Apple developer certificate, so the standard updater cannot be
@@ -143,9 +179,11 @@ async function checkForUpdates(manual: boolean) {
   }
 
   const bundle = bundlePath(app.getPath('exe'))
-  const blocker = update.archive
-    ? replaceBlocker({ packaged: app.isPackaged, platform: process.platform, bundle, writable })
-    : 'This release cannot be installed from inside the app.'
+  // Only the macOS app replaces itself, so elsewhere the reason is given whatever the release holds.
+  const blocker =
+    update.archive || process.platform !== 'darwin'
+      ? replaceBlocker({ packaged: app.isPackaged, platform: process.platform, bundle, writable })
+      : 'This release cannot be installed from inside the app.'
   const title = `SOS My Interview ${update.version} is available`
   const have = `You have ${app.getVersion()}.`
   if (blocker || !update.archive || !bundle) {
@@ -190,15 +228,56 @@ async function installUpdate(update: Update, bundle: string) {
   }
 }
 
+let offeringSettings = false
+// The camera is optional, so someone who turned it off on purpose is asked once per launch.
+let offeredCamera = false
+
+/**
+ * When the system refuses the microphone or the camera, say so and offer its settings. Windows
+ * never asks for a desktop app, and macOS asks only once, so without this the page could only
+ * report a failure. The microphone comes first: an answer cannot be recorded without it.
+ */
+async function offerPrivacySettings() {
+  if (offeringSettings) return
+  const device = (['microphone', 'camera'] as const).find(
+    (d) => systemPreferences.getMediaAccessStatus(d) === 'denied' && !(d === 'camera' && offeredCamera),
+  )
+  const settings = device && privacySettings(process.platform, device)
+  if (!device || !settings) return
+  offeringSettings = true
+  if (device === 'camera') offeredCamera = true
+  const detail =
+    device === 'microphone'
+      ? 'SOS My Interview needs the microphone to record your answers. Allow it in the privacy settings, then open the interview again.'
+      : 'Without the camera only your voice is recorded. To record video too, allow it in the privacy settings, then open the interview again.'
+  const name = device === 'microphone' ? 'Microphone' : 'Camera'
+  const choice = await ask(`${name} access is turned off`, detail, ['Open Settings', 'Later'])
+  offeringSettings = false
+  if (choice === 0) void shell.openExternal(settings)
+}
+
 function setMenu() {
-  if (process.platform !== 'darwin') return
+  const checkForUpdate = { label: 'Check for Updates…', click: () => void checkForUpdates(true) }
+  if (process.platform !== 'darwin') {
+    // Windows and Linux have no application menu, so the check sits under Help.
+    Menu.setApplicationMenu(
+      Menu.buildFromTemplate([
+        { label: 'File', submenu: [{ role: 'quit' }] },
+        { role: 'editMenu' },
+        { role: 'viewMenu' },
+        { role: 'windowMenu' },
+        { label: 'Help', submenu: [checkForUpdate] },
+      ]),
+    )
+    return
+  }
   Menu.setApplicationMenu(
     Menu.buildFromTemplate([
       {
         label: app.name,
         submenu: [
           { role: 'about' },
-          { label: 'Check for Updates…', click: () => void checkForUpdates(true) },
+          checkForUpdate,
           { type: 'separator' },
           { role: 'services' },
           { type: 'separator' },
@@ -237,7 +316,10 @@ async function main() {
   if (!app.isPackaged) app.dock?.setIcon(join(__dirname, '..', 'assets', 'icon.png'))
 
   // The page records answers with the webcam and microphone.
-  session.defaultSession.setPermissionRequestHandler((_contents, permission, allow) => allow(permission === 'media'))
+  session.defaultSession.setPermissionRequestHandler((_contents, permission, allow) => {
+    if (permission === 'media') void offerPrivacySettings()
+    allow(permission === 'media')
+  })
   if (process.platform === 'darwin') {
     // macOS asks once; startup does not wait for the answer.
     void systemPreferences
@@ -256,10 +338,13 @@ async function main() {
 
   const port = await freePort()
   const url = `http://127.0.0.1:${port}`
+  startupLog = ''
   startBackend(uv, port)
   try {
     await waitForBackend(url)
+    startupLog = null
   } catch (e) {
+    startupLog = null
     if (quitting) return
     quitting = true
     stopBackend()

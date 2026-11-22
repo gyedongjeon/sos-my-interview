@@ -20,7 +20,12 @@ cat <<NOTES
 
 Already have the app? From version 0.3.0 on it offers new versions by itself at startup (or choose **SOS My Interview → Check for Updates…**), so there is no need to download anything here. The \`.zip\` file is what the app uses for that.
 
-Intel Macs, Windows, and Linux have no installer yet; the app can be run from source there (see the README).
+## Install (Windows, 64-bit)
+1. Download \`SOS-My-Interview-Setup-${tag#v}.exe\` below and run it. It is added to this page a few minutes after the macOS files.
+2. The installer is not signed, so Windows shows "Windows protected your PC": choose **More info**, then **Run anyway**.
+3. The first launch downloads the Python packages, so it needs an internet connection and can take a few minutes. A newer version is installed by running its installer; your interviews and settings are kept.
+
+Intel Macs and Linux have no installer yet; the app can be run from source there (see the README).
 
 SHA-256 of \`$asset\`: \`$sha256\`
 

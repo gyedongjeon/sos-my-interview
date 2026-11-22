@@ -43,7 +43,10 @@ KEY_VARIABLES = {
 @pytest.fixture(autouse=True)
 def isolated(monkeypatch, request):
     """A fresh database and data folder, with the LLM and downloads blocked unless mocked."""
-    shutil.rmtree(DATA_DIR, ignore_errors=True)
+    # Not ignoring errors: a file that cannot be removed (on Windows, one that is still open)
+    # would quietly carry one test's data into the next.
+    if DATA_DIR.exists():
+        shutil.rmtree(DATA_DIR)
     shutil.rmtree(FRONTEND_DIST, ignore_errors=True)
     init_db()
     if request.node.get_closest_marker("live"):

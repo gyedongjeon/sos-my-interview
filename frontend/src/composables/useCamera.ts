@@ -1,5 +1,17 @@
 import { ref, shallowRef } from 'vue'
 
+/** Why a device could not be opened, in words the user can act on. */
+export function deviceProblem(device: 'microphone' | 'camera', failure: unknown): string {
+  const name = failure instanceof Error ? failure.name : ''
+  if (name === 'NotFoundError') return `No ${device} was found.`
+  if (name === 'NotAllowedError') {
+    const Device = device[0].toUpperCase() + device.slice(1)
+    return `${Device} access is turned off. Allow it for this app in your system's privacy settings.`
+  }
+  if (name === 'NotReadableError') return `The ${device} could not be started. Close other apps that use it.`
+  return name ? `The ${device} is not available (${name}).` : `The ${device} is not available.`
+}
+
 // Webcam + microphone access and answer recording via getUserMedia / MediaRecorder.
 export function useCamera() {
   const stream = shallowRef<MediaStream | null>(null)
@@ -12,21 +24,19 @@ export function useCamera() {
 
   async function open() {
     error.value = ''
+    let cameraFailure: unknown
     try {
       stream.value = await navigator.mediaDevices.getUserMedia({ video: true, audio: true })
       return
-    } catch {
+    } catch (e) {
       // Fall through: the answer only needs the microphone, so retry without the camera.
+      cameraFailure = e
     }
     try {
       stream.value = await navigator.mediaDevices.getUserMedia({ audio: true })
-      error.value = 'The camera is unavailable, so only your voice is recorded.'
+      error.value = `${deviceProblem('camera', cameraFailure)} Only your voice is recorded.`
     } catch (e) {
-      const err = e as DOMException
-      error.value =
-        err.name === 'NotAllowedError'
-          ? 'Microphone permission was denied. Allow it in the browser and reload.'
-          : `Could not open the microphone: ${err.message}`
+      error.value = `${deviceProblem('microphone', e)} Answers cannot be recorded until this is fixed; then open this page again.`
     }
   }
 
