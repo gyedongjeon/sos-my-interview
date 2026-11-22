@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { backendLaunch, startupProgress, stopCommand } from '../src/backend'
+import { backendLaunch, privacySettings, startupProgress, stopCommand } from '../src/backend'
 
 const options = {
   project: '/App/Resources/backend',
@@ -120,5 +120,20 @@ describe('startupProgress', () => {
 
   it('counts a Python that was already there as done', () => {
     expect(startupProgress('Downloading numpy (10.0MiB)\n').fraction).toBe(0.1)
+  })
+})
+
+describe('privacySettings', () => {
+  it('is the page of the system settings where access to the device is allowed', () => {
+    expect(privacySettings('win32', 'microphone')).toBe('ms-settings:privacy-microphone')
+    expect(privacySettings('win32', 'camera')).toBe('ms-settings:privacy-webcam')
+    expect(privacySettings('darwin', 'microphone')).toBe(
+      'x-apple.systempreferences:com.apple.preference.security?Privacy_Microphone',
+    )
+    expect(privacySettings('darwin', 'camera')).toBe('x-apple.systempreferences:com.apple.preference.security?Privacy_Camera')
+  })
+
+  it('is not known on other systems', () => {
+    expect(privacySettings('linux', 'microphone')).toBeNull()
   })
 })

@@ -7,7 +7,7 @@ import { mkdir, rm } from 'node:fs/promises'
 import { createServer } from 'node:net'
 import { homedir } from 'node:os'
 import { join } from 'node:path'
-import { backendLaunch, startupProgress, stopCommand } from './backend'
+import { backendLaunch, privacySettings, startupProgress, stopCommand } from './backend'
 import {
   bundlePath,
   download,
@@ -228,6 +228,34 @@ async function installUpdate(update: Update, bundle: string) {
   }
 }
 
+let offeringSettings = false
+// The camera is optional, so someone who turned it off on purpose is asked once per launch.
+let offeredCamera = false
+
+/**
+ * When the system refuses the microphone or the camera, say so and offer its settings. Windows
+ * never asks for a desktop app, and macOS asks only once, so without this the page could only
+ * report a failure. The microphone comes first: an answer cannot be recorded without it.
+ */
+async function offerPrivacySettings() {
+  if (offeringSettings) return
+  const device = (['microphone', 'camera'] as const).find(
+    (d) => systemPreferences.getMediaAccessStatus(d) === 'denied' && !(d === 'camera' && offeredCamera),
+  )
+  const settings = device && privacySettings(process.platform, device)
+  if (!device || !settings) return
+  offeringSettings = true
+  if (device === 'camera') offeredCamera = true
+  const detail =
+    device === 'microphone'
+      ? 'SOS My Interview needs the microphone to record your answers. Allow it in the privacy settings, then open the interview again.'
+      : 'Without the camera only your voice is recorded. To record video too, allow it in the privacy settings, then open the interview again.'
+  const name = device === 'microphone' ? 'Microphone' : 'Camera'
+  const choice = await ask(`${name} access is turned off`, detail, ['Open Settings', 'Later'])
+  offeringSettings = false
+  if (choice === 0) void shell.openExternal(settings)
+}
+
 function setMenu() {
   const checkForUpdate = { label: 'Check for Updates…', click: () => void checkForUpdates(true) }
   if (process.platform !== 'darwin') {
@@ -288,7 +316,10 @@ async function main() {
   if (!app.isPackaged) app.dock?.setIcon(join(__dirname, '..', 'assets', 'icon.png'))
 
   // The page records answers with the webcam and microphone.
-  session.defaultSession.setPermissionRequestHandler((_contents, permission, allow) => allow(permission === 'media'))
+  session.defaultSession.setPermissionRequestHandler((_contents, permission, allow) => {
+    if (permission === 'media') void offerPrivacySettings()
+    allow(permission === 'media')
+  })
   if (process.platform === 'darwin') {
     // macOS asks once; startup does not wait for the answer.
     void systemPreferences

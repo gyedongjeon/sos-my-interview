@@ -113,3 +113,13 @@ export function startupProgress(log: string): Progress {
     fraction: PYTHON_SHARE + PACKAGES_SHARE * (done / total),
   }
 }
+
+/** The page of the system settings where access to a device is allowed, where there is one to open. */
+export function privacySettings(platform: NodeJS.Platform, device: 'microphone' | 'camera'): string | null {
+  if (platform === 'win32') return device === 'microphone' ? 'ms-settings:privacy-microphone' : 'ms-settings:privacy-webcam'
+  if (platform === 'darwin') {
+    const pane = device === 'microphone' ? 'Privacy_Microphone' : 'Privacy_Camera'
+    return `x-apple.systempreferences:com.apple.preference.security?${pane}`
+  }
+  return null
+}
