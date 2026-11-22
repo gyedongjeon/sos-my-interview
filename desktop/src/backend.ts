@@ -51,3 +51,65 @@ export function backendLaunch({ project, frontend, userData, port, env, python }
 export function stopCommand(platform: NodeJS.Platform, pid: number): { command: string; args: string[] } | null {
   return platform === 'win32' ? { command: 'taskkill', args: ['/pid', String(pid), '/T', '/F'] } : null
 }
+
+// Colour and cursor codes that a tool writes for a terminal.
+const TERMINAL_CODES = /\u001b\[[0-9;?]*[A-Za-z]/g
+
+export interface Progress {
+  /** What the first launch is doing, in words for the waiting screen. */
+  label: string
+  /** How far along it is, from 0 to 1; null when there is nothing to measure. */
+  fraction: number | null
+}
+
+// The parts of the first launch, as shares of the whole: Python, then the packages, then
+// installing them. The rest is the server starting.
+const PYTHON_SHARE = 0.1
+const PACKAGES_SHARE = 0.75
+const INSTALLED = 0.95
+
+const MEGABYTES: Record<string, number> = { KiB: 1 / 1024, MiB: 1, GiB: 1024 }
+
+/**
+ * How far the first launch has come, read from what uv has written so far. uv names each large
+ * download with its size when it starts and again when it ends, so the bar follows the size of
+ * what has arrived. Small packages are not named, which makes this an estimate.
+ */
+export function startupProgress(log: string): Progress {
+  const lines = log
+    .replace(TERMINAL_CODES, '')
+    .split(/[\r\n]+/)
+    .map((line) => line.trim())
+  const sizes = new Map<string, number>()
+  const arrived = new Set<string>()
+  let python: 'none' | 'downloading' | 'done' = 'none'
+  let prepared = false
+  let installed = false
+  for (const line of lines) {
+    const started = /^Downloading (\S+)(?: \(download\))? \(([\d.]+)\s*(KiB|MiB|GiB)\)/.exec(line)
+    const ended = /^Downloaded (\S+)/.exec(line)
+    const name = (started ?? ended)?.[1]
+    if (name?.startsWith('cpython-')) python = started ? 'downloading' : 'done'
+    else if (started) sizes.set(started[1], Number(started[2]) * MEGABYTES[started[3]])
+    else if (ended) arrived.add(ended[1])
+    else if (/^Prepared \d+ package/.test(line)) prepared = true
+    else if (/^Installed \d+ package/.test(line)) installed = true
+  }
+
+  if (installed) return { label: 'Starting…', fraction: INSTALLED }
+  if (prepared) return { label: 'Installing packages…', fraction: PYTHON_SHARE + PACKAGES_SHARE }
+  if (python === 'downloading') return { label: 'Downloading Python…', fraction: 0 }
+  if (sizes.size === 0) {
+    return python === 'done' ? { label: 'Downloading packages…', fraction: PYTHON_SHARE } : { label: 'Starting…', fraction: null }
+  }
+  let total = 0
+  let done = 0
+  for (const [name, size] of sizes) {
+    total += size
+    if (arrived.has(name)) done += size
+  }
+  return {
+    label: `Downloading packages… ${Math.round(done)} of ${Math.round(total)} MB`,
+    fraction: PYTHON_SHARE + PACKAGES_SHARE * (done / total),
+  }
+}

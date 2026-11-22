@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { backendLaunch, stopCommand } from '../src/backend'
+import { backendLaunch, startupProgress, stopCommand } from '../src/backend'
 
 const options = {
   project: '/App/Resources/backend',
@@ -78,5 +78,47 @@ describe('stopCommand', () => {
   it('needs no command elsewhere, where the process group is signalled', () => {
     expect(stopCommand('darwin', 4321)).toBeNull()
     expect(stopCommand('linux', 4321)).toBeNull()
+  })
+})
+
+describe('startupProgress', () => {
+  const python = 'Downloading cpython-3.14.10-windows-x86_64-none (download) (22.6MiB)\r\n'
+  const gotPython = ' Downloaded cpython-3.14.10-windows-x86_64-none (download)\r\n'
+
+  it('only says the app is starting when nothing has to be set up', () => {
+    expect(startupProgress('')).toEqual({ label: 'Starting…', fraction: null })
+    expect(startupProgress('INFO:     Started server process [1234]\n')).toEqual({ label: 'Starting…', fraction: null })
+  })
+
+  it('starts with Python, which is a small first part of the whole', () => {
+    expect(startupProgress(python)).toEqual({ label: 'Downloading Python…', fraction: 0 })
+    expect(startupProgress(python + gotPython)).toEqual({ label: 'Downloading packages…', fraction: 0.1 })
+  })
+
+  it('fills up by the size of the packages that have arrived', () => {
+    const log =
+      python +
+      gotPython +
+      'Downloading onnxruntime (100.0MiB)\nDownloading numpy (50.0MiB)\nDownloading tokenizers (512.0KiB)\n' +
+      ' Downloaded numpy\n Downloaded openai\n'
+    const { label, fraction } = startupProgress(log)
+    expect(label).toBe('Downloading packages… 50 of 151 MB')
+    // A third of the packages, which take the part between Python and installing.
+    expect(fraction).toBeCloseTo(0.1 + 0.75 * (50 / 150.5), 3)
+  })
+
+  it('reads the colour codes a terminal would get', () => {
+    const log = '\u001b[2mDownloading\u001b[0m numpy (10.0MiB)\n \u001b[2mDownloaded\u001b[0m numpy\n'
+    expect(startupProgress(log).label).toBe('Downloading packages… 10 of 10 MB')
+  })
+
+  it('goes on to installing and then to starting', () => {
+    const downloaded = 'Downloading numpy (10.0MiB)\n Downloaded numpy\nPrepared 84 packages in 1m 02s\n'
+    expect(startupProgress(downloaded)).toEqual({ label: 'Installing packages…', fraction: 0.85 })
+    expect(startupProgress(downloaded + 'Installed 84 packages in 12.3s\n')).toEqual({ label: 'Starting…', fraction: 0.95 })
+  })
+
+  it('counts a Python that was already there as done', () => {
+    expect(startupProgress('Downloading numpy (10.0MiB)\n').fraction).toBe(0.1)
   })
 })
