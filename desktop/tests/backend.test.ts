@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { backendLaunch } from '../src/backend'
+import { backendLaunch, stopCommand } from '../src/backend'
 
 const options = {
   project: '/App/Resources/backend',
@@ -37,6 +37,11 @@ describe('backendLaunch', () => {
     expect(env.UV_PYTHON_INSTALL_DIR).toBe('/Users/me/Library/Application Support/SOS My Interview/python')
   })
 
+  it('leaves the choice of Python to the project, which pins it for every way of running', () => {
+    // backend/.python-version is shipped with the app; see tests/package.test.ts.
+    expect(backendLaunch(options).args).not.toContain('--python')
+  })
+
   it('leaves a checkout to its own defaults', () => {
     const { args, env } = backendLaunch({ ...options, userData: null })
     expect(env.SOS_MY_INTERVIEW_DATA_DIR).toBeUndefined()
@@ -45,5 +50,33 @@ describe('backendLaunch', () => {
     expect(env.UV_PYTHON_INSTALL_DIR).toBeUndefined()
     expect(args).not.toContain('--frozen')
     expect(args).not.toContain('--no-dev')
+    expect(args).not.toContain('--python')
+  })
+})
+
+describe('backendLaunch with a Python shipped in the app', () => {
+  const python = 'C:\\Programs\\sos\\resources\\python\\python.exe'
+
+  it('runs on that Python and downloads none, so the first launch does not depend on that download', () => {
+    const { env } = backendLaunch({ ...options, python })
+    expect(env.UV_PYTHON).toBe(python)
+    expect(env.UV_PYTHON_DOWNLOADS).toBe('never')
+  })
+
+  it('lets uv fetch the pinned Python where none is shipped', () => {
+    const { env } = backendLaunch(options)
+    expect(env.UV_PYTHON).toBeUndefined()
+    expect(env.UV_PYTHON_DOWNLOADS).toBeUndefined()
+  })
+})
+
+describe('stopCommand', () => {
+  it('ends the whole process tree on Windows, where uv and the Python server are separate processes', () => {
+    expect(stopCommand('win32', 4321)).toEqual({ command: 'taskkill', args: ['/pid', '4321', '/T', '/F'] })
+  })
+
+  it('needs no command elsewhere, where the process group is signalled', () => {
+    expect(stopCommand('darwin', 4321)).toBeNull()
+    expect(stopCommand('linux', 4321)).toBeNull()
   })
 })

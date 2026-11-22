@@ -17,6 +17,10 @@ const BUILDS = {
     archive: 'uv-aarch64-apple-darwin.tar.gz',
     sha256: '5aeca67f2283f75235de40d0bd9c0a5bbc5fce23b6d48b3bf9fa1b2db08382ca',
   },
+  'win32-x64': {
+    archive: 'uv-x86_64-pc-windows-msvc.zip',
+    sha256: 'edd61f7f5728a56cc62455386661860bdfc7bab65872f39b0c25bdcc1d8e1beb',
+  },
 }
 
 const target = `${process.platform}-${process.arch}`
@@ -27,7 +31,7 @@ if (!build) {
 }
 
 const folder = join(dirname(fileURLToPath(import.meta.url)), '..', 'vendor', 'uv')
-const program = join(folder, 'uv')
+const program = join(folder, process.platform === 'win32' ? 'uv.exe' : 'uv')
 const marker = join(folder, 'VERSION')
 const wanted = `${UV_VERSION} ${target} ${build.sha256}`
 
@@ -57,11 +61,23 @@ mkdirSync(folder, { recursive: true })
 const archivePath = join(tmpdir(), `${sha256}-${build.archive}`)
 writeFileSync(archivePath, archive)
 try {
-  // The archive holds one folder with `uv` and `uvx`; only `uv` is needed.
-  const inner = `${build.archive.replace(/\.tar\.gz$/, '')}/uv`
-  execFileSync('tar', ['-xzf', archivePath, '-C', folder, '--strip-components=1', inner])
+  if (build.archive.endsWith('.zip')) {
+    // The Windows archive holds `uv.exe` and two helpers at its top; only `uv.exe` is needed.
+    // Windows ships a tar that reads zip files. It is named by its full path, because a tar
+    // from Git (first on the PATH of a Git shell) takes "C:" in a path for a remote host.
+    const tar = join(process.env.SystemRoot ?? 'C:\\Windows', 'System32', 'tar.exe')
+    execFileSync(tar, ['-xf', archivePath, '-C', folder, 'uv.exe'])
+  } else {
+    // The archive holds one folder with `uv` and `uvx`; only `uv` is needed.
+    const inner = `${build.archive.replace(/\.tar\.gz$/, '')}/uv`
+    execFileSync('tar', ['-xzf', archivePath, '-C', folder, '--strip-components=1', inner])
+  }
 } finally {
   rmSync(archivePath, { force: true })
+}
+if (!existsSync(program)) {
+  console.error(`${build.archive} did not contain ${program}`)
+  process.exit(1)
 }
 chmodSync(program, 0o755)
 writeFileSync(marker, wanted)

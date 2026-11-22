@@ -107,7 +107,7 @@ export interface Installation {
 
 /** Why this copy of the app cannot replace itself, or null when it can. */
 export function replaceBlocker({ packaged, platform, bundle, writable }: Installation): string | null {
-  if (platform !== 'darwin') return 'Updating from inside the app is available on macOS only.'
+  if (platform !== 'darwin') return 'On this system the new version is installed with its installer from the download page.'
   if (!packaged) return 'This copy runs from a source checkout; update it with git.'
   if (!bundle) return 'The app is not running from an app bundle.'
   // A quarantined app that was never moved runs from a random read-only place ("translocation"),

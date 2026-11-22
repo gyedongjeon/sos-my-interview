@@ -99,3 +99,56 @@ jobs:
         run: npm test
       - name: Type check
         run: npx tsc --noEmit
+
+  # The Windows installer cannot be tried by hand on the machines this project is developed on,
+  # so this job does what can be done without a screen: the backend's tests, the server started
+  # the way the installed app starts it, and the installer itself built.
+  windows:
+    name: Windows (backend, server start, installer)
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - name: Run the backend tests
+        working-directory: backend
+        run: |
+          uv sync --frozen
+          uv run --frozen pytest
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            frontend/package-lock.json
+            desktop/package-lock.json
+      - name: Fetch the uv and the Python that the installer ships
+        run: |
+          npm run uv --prefix desktop
+          npm run python --prefix desktop
+      - name: Start the server as the installed app does, on the shipped Python
+        run: |
+          export UV_PYTHON="$(cygpath -w "$PWD/desktop/vendor/python/python.exe")"
+          export UV_PYTHON_DOWNLOADS=never
+          "$UV_PYTHON" --version
+          .github/scripts/start-server-check.sh
+      - name: Build the installer
+        run: |
+          npm ci --prefix frontend
+          npm ci --prefix desktop
+          npm run dist --prefix desktop -- --publish never
+          ls -l desktop/release/*.exe
+          # What the installer holds: the backend, uv, and Python.
+          ls desktop/release/win-unpacked/resources/backend/pyproject.toml
+          ls desktop/release/win-unpacked/resources/uv/uv.exe
+          ls desktop/release/win-unpacked/resources/python/python.exe
+
+      # Kept for a few days so the installer can be tried on a real machine before a release.
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows-installer
+          path: desktop/release/*.exe
+          retention-days: 7
+          compression-level: 0
