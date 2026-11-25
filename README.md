@@ -16,6 +16,7 @@ and what you said.
 - **Listening first**: the interviewer reads each question aloud, and its text stays hidden until you ask for it.
 - **Follow-up questions**: up to two follow-ups dig into what you just said, as a real interviewer would.
 - **Two separate scores**: English (grammar, vocabulary, naturalness, pronunciation, intonation, stress) and content (relevance, structure, specificity), with corrected sentences and a stronger version of your answer.
+- **Fitted to your level**: choose your English level (CEFR A2 to C1) and the better sentences are written at it or one step above, so you can say them yourself.
 - **Pages and feedback in your language**: menus, buttons, and feedback in Korean, Japanese, Chinese, Spanish, and more; questions and model answers stay in English.
 - **Questions for the job you want**: add a job posting (link or text) and your résumé to get questions written for that role.
 - **History**: every answer is kept with its transcript, scores, and recording, so you can see how you improve.
@@ -97,7 +98,7 @@ The app opens on the Settings page the first time.
 2. **AI model and API key**: choose a provider and model and paste that provider's API key. It is
    saved and checked with a test request.
 
-Under Settings you can also choose your interviewer's voice, American or British, male or female;
+Under Settings you can also choose your English level (see [Feedback](#feedback)) and your interviewer's voice, American or British, male or female;
 see [Text-to-speech](#text-to-speech).
 
 Tailored questions, follow-up questions, and feedback are written by an LLM through
@@ -142,6 +143,12 @@ After answering, "Get feedback" scores the attempt in two parts (0-100 each):
 - **Content**: relevance, structure, and specificity.
 
 Written feedback is in the language picked under Settings ("Your language"), and so are the pages. On first visit it starts from the browser's language.
+
+With an English level chosen under Settings (CEFR A2, B1, B2, or C1), the stronger answer and the
+corrected sentences are written at that level or one step above (C1 stays at C1), so they are
+sentences you can learn and say yourself; questions and follow-ups are worded for it too, while
+what they ask and the difficulty you pick stay the same. The scores do not depend on the level, so
+they stay comparable over time. Without a level, nothing is fitted.
 See [Adding a language for the pages](#adding-a-language-for-the-pages).
 
 ### History
