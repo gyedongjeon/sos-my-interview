@@ -6,6 +6,7 @@ import FeedbackPanel from '../components/FeedbackPanel.vue'
 import TurnList from '../components/TurnList.vue'
 import { useSpeech } from '../composables/useSpeech'
 import { formatDay, formatTime } from '../dates'
+import { t } from '../i18n'
 import { mean } from '../scores'
 import type { AttemptDetail, Turn } from '../types'
 import MorseSignal from '../components/MorseSignal.vue'
@@ -19,30 +20,30 @@ const error = ref('')
 const deleting = ref(false)
 
 const turns = computed<Turn[]>(() =>
-  (attempt.value?.turns ?? []).map((t) => ({
-    question: t.question,
-    answer: t.answer,
+  (attempt.value?.turns ?? []).map((turn) => ({
+    question: turn.question,
+    answer: turn.answer,
     delivery:
-      t.clarity === null
+      turn.clarity === null
         ? null
-        : { clarity: t.clarity, unclearWords: t.unclear_words, wordsPerMinute: t.words_per_minute },
-    recordingUrl: t.recording_url,
-    hasVideo: t.has_video,
+        : { clarity: turn.clarity, unclearWords: turn.unclear_words, wordsPerMinute: turn.words_per_minute },
+    recordingUrl: turn.recording_url,
+    hasVideo: turn.has_video,
   })),
 )
 const clarity = computed(() => {
-  const scores = turns.value.flatMap((t) => (t.delivery ? [t.delivery.clarity] : []))
+  const scores = turns.value.flatMap((turn) => (turn.delivery ? [turn.delivery.clarity] : []))
   return scores.length ? mean(scores) : null
 })
 
 async function remove() {
-  if (!window.confirm('Delete this attempt and its recordings? This cannot be undone.')) return
+  if (!window.confirm(t('attempt.confirmDelete'))) return
   deleting.value = true
   try {
     await api(`/attempts/${props.id}`, { method: 'DELETE' })
     router.push({ name: 'history' })
   } catch (e) {
-    error.value = `Could not delete: ${(e as Error).message}`
+    error.value = t('attempt.deleteFailed', { error: (e as Error).message })
     deleting.value = false
   }
 }
@@ -51,7 +52,7 @@ onMounted(async () => {
   try {
     attempt.value = await api<AttemptDetail>(`/attempts/${props.id}`)
   } catch (e) {
-    error.value = `Could not load this attempt: ${(e as Error).message}`
+    error.value = t('attempt.loadFailed', { error: (e as Error).message })
   }
 })
 
@@ -61,12 +62,12 @@ onBeforeUnmount(speech.stop)
 <template>
   <main class="mx-auto max-w-5xl p-4 sm:p-8">
     <div class="mb-4 flex items-center justify-between">
-      <RouterLink class="btn btn-ghost btn-sm" to="/history">← History</RouterLink>
+      <RouterLink class="btn btn-ghost btn-sm" to="/history">{{ t('history.back') }}</RouterLink>
       <div v-if="attempt" class="flex gap-2">
         <RouterLink class="btn btn-primary btn-sm" :to="{ name: 'interview', params: { id: attempt.question_id } }">
-          Retry this question
+          {{ t('attempt.retry') }}
         </RouterLink>
-        <button class="btn btn-error btn-outline btn-sm" :disabled="deleting" @click="remove">Delete</button>
+        <button class="btn btn-error btn-outline btn-sm" :disabled="deleting" @click="remove">{{ t('common.delete') }}</button>
       </div>
     </div>
 
@@ -78,7 +79,7 @@ onBeforeUnmount(speech.stop)
     <template v-else>
       <header class="mb-4">
         <p class="text-sm text-base-content/60">
-          {{ attempt.posting_title ?? 'Common questions' }} · {{ formatDay(attempt.created_at) }} ·
+          {{ attempt.posting_title ?? t('common.commonQuestions') }} · {{ formatDay(attempt.created_at) }} ·
           {{ formatTime(attempt.created_at) }}
         </p>
         <h1 class="text-2xl font-semibold">{{ attempt.question }}</h1>
@@ -91,7 +92,7 @@ onBeforeUnmount(speech.stop)
         :clarity="clarity"
         @listen="speech.speak"
       />
-      <div v-else role="alert" class="alert alert-soft">This attempt was not scored.</div>
+      <div v-else role="alert" class="alert alert-soft">{{ t('attempt.notScored') }}</div>
 
       <TurnList class="mt-4" :turns="turns" :download-prefix="`attempt-${attempt.id}`" />
     </template>

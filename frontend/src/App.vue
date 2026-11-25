@@ -3,6 +3,7 @@ import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import BrandMark from './components/BrandMark.vue'
 import ModelDownloads from './components/ModelDownloads.vue'
+import { t } from './i18n'
 import { useModelsStore } from './stores/models'
 import { useSettingsStore } from './stores/settings'
 
@@ -28,10 +29,10 @@ onMounted(async () => {
           <span><span class="font-extrabold text-primary">SOS</span> <span class="font-medium">My Interview</span></span>
         </RouterLink>
         <ul class="menu menu-horizontal ml-auto gap-1 px-0">
-          <li><RouterLink :class="LINK" to="/" exact-active-class="bg-primary text-primary-content hover:bg-primary">Interviews</RouterLink></li>
-          <li><RouterLink :class="LINK" to="/history" active-class="bg-primary text-primary-content hover:bg-primary">History</RouterLink></li>
-          <li><RouterLink :class="LINK" to="/resume" active-class="bg-primary text-primary-content hover:bg-primary">Résumé</RouterLink></li>
-          <li><RouterLink :class="LINK" to="/settings" active-class="bg-primary text-primary-content hover:bg-primary">Settings</RouterLink></li>
+          <li><RouterLink :class="LINK" to="/" exact-active-class="bg-primary text-primary-content hover:bg-primary">{{ t('nav.interviews') }}</RouterLink></li>
+          <li><RouterLink :class="LINK" to="/history" active-class="bg-primary text-primary-content hover:bg-primary">{{ t('nav.history') }}</RouterLink></li>
+          <li><RouterLink :class="LINK" to="/resume" active-class="bg-primary text-primary-content hover:bg-primary">{{ t('nav.resume') }}</RouterLink></li>
+          <li><RouterLink :class="LINK" to="/settings" active-class="bg-primary text-primary-content hover:bg-primary">{{ t('nav.settings') }}</RouterLink></li>
         </ul>
       </div>
     </nav>
@@ -44,8 +45,8 @@ onMounted(async () => {
       role="alert"
       class="alert alert-warning alert-soft mx-auto mt-4 max-w-3xl"
     >
-      <span>Add an AI model and API key to get tailored questions, follow-up questions, and feedback.</span>
-      <RouterLink class="btn btn-sm btn-warning" to="/settings">Open Settings</RouterLink>
+      <span>{{ t('app.needModel') }}</span>
+      <RouterLink class="btn btn-sm btn-warning" to="/settings">{{ t('app.openSettings') }}</RouterLink>
     </div>
     <RouterView />
   </div>

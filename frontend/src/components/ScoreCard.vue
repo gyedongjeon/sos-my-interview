@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { t } from '../i18n'
 import { total, type SubScore } from '../scores'
 
 const props = defineProps<{
@@ -29,7 +30,7 @@ const barClass = { success: 'progress-success', warning: 'progress-warning', err
           :style="{ '--value': score, '--size': '5rem', '--thickness': '0.5rem' }"
           role="progressbar"
           :aria-valuenow="score"
-          :aria-label="`${title} score`"
+          :aria-label="t('score.of', { title })"
         >
           {{ score }}
         </div>
@@ -41,7 +42,7 @@ const barClass = { success: 'progress-success', warning: 'progress-warning', err
               class="badge badge-soft"
               :class="change > 0 ? 'badge-success' : change < 0 ? 'badge-error' : ''"
             >
-              {{ change > 0 ? `+${change}` : change }} vs last time
+              {{ t('score.change', { change: change > 0 ? `+${change}` : change }) }}
             </span>
           </h3>
           <div v-for="s in scores" :key="s.label" class="flex items-center gap-2 text-sm">

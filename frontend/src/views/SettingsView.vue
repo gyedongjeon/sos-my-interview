@@ -2,6 +2,7 @@
 import { computed, onMounted, ref } from 'vue'
 import { api } from '../api'
 import { useSpeech } from '../composables/useSpeech'
+import { t, voiceLabel } from '../i18n'
 import { LANGUAGES, useSettingsStore } from '../stores/settings'
 import type { LLMSettings } from '../types'
 
@@ -40,7 +41,7 @@ const PROVIDERS = [
     keyUrl: 'https://openrouter.ai/keys',
   },
   // Anything else LiteLLM supports, written out in full as "<provider>/<model>".
-  { id: 'other', label: 'Other (LiteLLM)', prefix: '', model: '', example: 'mistral/mistral-small-latest', keyUrl: '' },
+  { id: 'other', label: '', prefix: '', model: '', example: 'mistral/mistral-small-latest', keyUrl: '' },
 ] as const
 
 // Third-party work shipped in the built app; the full texts are in public/THIRD_PARTY_NOTICES.txt.
@@ -94,15 +95,15 @@ async function save() {
     })
     apiKey.value = ''
   } catch (e) {
-    error.value = `Could not save: ${(e as Error).message}`
+    error.value = t('settings.saveFailed', { error: (e as Error).message })
     busy.value = false
     return
   }
   try {
     await api('/settings/llm/test', { method: 'POST' })
-    success.value = 'Saved. The model answered a test request, so everything is ready.'
+    success.value = t('settings.saved')
   } catch (e) {
-    error.value = `Saved, but the test request failed. ${(e as Error).message}`
+    error.value = t('settings.testFailed', { error: (e as Error).message })
   } finally {
     busy.value = false
   }
@@ -116,7 +117,7 @@ async function remove() {
     store.llm = await api<LLMSettings>('/settings/llm', { method: 'DELETE' })
     apiKey.value = ''
   } catch (e) {
-    error.value = `Could not remove: ${(e as Error).message}`
+    error.value = t('settings.removeFailed', { error: (e as Error).message })
   } finally {
     busy.value = false
   }
@@ -140,23 +141,20 @@ onMounted(async () => {
 
 <template>
   <main class="mx-auto max-w-3xl p-4 sm:p-6">
-    <h1 class="text-2xl font-semibold">{{ saved && !saved.model ? 'Welcome — let\'s get you set up' : 'Settings' }}</h1>
+    <h1 class="text-2xl font-semibold">{{ saved && !saved.model ? t('settings.welcome') : t('nav.settings') }}</h1>
     <p v-if="saved && !saved.model" class="mt-1 text-base-content/70">
-      Two things before your first interview: the language for your feedback and an AI model. You can change both
-      any time under Settings.
-      <RouterLink class="link" to="/">Skip for now</RouterLink>
+      {{ t('settings.welcomeBody') }}
+      <RouterLink class="link" to="/">{{ t('settings.skip') }}</RouterLink>
     </p>
 
     <section class="card mt-4 bg-base-100 shadow-sm">
       <div class="card-body gap-4">
         <div>
-          <h2 class="card-title">Feedback language</h2>
-          <p class="text-sm text-base-content/70">
-            Scores and written feedback are explained in this language. Questions and model answers stay in English.
-          </p>
+          <h2 class="card-title">{{ t('settings.yourLanguage') }}</h2>
+          <p class="text-sm text-base-content/70">{{ t('settings.yourLanguageBody') }}</p>
         </div>
         <label class="flex flex-col gap-1">
-          <span class="text-sm font-medium">Language</span>
+          <span class="text-sm font-medium">{{ t('common.language') }}</span>
           <select
             class="select w-full"
             :value="store.feedbackLanguage"
@@ -164,9 +162,7 @@ onMounted(async () => {
           >
             <option v-for="l in LANGUAGES" :key="l.name" :value="l.name">{{ l.label }}</option>
           </select>
-          <span class="text-xs text-base-content/60">
-            Starts from your browser's language. Saved as soon as you pick one.
-          </span>
+          <span class="text-xs text-base-content/60">{{ t('settings.yourLanguageNote') }}</span>
         </label>
       </div>
     </section>
@@ -174,26 +170,23 @@ onMounted(async () => {
     <section class="card mt-4 bg-base-100 shadow-sm">
       <div class="card-body gap-4">
         <div>
-          <h2 class="card-title">Interviewer's voice</h2>
-          <p class="text-sm text-base-content/70">
-            The voice your interviewer speaks with, American or British. Every voice runs on this computer and comes
-            with the voice download, so changing it downloads nothing more.
-          </p>
+          <h2 class="card-title">{{ t('settings.voiceTitle') }}</h2>
+          <p class="text-sm text-base-content/70">{{ t('settings.voiceBody') }}</p>
         </div>
         <div class="flex flex-wrap items-end gap-2">
           <label class="flex min-w-64 flex-1 flex-col gap-1">
-            <span class="text-sm font-medium">Voice</span>
+            <span class="text-sm font-medium">{{ t('settings.voice') }}</span>
             <select
               class="select w-full"
               :value="store.voice ?? ''"
               :disabled="!store.voices.length"
               @change="chooseVoice(($event.target as HTMLSelectElement).value)"
             >
-              <option v-for="v in store.voices" :key="v.id" :value="v.id">{{ v.label }}</option>
+              <option v-for="v in store.voices" :key="v.id" :value="v.id">{{ voiceLabel(v.label) }}</option>
             </select>
           </label>
           <button class="btn" :disabled="!store.voice" @click="speech.speaking.value ? speech.stop() : speech.speak(SAMPLE)">
-            {{ speech.speaking.value ? 'Stop' : 'Hear it' }}
+            {{ speech.speaking.value ? t('common.stop') : t('common.hearIt') }}
           </button>
         </div>
       </div>
@@ -202,63 +195,55 @@ onMounted(async () => {
     <section class="card mt-4 bg-base-100 shadow-sm">
       <form class="card-body gap-4" @submit.prevent="save">
         <div>
-          <h2 class="card-title">AI model</h2>
-          <p class="text-sm text-base-content/70">
-            Tailored questions, follow-up questions, and feedback are written by an AI model you bring your own API
-            key for. The key is stored only on this computer and is sent only to the provider you choose.
-          </p>
+          <h2 class="card-title">{{ t('settings.ai') }}</h2>
+          <p class="text-sm text-base-content/70">{{ t('settings.aiBody') }}</p>
         </div>
 
         <p v-if="saved?.source === 'app'" class="text-sm">
-          Current: <span class="font-mono">{{ saved.model }}</span>
-          <span v-if="saved.key_hint" class="text-base-content/60"> · key ending in {{ saved.key_hint }}</span>
+          {{ t('settings.current') }} <span class="font-mono">{{ saved.model }}</span>
+          <span v-if="saved.key_hint" class="text-base-content/60">{{ t('settings.keyEnding', { hint: saved.key_hint }) }}</span>
         </p>
         <p v-else-if="saved?.source === 'env'" class="text-sm">
-          Current: <span class="font-mono">{{ saved.model }}</span>
-          <span class="text-base-content/60"> · from the LLM_MODEL environment variable. Saving here takes over from it.</span>
+          {{ t('settings.current') }} <span class="font-mono">{{ saved.model }}</span>
+          <span class="text-base-content/60">{{ t('settings.fromEnv') }}</span>
         </p>
-        <p v-else class="text-sm text-warning">No model is set up yet.</p>
+        <p v-else class="text-sm text-warning">{{ t('settings.noModel') }}</p>
 
         <label class="flex flex-col gap-1">
-          <span class="text-sm font-medium">Provider</span>
+          <span class="text-sm font-medium">{{ t('settings.provider') }}</span>
           <select v-model="providerId" class="select w-full" :disabled="busy" @change="onProviderChange">
-            <option v-for="p in PROVIDERS" :key="p.id" :value="p.id">{{ p.label }}</option>
+            <option v-for="p in PROVIDERS" :key="p.id" :value="p.id">{{ p.label || t('settings.otherProvider') }}</option>
           </select>
         </label>
 
         <label class="flex flex-col gap-1">
-          <span class="text-sm font-medium">Model</span>
+          <span class="text-sm font-medium">{{ t('settings.model') }}</span>
           <input
             v-model="model"
             class="input w-full font-mono"
-            :placeholder="`e.g. ${provider.example}`"
+            :placeholder="t('settings.example', { example: provider.example })"
             :disabled="busy"
             required
             spellcheck="false"
           />
-          <span v-if="providerId === 'other'" class="text-xs text-base-content/60">
-            Write it as provider/model, the way LiteLLM names it.
-          </span>
-          <span v-else class="text-xs text-base-content/60">
-            The model name as the provider lists it. Feedback on pronunciation, intonation, and stress needs a model
-            that accepts audio, such as Gemini.
-          </span>
+          <span v-if="providerId === 'other'" class="text-xs text-base-content/60">{{ t('settings.otherHelp') }}</span>
+          <span v-else class="text-xs text-base-content/60">{{ t('settings.modelHelp') }}</span>
         </label>
 
         <label class="flex flex-col gap-1">
-          <span class="text-sm font-medium">API key</span>
+          <span class="text-sm font-medium">{{ t('settings.apiKey') }}</span>
           <input
             v-model="apiKey"
             type="password"
             class="input w-full font-mono"
-            :placeholder="canKeepKey ? 'Leave empty to keep the saved key' : 'Paste your API key'"
+            :placeholder="canKeepKey ? t('settings.keepKey') : t('settings.pasteKey')"
             :required="!canKeepKey"
             :disabled="busy"
             autocomplete="off"
             spellcheck="false"
           />
           <a v-if="provider.keyUrl" class="link text-xs" :href="provider.keyUrl" target="_blank" rel="noreferrer">
-            Get a {{ provider.label }} API key
+            {{ t('settings.getKey', { provider: provider.label }) }}
           </a>
         </label>
 
@@ -268,10 +253,10 @@ onMounted(async () => {
         <div class="card-actions items-center">
           <button class="btn btn-primary" :disabled="busy">
             <span v-if="busy" class="loading loading-spinner loading-sm"></span>
-            Save and test
+            {{ t('settings.saveTest') }}
           </button>
           <button v-if="saved?.source === 'app'" type="button" class="btn btn-ghost" :disabled="busy" @click="remove">
-            Remove
+            {{ t('common.remove') }}
           </button>
         </div>
       </form>
@@ -280,10 +265,8 @@ onMounted(async () => {
     <section class="card mt-4 bg-base-100 shadow-sm">
       <div class="card-body gap-4">
         <div>
-          <h2 class="card-title">Open source</h2>
-          <p class="text-sm text-base-content/70">
-            SOS My Interview is open source under the MIT License. It is built with the work below.
-          </p>
+          <h2 class="card-title">{{ t('settings.openSource') }}</h2>
+          <p class="text-sm text-base-content/70">{{ t('settings.openSourceBody') }}</p>
         </div>
         <ul class="list">
           <li v-for="c in CREDITS" :key="c.name" class="list-row items-center px-0">
@@ -295,7 +278,7 @@ onMounted(async () => {
           </li>
         </ul>
         <a class="link text-sm" href="/THIRD_PARTY_NOTICES.txt" target="_blank" rel="noreferrer">
-          Full license texts
+          {{ t('settings.licenses') }}
         </a>
       </div>
     </section>

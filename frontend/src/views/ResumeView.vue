@@ -2,6 +2,7 @@
 import { onMounted, ref } from 'vue'
 import { api } from '../api'
 import { formatDay } from '../dates'
+import { t } from '../i18n'
 import type { Resume } from '../types'
 import MorseSignal from '../components/MorseSignal.vue'
 
@@ -48,7 +49,7 @@ function saveText() {
 }
 
 async function remove() {
-  if (!window.confirm('Delete your résumé?')) return
+  if (!window.confirm(t('resume.confirmDelete'))) return
   error.value = ''
   saved.value = false
   try {
@@ -73,11 +74,8 @@ onMounted(async () => {
 <template>
   <main class="mx-auto max-w-3xl p-4 sm:p-8">
     <header class="py-6">
-      <h1 class="text-3xl font-bold">Résumé</h1>
-      <p class="mt-2 text-base-content/70">
-        Your résumé is used to write questions about your experience and to judge your answers against it. It is stored
-        on this computer; its text is sent to the LLM when questions and feedback are generated.
-      </p>
+      <h1 class="text-3xl font-bold">{{ t('resume.title') }}</h1>
+      <p class="mt-2 text-base-content/70">{{ t('resume.intro') }}</p>
     </header>
 
     <div v-if="loading" class="flex justify-center py-16">
@@ -87,10 +85,10 @@ onMounted(async () => {
     <div v-else class="card bg-base-100 shadow-sm">
       <div class="card-body gap-4">
         <div v-if="error" role="alert" class="alert alert-error alert-soft">{{ error }}</div>
-        <div v-if="saved" role="status" class="alert alert-success alert-soft">Résumé saved.</div>
+        <div v-if="saved" role="status" class="alert alert-success alert-soft">{{ t('resume.saved') }}</div>
 
         <label class="grid gap-2">
-          <span class="text-sm font-medium">Upload a file (PDF, .txt, or .md)</span>
+          <span class="text-sm font-medium">{{ t('resume.upload') }}</span>
           <input
             type="file"
             class="file-input w-full"
@@ -102,7 +100,7 @@ onMounted(async () => {
 
         <label class="grid gap-2">
           <span class="text-sm font-medium">
-            {{ resume ? 'Extracted text (edit it if the extraction got something wrong)' : 'Or paste the text' }}
+            {{ resume ? t('resume.extracted') : t('resume.orPaste') }}
           </span>
           <textarea v-model="text" class="textarea h-96 w-full font-mono text-sm" :disabled="saving"></textarea>
         </label>
@@ -110,14 +108,14 @@ onMounted(async () => {
         <div class="flex flex-wrap items-center justify-between gap-2">
           <p class="text-sm text-base-content/60">
             <template v-if="resume">
-              {{ resume.filename ?? 'Pasted text' }} · saved {{ formatDay(resume.updated_at) }}
+              {{ resume.filename ?? t('common.pastedText') }}{{ t('resume.savedOn', { date: formatDay(resume.updated_at) }) }}
             </template>
           </p>
           <div class="flex gap-2">
-            <button v-if="resume" class="btn btn-error btn-outline" :disabled="saving" @click="remove">Delete</button>
+            <button v-if="resume" class="btn btn-error btn-outline" :disabled="saving" @click="remove">{{ t('common.delete') }}</button>
             <button class="btn btn-primary" :disabled="saving || !text.trim()" @click="saveText">
               <span v-if="saving" class="loading loading-spinner loading-xs"></span>
-              Save
+              {{ t('common.save') }}
             </button>
           </div>
         </div>

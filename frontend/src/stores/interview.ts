@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { api } from '../api'
+import { t } from '../i18n'
 import type { AttemptSummary, Question } from '../types'
 
 interface State {
@@ -36,7 +37,7 @@ export const useInterviewStore = defineStore('interview', {
         this.questions = await api<Question[]>('/questions')
         this.loaded = true
       } catch (e) {
-        this.error = `Failed to load questions: ${(e as Error).message}`
+        this.error = t('store.questionsFailed', { error: (e as Error).message })
       } finally {
         this.loading = false
       }
@@ -45,7 +46,7 @@ export const useInterviewStore = defineStore('interview', {
       try {
         this.attempts = await api<AttemptSummary[]>('/attempts')
       } catch (e) {
-        this.error = `Failed to load history: ${(e as Error).message}`
+        this.error = t('store.historyFailed', { error: (e as Error).message })
       }
     },
   },

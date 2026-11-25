@@ -1,3 +1,4 @@
+import { t } from './i18n'
 import type { Feedback, SpeakingFeedback } from './types'
 
 export interface SubScore {
@@ -21,25 +22,25 @@ export function englishScores(
 ): SubScore[] {
   const spoken: SubScore[] = speaking
     ? [
-        { label: 'Pronunciation', value: speaking.pronunciation },
-        { label: 'Intonation', value: speaking.intonation },
-        { label: 'Stress', value: speaking.stress },
+        { label: t('score.pronunciation'), value: speaking.pronunciation },
+        { label: t('score.intonation'), value: speaking.intonation },
+        { label: t('score.stress'), value: speaking.stress },
       ]
     : clarity !== null
-      ? [{ label: 'Pronunciation', value: clarity }]
+      ? [{ label: t('score.pronunciation'), value: clarity }]
       : []
   return [
     ...spoken,
-    { label: 'Grammar', value: feedback.english.grammar },
-    { label: 'Vocabulary', value: feedback.english.vocabulary },
-    { label: 'Naturalness', value: feedback.english.naturalness },
+    { label: t('score.grammar'), value: feedback.english.grammar },
+    { label: t('score.vocabulary'), value: feedback.english.vocabulary },
+    { label: t('score.naturalness'), value: feedback.english.naturalness },
   ]
 }
 
 export function contentScores(feedback: Feedback): SubScore[] {
   return [
-    { label: 'Relevance', value: feedback.content.relevance },
-    { label: 'Structure', value: feedback.content.structure },
-    { label: 'Specificity', value: feedback.content.specificity },
+    { label: t('score.relevance'), value: feedback.content.relevance },
+    { label: t('score.structure'), value: feedback.content.structure },
+    { label: t('score.specificity'), value: feedback.content.specificity },
   ]
 }
