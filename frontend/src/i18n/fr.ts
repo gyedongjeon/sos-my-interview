@@ -1,0 +1,244 @@
+import type en from './en'
+
+// The texts of the pages in French; the keys are those of `en.ts`. The user is addressed as
+// "vous", and the words for a voice agree with "voix" (feminine). A no-break space stands before
+// the high punctuation marks.
+const fr: Record<keyof typeof en, string> = {
+  'models.speech-to-text': 'Reconnaissance vocale',
+  'models.voice': 'Voix du recruteur',
+  'voice.American': 'américaine',
+  'voice.British': 'britannique',
+  'voice.female': 'féminine',
+  'voice.male': 'masculine',
+  'voice.soft': 'douce',
+
+  'common.delete': 'Supprimer',
+  'common.cancel': 'Annuler',
+  'common.save': 'Enregistrer',
+  'common.edit': 'Modifier',
+  'common.remove': 'Retirer',
+  'common.stop': 'Arrêter',
+  'common.hearIt': 'Écouter',
+  'common.tryAgain': 'Réessayer',
+  'common.language': 'Langue',
+  'common.loading': 'Chargement',
+  'common.backToInterviews': '← Entretiens',
+  'common.commonQuestions': 'Questions courantes',
+  'common.pastedText': 'Texte collé',
+  'common.title': 'Titre',
+  'common.postingText': 'Texte de l’offre',
+  'common.optional': '(facultatif)',
+  'common.added': 'Ajoutée le {date}',
+
+  'nav.interviews': 'Entretiens',
+  'nav.history': 'Historique',
+  'nav.resume': 'CV',
+  'nav.settings': 'Paramètres',
+  'app.needModel':
+    'Ajoutez un modèle d’IA et une clé API pour obtenir des questions sur mesure, des questions de relance et des commentaires.',
+  'app.openSettings': 'Ouvrir les paramètres',
+
+  'downloads.title': 'Téléchargement des modèles vocaux',
+  'downloads.body':
+    'Cela n’arrive qu’une fois. Vous pouvez continuer à utiliser l’application : d’ici la fin du téléchargement, les questions sont lues avec la voix du système, et votre première réponse attend la reconnaissance vocale.',
+  'downloads.of': 'Téléchargement : {name}',
+  'downloads.failed': 'Un modèle vocal n’a pas pu être téléchargé',
+
+  'device.microphone.notFound': 'Aucun micro n’a été détecté.',
+  'device.microphone.notAllowed':
+    'L’accès au micro est désactivé. Autorisez-le pour cette application dans les réglages de confidentialité de votre système.',
+  'device.microphone.notReadable': 'Impossible de démarrer le micro. Fermez les autres applications qui l’utilisent.',
+  'device.microphone.unavailableNamed': 'Le micro n’est pas disponible ({name}).',
+  'device.microphone.unavailable': 'Le micro n’est pas disponible.',
+  'device.camera.notFound': 'Aucune caméra n’a été détectée.',
+  'device.camera.notAllowed':
+    'L’accès à la caméra est désactivé. Autorisez-le pour cette application dans les réglages de confidentialité de votre système.',
+  'device.camera.notReadable': 'Impossible de démarrer la caméra. Fermez les autres applications qui l’utilisent.',
+  'device.camera.unavailableNamed': 'La caméra n’est pas disponible ({name}).',
+  'device.camera.unavailable': 'La caméra n’est pas disponible.',
+  'device.voiceOnly': 'Seule votre voix est enregistrée.',
+  'device.cannotRecord':
+    'Les réponses ne peuvent pas être enregistrées tant que ce problème n’est pas résolu ; rouvrez ensuite cette page.',
+
+  'home.headline1': 'Un entretien en vue ?',
+  'home.headline2': 'Les secours arrivent.',
+  'home.intro': 'Choisissez l’entreprise pour laquelle vous vous préparez, ou échauffez-vous avec des questions courantes.',
+  'home.addPosting': 'Ajouter une offre d’emploi',
+  'home.commonNote': 'Les questions posées à chaque entretien',
+  'home.answered': 'Répondu à {answered} questions sur {total}',
+
+  'commonView.intro': 'Des questions qui reviennent dans presque tous les entretiens.',
+
+  'questions.title': 'Questions',
+  'questions.forPosting': 'Questions pour cette offre',
+  'questions.none': 'Pas encore de questions.',
+  'questions.attempts': '{n} tentative | {n} tentatives',
+  'questions.retry': 'Recommencer',
+  'questions.answer': 'Répondre',
+
+  'postingNew.intro':
+    'Les questions d’entretien sont rédigées pour cette offre, et les questions de relance comme les commentaires en tiennent compte.',
+  'postingNew.link': 'Lien',
+  'postingNew.linkHelp':
+    'Le texte de l’offre est extrait de la page. Si un site ne peut pas être lu (par exemple s’il demande une connexion), collez plutôt le texte ci-dessous.',
+  'postingNew.orPaste': 'ou collez le texte',
+  'postingNew.titlePlaceholder': 'Ingénieur backend senior chez Acme',
+  'postingNew.adding': 'Ajout de l’offre et rédaction des questions…',
+  'postingNew.add': 'Ajouter l’offre',
+
+  'difficulty.label': 'Difficulté des questions',
+  'difficulty.easy': 'Facile : de courtes questions d’échauffement',
+  'difficulty.standard': 'Standard : un premier entretien',
+  'difficulty.hard': 'Difficile : un dernier entretien exigeant',
+
+  'posting.documentSaved': 'Enregistré. Réécrivez les questions pour qu’elles en tiennent compte.',
+  'posting.confirmCommonResume': 'Retirer le CV rédigé pour cette offre et utiliser votre CV général ?',
+  'posting.confirmRewriteAnswered':
+    'Remplacer ces questions par une nouvelle série ? Les réponses déjà enregistrées restent dans l’historique.',
+  'posting.confirmRewrite': 'Remplacer ces questions par une nouvelle série ?',
+  'posting.confirmDelete':
+    'Supprimer cette offre et ses questions ? Les réponses déjà enregistrées restent dans l’historique.',
+  'posting.open': 'Ouvrir l’offre',
+  'posting.application': 'Votre candidature',
+  'posting.applicationBody':
+    'Ce que vous avez envoyé à cette entreprise. Les questions, les relances et les commentaires pour cette offre s’appuient dessus.',
+  'posting.useCommon': 'Utiliser mon CV général',
+  'posting.view': '(voir)',
+  'posting.useOwn': 'Utiliser un CV rédigé pour cette offre',
+  'posting.coverLetter': 'Lettre de motivation',
+  'posting.rewrite': 'Réécrire les questions',
+  'posting.write': 'Rédiger les questions',
+
+  'document.upload': 'Importer un fichier PDF, .txt ou .md',
+  'document.placeholder': 'Importez un fichier PDF, .txt ou .md ci-dessus, ou collez le texte ici.',
+
+  'resume.title': 'CV',
+  'resume.intro':
+    'Votre CV sert à rédiger des questions sur votre parcours et à évaluer vos réponses par rapport à lui. Il est stocké sur cet ordinateur ; son texte est envoyé au modèle d’IA lors de la rédaction des questions et des commentaires.',
+  'resume.saved': 'CV enregistré.',
+  'resume.upload': 'Importer un fichier (PDF, .txt ou .md)',
+  'resume.extracted': 'Texte extrait (corrigez-le si l’extraction comporte des erreurs)',
+  'resume.orPaste': 'Ou collez le texte',
+  'resume.savedOn': ' · enregistré le {date}',
+  'resume.confirmDelete': 'Supprimer votre CV ?',
+
+  'history.none': 'Pas encore de réponses. Répondez à une question et elle apparaîtra ici.',
+  'history.pick': 'Choisissez une question',
+  'history.notScored': 'Non noté',
+  'history.review': 'Revoir',
+  'history.back': '← Historique',
+
+  'attempt.confirmDelete': 'Supprimer cette tentative et ses enregistrements ? Cette action est irréversible.',
+  'attempt.deleteFailed': 'Impossible de supprimer : {error}',
+  'attempt.loadFailed': 'Impossible de charger cette tentative : {error}',
+  'attempt.retry': 'Refaire cette question',
+  'attempt.notScored': 'Cette tentative n’a pas été notée.',
+
+  'score.english': 'Anglais',
+  'score.content': 'Contenu',
+  'score.of': 'Note : {title}',
+  'score.change': '{change} par rapport à la dernière fois',
+  'score.pronunciation': 'Prononciation',
+  'score.intonation': 'Intonation',
+  'score.stress': 'Accent tonique',
+  'score.grammar': 'Grammaire',
+  'score.vocabulary': 'Vocabulaire',
+  'score.naturalness': 'Naturel',
+  'score.relevance': 'Pertinence',
+  'score.structure': 'Structure',
+  'score.specificity': 'Précision',
+
+  'feedback.speaking': 'Expression orale',
+  'feedback.sentences': 'Phrases',
+  'feedback.strengths': 'Points forts',
+  'feedback.improvements': 'À améliorer',
+  'feedback.better': 'Une version plus solide de votre première réponse',
+  'feedback.listen': 'Écouter',
+
+  'turns.noSpeech': '(aucune parole reconnue)',
+  'turns.clarity': 'Clarté {n}',
+  'turns.pace': '{n} mots/min',
+  'turns.unclear': 'Peu clair :',
+  'turns.watch': 'Voir l’enregistrement',
+  'turns.download': 'Télécharger',
+
+  'interview.micUnavailable': 'Le micro n’est pas disponible : la réponse ne peut donc pas être enregistrée.',
+  'interview.usingCaption': '{error}. Les sous-titres en direct sont utilisés à la place.',
+  'interview.notSaved': 'Cette réponse n’a pas pu être enregistrée dans l’historique : {error}',
+  'interview.noSpeech':
+    'Aucune parole n’a été reconnue, il n’y a donc pas de question de relance. Essayez de répondre à nouveau.',
+  'interview.followUpFailed': 'Impossible d’obtenir une question de relance : {error}',
+  'interview.noAudio': 'aucun son n’a été enregistré',
+  'interview.speakingNotScored': 'L’intonation et l’accent tonique n’ont pas été notés : {error}',
+  'interview.feedbackFailed': 'Impossible d’obtenir les commentaires : {error}',
+  'interview.notFound': 'Cette question n’existe pas.',
+  'interview.backToQuestions': 'Retour aux questions',
+  'interview.back': '← Questions',
+  'interview.followUp': 'Relance {n} / {total}',
+  'interview.main': 'Question principale',
+  'interview.interviewer': 'Recruteur',
+  'interview.you': 'Vous',
+  'interview.listenFirst': 'Écoutez la question, ou affichez son texte si nécessaire.',
+  'interview.hide': 'Masquer la question',
+  'interview.show': 'Afficher la question',
+  'interview.listening': 'Écoute…',
+  'interview.downloadingRecognition':
+    'Téléchargement du modèle de reconnaissance vocale (la première fois seulement){percent}… Votre réponse sera transcrite dès la fin du téléchargement.',
+  'interview.transcribing': 'Transcription de votre réponse…',
+  'interview.preparing': 'Préparation d’une question de relance…',
+  'interview.done': 'C’est tout pour cette question. Vos réponses sont enregistrées dans l’historique.',
+  'interview.pickAnother': 'Choisir une autre question',
+  'interview.stopVoice': 'Arrêter la voix',
+  'interview.replay': 'Réécouter la question',
+  'interview.scoring': 'Notation…',
+  'interview.getFeedback': 'Obtenir les commentaires',
+  'interview.stopAnswer': 'Terminer la réponse',
+  'interview.startAnswer': 'Commencer la réponse',
+
+  'store.questionsFailed': 'Impossible de charger les questions : {error}',
+  'store.historyFailed': 'Impossible de charger l’historique : {error}',
+
+  'settings.welcome': 'Bienvenue — commençons par quelques réglages',
+  'settings.welcomeBody':
+    'Deux choses avant votre premier entretien : votre langue et un modèle d’IA. Vous pourrez modifier les deux à tout moment dans Paramètres.',
+  'settings.skip': 'Plus tard',
+  'settings.yourLanguage': 'Votre langue',
+  'settings.yourLanguageBody':
+    'Les pages s’affichent et vos commentaires sont expliqués dans cette langue. Les questions et les réponses modèles restent en anglais.',
+  'settings.yourLanguageNote':
+    'Au départ, c’est la langue de votre navigateur. Votre choix est enregistré aussitôt. La plupart des langues des pages ont été traduites par une IA, sans relecture par un locuteur natif : un texte peut donc sembler un peu étrange.',
+  'settings.voiceTitle': 'Voix du recruteur',
+  'settings.voiceBody':
+    'La voix de votre recruteur, américaine ou britannique. Toutes les voix fonctionnent sur cet ordinateur et sont fournies avec le téléchargement des voix : en changer ne télécharge donc rien de plus.',
+  'settings.voice': 'Voix',
+  'settings.ai': 'Modèle d’IA',
+  'settings.aiBody':
+    'Les questions sur mesure, les questions de relance et les commentaires sont rédigés par un modèle d’IA, pour lequel vous fournissez votre propre clé API. La clé est stockée uniquement sur cet ordinateur et n’est envoyée qu’au fournisseur que vous choisissez.',
+  'settings.current': 'Actuel :',
+  'settings.keyEnding': ' · clé se terminant par {hint}',
+  'settings.fromEnv': ' · défini par la variable d’environnement LLM_MODEL. Un enregistrement ici prend le relais.',
+  'settings.noModel': 'Aucun modèle n’est encore configuré.',
+  'settings.provider': 'Fournisseur',
+  'settings.otherProvider': 'Autre (LiteLLM)',
+  'settings.model': 'Modèle',
+  'settings.example': 'p. ex. {example}',
+  'settings.otherHelp': 'Écrivez-le sous la forme provider/model, comme le nomme LiteLLM.',
+  'settings.modelHelp':
+    'Le nom du modèle tel que le fournisseur l’indique. Les commentaires sur la prononciation, l’intonation et l’accent tonique nécessitent un modèle qui accepte l’audio, comme Gemini.',
+  'settings.apiKey': 'Clé API',
+  'settings.keepKey': 'Laissez vide pour garder la clé enregistrée',
+  'settings.pasteKey': 'Collez votre clé API',
+  'settings.getKey': 'Obtenir une clé API {provider}',
+  'settings.saveTest': 'Enregistrer et tester',
+  'settings.saveFailed': 'Impossible d’enregistrer : {error}',
+  'settings.saved': 'Enregistré. Le modèle a répondu à une requête de test : tout est prêt.',
+  'settings.testFailed': 'Enregistré, mais la requête de test a échoué. {error}',
+  'settings.removeFailed': 'Impossible de retirer : {error}',
+  'settings.openSource': 'Open source',
+  'settings.openSourceBody': 'SOS My Interview est un logiciel open source sous licence MIT. Il repose sur les projets ci-dessous.',
+  'settings.licenses': 'Textes complets des licences',
+  'settings.voiceFailed': 'Impossible de changer de voix : {error}',
+  'settings.yourLanguageFailed': 'Impossible d’enregistrer la langue : {error}',
+}
+
+export default fr

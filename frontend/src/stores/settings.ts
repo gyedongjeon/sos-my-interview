@@ -1,28 +1,30 @@
 import { defineStore } from 'pinia'
 import { api } from '../api'
+import { t } from '../i18n'
 import type { LLMSettings, VoiceStatus } from '../types'
 
-/** Languages feedback can be written in: the English name the LLM is told, and its own name. */
+/** The languages a user's own can be: the pages are shown and feedback is explained in it (see `i18n`).
+ * The English name the LLM is told, the tag dates are written with, and its own name. */
 export const LANGUAGES = [
-  { name: 'English', label: 'English', codes: ['en'] },
-  { name: 'Korean', label: '한국어', codes: ['ko'] },
-  { name: 'Japanese', label: '日本語', codes: ['ja'] },
-  { name: 'Simplified Chinese', label: '简体中文', codes: ['zh'] },
-  { name: 'Traditional Chinese', label: '繁體中文', codes: ['zh-tw', 'zh-hk', 'zh-hant'] },
-  { name: 'Spanish', label: 'Español', codes: ['es'] },
-  { name: 'French', label: 'Français', codes: ['fr'] },
-  { name: 'German', label: 'Deutsch', codes: ['de'] },
-  { name: 'Portuguese', label: 'Português', codes: ['pt'] },
-  { name: 'Italian', label: 'Italiano', codes: ['it'] },
-  { name: 'Polish', label: 'Polski', codes: ['pl'] },
-  { name: 'Russian', label: 'Русский', codes: ['ru'] },
-  { name: 'Ukrainian', label: 'Українська', codes: ['uk'] },
-  { name: 'Turkish', label: 'Türkçe', codes: ['tr'] },
-  { name: 'Vietnamese', label: 'Tiếng Việt', codes: ['vi'] },
-  { name: 'Indonesian', label: 'Bahasa Indonesia', codes: ['id'] },
-  { name: 'Thai', label: 'ไทย', codes: ['th'] },
-  { name: 'Hindi', label: 'हिन्दी', codes: ['hi'] },
-  { name: 'Bengali', label: 'বাংলা', codes: ['bn'] },
+  { name: 'English', locale: 'en', label: 'English', codes: ['en'] },
+  { name: 'Korean', locale: 'ko', label: '한국어', codes: ['ko'] },
+  { name: 'Japanese', locale: 'ja', label: '日本語', codes: ['ja'] },
+  { name: 'Simplified Chinese', locale: 'zh-CN', label: '简体中文', codes: ['zh'] },
+  { name: 'Traditional Chinese', locale: 'zh-TW', label: '繁體中文', codes: ['zh-tw', 'zh-hk', 'zh-hant'] },
+  { name: 'Spanish', locale: 'es', label: 'Español', codes: ['es'] },
+  { name: 'French', locale: 'fr', label: 'Français', codes: ['fr'] },
+  { name: 'German', locale: 'de', label: 'Deutsch', codes: ['de'] },
+  { name: 'Portuguese', locale: 'pt', label: 'Português', codes: ['pt'] },
+  { name: 'Italian', locale: 'it', label: 'Italiano', codes: ['it'] },
+  { name: 'Polish', locale: 'pl', label: 'Polski', codes: ['pl'] },
+  { name: 'Russian', locale: 'ru', label: 'Русский', codes: ['ru'] },
+  { name: 'Ukrainian', locale: 'uk', label: 'Українська', codes: ['uk'] },
+  { name: 'Turkish', locale: 'tr', label: 'Türkçe', codes: ['tr'] },
+  { name: 'Vietnamese', locale: 'vi', label: 'Tiếng Việt', codes: ['vi'] },
+  { name: 'Indonesian', locale: 'id', label: 'Bahasa Indonesia', codes: ['id'] },
+  { name: 'Thai', locale: 'th', label: 'ไทย', codes: ['th'] },
+  { name: 'Hindi', locale: 'hi', label: 'हिन्दी', codes: ['hi'] },
+  { name: 'Bengali', locale: 'bn', label: 'বাংলা', codes: ['bn'] },
 ] as const
 
 // The listed language matching the browser's language, e.g. "ko-KR" -> Korean.
@@ -78,7 +80,7 @@ export const useSettingsStore = defineStore('settings', {
         this.voices = await api<VoiceStatus[]>('/voice', { method: 'PUT', json: { voice } })
         return true
       } catch (e) {
-        this.error = `Could not change the voice: ${(e as Error).message}`
+        this.error = t('settings.voiceFailed', { error: (e as Error).message })
         return false
       }
     },
@@ -88,7 +90,7 @@ export const useSettingsStore = defineStore('settings', {
         await api('/settings', { method: 'PUT', json: { feedback_language: language } })
         this.feedbackLanguage = language
       } catch (e) {
-        this.error = `Could not save the language: ${(e as Error).message}`
+        this.error = t('settings.yourLanguageFailed', { error: (e as Error).message })
       }
     },
   },

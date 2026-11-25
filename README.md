@@ -16,7 +16,7 @@ and what you said.
 - **Listening first**: the interviewer reads each question aloud, and its text stays hidden until you ask for it.
 - **Follow-up questions**: up to two follow-ups dig into what you just said, as a real interviewer would.
 - **Two separate scores**: English (grammar, vocabulary, naturalness, pronunciation, intonation, stress) and content (relevance, structure, specificity), with corrected sentences and a stronger version of your answer.
-- **Feedback in your language**: explanations in Korean, Japanese, Chinese, Spanish, and more; questions and model answers stay in English.
+- **Pages and feedback in your language**: menus, buttons, and feedback in Korean, Japanese, Chinese, Spanish, and more; questions and model answers stay in English.
 - **Questions for the job you want**: add a job posting (link or text) and your résumé to get questions written for that role.
 - **History**: every answer is kept with its transcript, scores, and recording, so you can see how you improve.
 - **Private by default**: speech-to-text and the interviewer's voice run locally, and your data stays on your computer. Only what the feedback needs goes to the LLM provider you choose, with your own API key: your answers (text, and audio for pronunciation scoring) and the résumé and job postings you add.
@@ -91,8 +91,8 @@ your interviews and settings kept. You can also choose **SOS My Interview → Ch
 ## First setup
 The app opens on the Settings page the first time.
 
-1. **Feedback language**: pick the language your feedback is explained in. It starts from your
-   system language.
+1. **Your language**: pick the language the pages are shown and your feedback is explained in. It
+   starts from your system language.
 2. **AI model and API key**: choose a provider and model and paste that provider's API key. It is
    saved and checked with a test request.
 
@@ -140,7 +140,8 @@ After answering, "Get feedback" scores the attempt in two parts (0-100 each):
   confidence in the words it heard is used as the pronunciation score instead.
 - **Content**: relevance, structure, and specificity.
 
-Written feedback is in the language picked under Settings ("Feedback language"). On first visit it starts from the browser's language.
+Written feedback is in the language picked under Settings ("Your language"), and so are the pages. On first visit it starts from the browser's language.
+See [Adding a language for the pages](#adding-a-language-for-the-pages).
 
 ### History
 Every answer is saved with its transcript, scores, feedback, and a low-bitrate recording
@@ -211,9 +212,27 @@ request into `main` runs all three suites, the live tests (with a key kept as a 
 the frontend build, and the desktop type check
 (`.github/workflows/ci.yml`).
 
+## Adding a language for the pages
+The texts of the pages are in `frontend/src/i18n/`: `en.ts` has every text by a key, and a file for
+each other language (`ko.ts`, `ja.ts`, `zh-Hans.ts`, ...) the same keys in that language. Every
+language of `LANGUAGES` in `frontend/src/stores/settings.ts` has its file. All but English and Korean
+were translated by AI and have not been checked by a native speaker.
+
+1. Copy `ko.ts` to a file for the new language and translate the values. `{name}` is filled in and
+   must be kept; a text may be written as `one | many` where the language tells them apart, and is
+   worded to fit any number where it has more forms than two ("Attempts: {n}").
+2. Add the language to `LANGUAGES` of `frontend/src/stores/settings.ts` if it is not there (with the
+   tag its dates are written with), and list the file in `frontend/src/i18n/index.ts` under that name.
+3. Run the tests. TypeScript refuses a file that lacks a key; `frontend/src/i18n/files.test.ts`
+   checks each file for the names to fill in, and `index.test.ts` that every language of `LANGUAGES`
+   has its pages.
+
+A page must not contain a fixed text for the user: add a key to `en.ts` and every other language file,
+and use `t('key')`. Messages of the backend's errors are in English for now.
+
 ## Structure
 - `backend/` — FastAPI app. Everything it stores lives in `backend/data/` (git-ignored): the SQLite file `app.db`, `recordings/`, the `whisper/` speech-to-text model, and the `tts/` voice model and cache.
-- `frontend/` — Vue 3 app; `/api` requests are proxied to the backend by Vite. Once built (`npm run build`), the backend serves it too, so http://127.0.0.1:8000 alone runs the whole app.
+- `frontend/` — Vue 3 app; `src/i18n/` holds the texts of the pages in each language; `/api` requests are proxied to the backend by Vite. Once built (`npm run build`), the backend serves it too, so http://127.0.0.1:8000 alone runs the whole app.
 - `desktop/` — Electron shell that starts the backend and shows the app in a window.
 
 Built with FastAPI and SQLite (backend), Vue 3, TypeScript, Vite, Pinia, and Tailwind CSS + daisyUI

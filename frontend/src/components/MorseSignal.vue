@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '../i18n'
 // "SOS" in Morse code (··· ––– ···): the brand motif, and the loading indicator when animated.
 defineProps<{ animated?: boolean }>()
 
@@ -9,7 +10,7 @@ const SIGNAL = [...'...---...'].map((mark) => mark === '-')
   <span
     class="inline-flex items-center gap-1 text-primary"
     :role="animated ? 'status' : undefined"
-    :aria-label="animated ? 'Loading' : undefined"
+    :aria-label="animated ? t('common.loading') : undefined"
     :aria-hidden="animated ? undefined : true"
   >
     <span

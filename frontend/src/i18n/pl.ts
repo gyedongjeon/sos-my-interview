@@ -1,0 +1,244 @@
+import type en from './en'
+
+// The texts of the pages in Polish; the keys are those of `en.ts`. Polish has three forms for
+// numbers, so no text here is written as "one | many": each is worded to fit any number. The
+// user is addressed as "Ty", in wording that fits any gender; the interviewer is the "rekruter".
+const pl: Record<keyof typeof en, string> = {
+  'models.speech-to-text': 'Rozpoznawanie mowy',
+  'models.voice': 'Głos rekrutera',
+  'voice.American': 'amerykański',
+  'voice.British': 'brytyjski',
+  'voice.female': 'żeński',
+  'voice.male': 'męski',
+  'voice.soft': 'łagodny',
+
+  'common.delete': 'Usuń',
+  'common.cancel': 'Anuluj',
+  'common.save': 'Zapisz',
+  'common.edit': 'Edytuj',
+  'common.remove': 'Usuń',
+  'common.stop': 'Zatrzymaj',
+  'common.hearIt': 'Posłuchaj',
+  'common.tryAgain': 'Spróbuj ponownie',
+  'common.language': 'Język',
+  'common.loading': 'Wczytywanie',
+  'common.backToInterviews': '← Rozmowy',
+  'common.commonQuestions': 'Typowe pytania',
+  'common.pastedText': 'Wklejony tekst',
+  'common.title': 'Tytuł',
+  'common.postingText': 'Treść ogłoszenia',
+  'common.optional': '(opcjonalnie)',
+  'common.added': 'Dodano: {date}',
+
+  'nav.interviews': 'Rozmowy',
+  'nav.history': 'Historia',
+  'nav.resume': 'CV',
+  'nav.settings': 'Ustawienia',
+  'app.needModel':
+    'Dodaj model AI i klucz API, żeby dostawać dopasowane pytania, pytania dodatkowe i informacje zwrotne.',
+  'app.openSettings': 'Otwórz Ustawienia',
+
+  'downloads.title': 'Pobieranie modeli mowy',
+  'downloads.body':
+    'Dzieje się to tylko raz. Możesz dalej korzystać z aplikacji: do końca pobierania pytania są czytane głosem systemowym, a Twoja pierwsza odpowiedź czeka na rozpoznawanie mowy.',
+  'downloads.of': 'Pobieranie: {name}',
+  'downloads.failed': 'Nie udało się pobrać modelu mowy',
+
+  'device.microphone.notFound': 'Nie znaleziono mikrofonu.',
+  'device.microphone.notAllowed':
+    'Dostęp do mikrofonu jest wyłączony. Zezwól na niego tej aplikacji w systemowych ustawieniach prywatności.',
+  'device.microphone.notReadable':
+    'Nie udało się uruchomić mikrofonu. Zamknij inne aplikacje, które z niego korzystają.',
+  'device.microphone.unavailableNamed': 'Mikrofon jest niedostępny ({name}).',
+  'device.microphone.unavailable': 'Mikrofon jest niedostępny.',
+  'device.camera.notFound': 'Nie znaleziono kamery.',
+  'device.camera.notAllowed':
+    'Dostęp do kamery jest wyłączony. Zezwól na niego tej aplikacji w systemowych ustawieniach prywatności.',
+  'device.camera.notReadable': 'Nie udało się uruchomić kamery. Zamknij inne aplikacje, które z niej korzystają.',
+  'device.camera.unavailableNamed': 'Kamera jest niedostępna ({name}).',
+  'device.camera.unavailable': 'Kamera jest niedostępna.',
+  'device.voiceOnly': 'Nagrywany jest tylko Twój głos.',
+  'device.cannotRecord':
+    'Dopóki ten problem nie zostanie rozwiązany, nie da się nagrywać odpowiedzi; potem otwórz tę stronę ponownie.',
+
+  'home.headline1': 'Rozmowa o pracę tuż-tuż?',
+  'home.headline2': 'Pomoc już w drodze.',
+  'home.intro': 'Wybierz firmę, do której się przygotowujesz, albo rozgrzej się na typowych pytaniach.',
+  'home.addPosting': 'Dodaj ogłoszenie o pracę',
+  'home.commonNote': 'Pytania, które padają na każdej rozmowie',
+  'home.answered': 'Pytania z odpowiedzią: {answered} / {total}',
+
+  'commonView.intro': 'Pytania, które pojawiają się na prawie każdej rozmowie kwalifikacyjnej.',
+
+  'questions.title': 'Pytania',
+  'questions.forPosting': 'Pytania do tego ogłoszenia',
+  'questions.none': 'Nie ma jeszcze żadnych pytań.',
+  'questions.attempts': 'Podejścia: {n}',
+  'questions.retry': 'Jeszcze raz',
+  'questions.answer': 'Odpowiedz',
+
+  'postingNew.intro':
+    'Pytania na rozmowę są pisane pod to ogłoszenie, a pytania dodatkowe i informacje zwrotne też je uwzględniają.',
+  'postingNew.link': 'Link',
+  'postingNew.linkHelp':
+    'Treść ogłoszenia jest pobierana ze strony. Jeśli strony nie da się odczytać (na przykład wymaga logowania), wklej tekst poniżej.',
+  'postingNew.orPaste': 'albo wklej tekst',
+  'postingNew.titlePlaceholder': 'Starszy programista backend w Acme',
+  'postingNew.adding': 'Dodawanie i pisanie pytań…',
+  'postingNew.add': 'Dodaj ogłoszenie',
+
+  'difficulty.label': 'Trudność pytań',
+  'difficulty.easy': 'Łatwe: krótkie pytania na rozgrzewkę',
+  'difficulty.standard': 'Standardowe: pierwsza rozmowa',
+  'difficulty.hard': 'Trudne: wymagający ostatni etap',
+
+  'posting.documentSaved': 'Zapisano. Napisz pytania od nowa, żeby to uwzględniały.',
+  'posting.confirmCommonResume': 'Usunąć CV napisane pod to ogłoszenie i używać ogólnego CV?',
+  'posting.confirmRewriteAnswered':
+    'Zastąpić te pytania nowym zestawem? Nagrane już odpowiedzi zostaną w Historii.',
+  'posting.confirmRewrite': 'Zastąpić te pytania nowym zestawem?',
+  'posting.confirmDelete': 'Usunąć to ogłoszenie i jego pytania? Nagrane już odpowiedzi zostaną w Historii.',
+  'posting.open': 'Otwórz ogłoszenie',
+  'posting.application': 'Twoja aplikacja',
+  'posting.applicationBody':
+    'Dokumenty wysłane do tej firmy. Na ich podstawie powstają pytania, pytania dodatkowe i informacje zwrotne do tego ogłoszenia.',
+  'posting.useCommon': 'Użyj mojego ogólnego CV',
+  'posting.view': '(zobacz)',
+  'posting.useOwn': 'Użyj CV napisanego pod to ogłoszenie',
+  'posting.coverLetter': 'List motywacyjny',
+  'posting.rewrite': 'Napisz pytania od nowa',
+  'posting.write': 'Napisz pytania',
+
+  'document.upload': 'Prześlij plik PDF, .txt lub .md',
+  'document.placeholder': 'Prześlij powyżej plik PDF, .txt lub .md albo wklej tekst tutaj.',
+
+  'resume.title': 'CV',
+  'resume.intro':
+    'Na podstawie Twojego CV powstają pytania o Twoje doświadczenie i z nim porównywane są Twoje odpowiedzi. CV jest przechowywane na tym komputerze; jego treść jest wysyłana do modelu AI, gdy pisane są pytania i informacje zwrotne.',
+  'resume.saved': 'Zapisano CV.',
+  'resume.upload': 'Prześlij plik (PDF, .txt lub .md)',
+  'resume.extracted': 'Odczytany tekst (popraw go, jeśli coś zostało odczytane błędnie)',
+  'resume.orPaste': 'Albo wklej tekst',
+  'resume.savedOn': ' · zapisano: {date}',
+  'resume.confirmDelete': 'Usunąć Twoje CV?',
+
+  'history.none': 'Nie ma jeszcze żadnych odpowiedzi. Odpowiedz na pytanie, a pojawi się tutaj.',
+  'history.pick': 'Wybierz pytanie',
+  'history.notScored': 'Bez oceny',
+  'history.review': 'Przejrzyj',
+  'history.back': '← Historia',
+
+  'attempt.confirmDelete': 'Usunąć to podejście i jego nagrania? Tego nie da się cofnąć.',
+  'attempt.deleteFailed': 'Nie udało się usunąć: {error}',
+  'attempt.loadFailed': 'Nie udało się wczytać tego podejścia: {error}',
+  'attempt.retry': 'Odpowiedz na to pytanie jeszcze raz',
+  'attempt.notScored': 'To podejście nie zostało ocenione.',
+
+  'score.english': 'Angielski',
+  'score.content': 'Treść',
+  'score.of': 'Ocena: {title}',
+  'score.change': '{change} względem ostatniego razu',
+  'score.pronunciation': 'Wymowa',
+  'score.intonation': 'Intonacja',
+  'score.stress': 'Akcent wyrazowy',
+  'score.grammar': 'Gramatyka',
+  'score.vocabulary': 'Słownictwo',
+  'score.naturalness': 'Naturalność',
+  'score.relevance': 'Trafność',
+  'score.structure': 'Struktura',
+  'score.specificity': 'Konkretność',
+
+  'feedback.speaking': 'Mówienie',
+  'feedback.sentences': 'Zdania',
+  'feedback.strengths': 'Mocne strony',
+  'feedback.improvements': 'Do poprawy',
+  'feedback.better': 'Mocniejsza wersja Twojej pierwszej odpowiedzi',
+  'feedback.listen': 'Posłuchaj',
+
+  'turns.noSpeech': '(nie rozpoznano mowy)',
+  'turns.clarity': 'Wyraźność {n}',
+  'turns.pace': '{n} słów/min',
+  'turns.unclear': 'Niewyraźnie:',
+  'turns.watch': 'Obejrzyj nagranie',
+  'turns.download': 'Pobierz',
+
+  'interview.micUnavailable': 'Mikrofon jest niedostępny, więc nie da się nagrać odpowiedzi.',
+  'interview.usingCaption': '{error}. Zamiast tego używane są napisy na żywo.',
+  'interview.notSaved': 'Nie udało się zapisać tej odpowiedzi w Historii: {error}',
+  'interview.noSpeech': 'Nie rozpoznano mowy, więc nie ma pytania dodatkowego. Spróbuj odpowiedzieć jeszcze raz.',
+  'interview.followUpFailed': 'Nie udało się uzyskać pytania dodatkowego: {error}',
+  'interview.noAudio': 'nie nagrano dźwięku',
+  'interview.speakingNotScored': 'Intonacja i akcent wyrazowy nie zostały ocenione: {error}',
+  'interview.feedbackFailed': 'Nie udało się uzyskać informacji zwrotnej: {error}',
+  'interview.notFound': 'To pytanie nie istnieje.',
+  'interview.backToQuestions': 'Wróć do pytań',
+  'interview.back': '← Pytania',
+  'interview.followUp': 'Pytanie dodatkowe {n} / {total}',
+  'interview.main': 'Pytanie główne',
+  'interview.interviewer': 'Rekruter',
+  'interview.you': 'Ty',
+  'interview.listenFirst': 'Posłuchaj pytania albo pokaż jego tekst, jeśli go potrzebujesz.',
+  'interview.hide': 'Ukryj pytanie',
+  'interview.show': 'Pokaż pytanie',
+  'interview.listening': 'Słucham…',
+  'interview.downloadingRecognition':
+    'Pobieranie modelu rozpoznawania mowy (tylko za pierwszym razem){percent}… Twoja odpowiedź zostanie zapisana jako tekst, gdy tylko pobieranie się skończy.',
+  'interview.transcribing': 'Zapisywanie Twojej odpowiedzi jako tekstu…',
+  'interview.preparing': 'Przygotowywanie pytania dodatkowego…',
+  'interview.done': 'To wszystko w tym pytaniu. Twoje odpowiedzi są zapisane w Historii.',
+  'interview.pickAnother': 'Wybierz inne pytanie',
+  'interview.stopVoice': 'Zatrzymaj głos',
+  'interview.replay': 'Odtwórz pytanie ponownie',
+  'interview.scoring': 'Ocenianie…',
+  'interview.getFeedback': 'Uzyskaj informację zwrotną',
+  'interview.stopAnswer': 'Zakończ odpowiedź',
+  'interview.startAnswer': 'Zacznij odpowiedź',
+
+  'store.questionsFailed': 'Nie udało się wczytać pytań: {error}',
+  'store.historyFailed': 'Nie udało się wczytać historii: {error}',
+
+  'settings.welcome': 'Witaj — zacznijmy od ustawień',
+  'settings.welcomeBody':
+    'Dwie rzeczy przed pierwszą rozmową: Twój język i model AI. Jedno i drugie możesz zmienić w każdej chwili na stronie Ustawienia.',
+  'settings.skip': 'Na razie pomiń',
+  'settings.yourLanguage': 'Twój język',
+  'settings.yourLanguageBody':
+    'W tym języku wyświetlane są strony i objaśnienia informacji zwrotnych. Pytania i wzorcowe odpowiedzi pozostają po angielsku.',
+  'settings.yourLanguageNote':
+    'Na początku jest to język Twojej przeglądarki. Wybór zapisuje się od razu. Większość wersji językowych przetłumaczyła AI i nie sprawdziła ich osoba, dla której to język ojczysty, więc niektóre teksty mogą brzmieć trochę nienaturalnie.',
+  'settings.voiceTitle': 'Głos rekrutera',
+  'settings.voiceBody':
+    'Głos, którym mówi rekruter: amerykański albo brytyjski. Wszystkie głosy działają na tym komputerze i są częścią pobranego modelu głosu, więc zmiana niczego więcej nie pobiera.',
+  'settings.voice': 'Głos',
+  'settings.ai': 'Model AI',
+  'settings.aiBody':
+    'Dopasowane pytania, pytania dodatkowe i informacje zwrotne pisze model AI, do którego podajesz własny klucz API. Klucz jest przechowywany tylko na tym komputerze i wysyłany wyłącznie do wybranego dostawcy.',
+  'settings.current': 'Obecnie:',
+  'settings.keyEnding': ' · klucz kończący się na {hint}',
+  'settings.fromEnv': ' · ze zmiennej środowiskowej LLM_MODEL. Ustawienia zapisane tutaj ją zastąpią.',
+  'settings.noModel': 'Nie skonfigurowano jeszcze żadnego modelu.',
+  'settings.provider': 'Dostawca',
+  'settings.otherProvider': 'Inny (LiteLLM)',
+  'settings.model': 'Model',
+  'settings.example': 'np. {example}',
+  'settings.otherHelp': 'Wpisz w postaci provider/model, tak jak nazywa go LiteLLM.',
+  'settings.modelHelp':
+    'Nazwa modelu w takiej postaci, w jakiej podaje ją dostawca. Informacje zwrotne o wymowie, intonacji i akcencie wyrazowym wymagają modelu, który przyjmuje dźwięk, na przykład Gemini.',
+  'settings.apiKey': 'Klucz API',
+  'settings.keepKey': 'Zostaw puste, żeby zachować zapisany klucz',
+  'settings.pasteKey': 'Wklej swój klucz API',
+  'settings.getKey': 'Uzyskaj klucz API {provider}',
+  'settings.saveTest': 'Zapisz i przetestuj',
+  'settings.saveFailed': 'Nie udało się zapisać: {error}',
+  'settings.saved': 'Zapisano. Model odpowiedział na zapytanie testowe, więc wszystko jest gotowe.',
+  'settings.testFailed': 'Zapisano, ale zapytanie testowe się nie powiodło. {error}',
+  'settings.removeFailed': 'Nie udało się usunąć: {error}',
+  'settings.openSource': 'Otwarte oprogramowanie',
+  'settings.openSourceBody':
+    'SOS My Interview to otwarte oprogramowanie na licencji MIT. Powstało dzięki projektom wymienionym poniżej.',
+  'settings.licenses': 'Pełne teksty licencji',
+  'settings.voiceFailed': 'Nie udało się zmienić głosu: {error}',
+  'settings.yourLanguageFailed': 'Nie udało się zapisać języka: {error}',
+}
+
+export default pl

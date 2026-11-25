@@ -6,6 +6,7 @@ import TurnList from '../components/TurnList.vue'
 import { useCamera } from '../composables/useCamera'
 import { useSpeech } from '../composables/useSpeech'
 import { useCaptions } from '../composables/useCaptions'
+import { t } from '../i18n'
 import { contentScores, englishScores, mean, total } from '../scores'
 import { useInterviewStore } from '../stores/interview'
 import { percent, useModelsStore } from '../stores/models'
@@ -102,7 +103,7 @@ function startAnswer() {
   speaking.value = null
   speech.stop()
   if (!camera.startRecording()) {
-    error.value = 'The microphone is not available, so the answer cannot be recorded.'
+    error.value = t('interview.micUnavailable')
     return
   }
   // Captions are optional; the answer is still recorded and transcribed without them.
@@ -154,7 +155,7 @@ async function stopAnswer() {
     try {
       ;({ text: answer, delivery } = await transcribe(audio))
     } catch (e) {
-      notice.value = `${(e as Error).message}. Using the live caption instead.`
+      notice.value = t('interview.usingCaption', { error: (e as Error).message })
     }
   }
   const turn: LiveTurn = {
@@ -169,11 +170,11 @@ async function stopAnswer() {
   try {
     await saveTurn(turn, recording)
   } catch (e) {
-    notice.value = `This answer could not be saved to History: ${(e as Error).message}`
+    notice.value = t('interview.notSaved', { error: (e as Error).message })
   }
 
   if (!answer) {
-    error.value = 'No speech was recognized, so there is no follow-up. Try answering again.'
+    error.value = t('interview.noSpeech')
     phase.value = 'idle'
     return
   }
@@ -195,7 +196,7 @@ async function stopAnswer() {
     phase.value = 'idle'
     ask(data.question)
   } catch (e) {
-    error.value = `Could not get a follow-up question: ${(e as Error).message}`
+    error.value = t('interview.followUpFailed', { error: (e as Error).message })
     phase.value = 'idle'
   }
 }
@@ -226,7 +227,7 @@ async function requestFeedback() {
           turns: answered.value.map(({ question, answer }) => ({ question, answer })),
         },
       }),
-      hasAudio ? evaluateSpeaking() : Promise.reject(new Error('no audio was recorded')),
+      hasAudio ? evaluateSpeaking() : Promise.reject(new Error(t('interview.noAudio'))),
     ])
     if (text.status === 'rejected') throw text.reason
     feedback.value = text.value
@@ -234,7 +235,7 @@ async function requestFeedback() {
       speaking.value = spoken.value
     } else {
       // Not every model accepts audio; the sentence and content scores still stand.
-      notice.value = `Intonation and stress were not scored: ${(spoken.reason as Error).message}`
+      notice.value = t('interview.speakingNotScored', { error: (spoken.reason as Error).message })
     }
     if (attemptId.value !== null) {
       await api(`/attempts/${attemptId.value}/feedback`, {
@@ -248,7 +249,7 @@ async function requestFeedback() {
       })
     }
   } catch (e) {
-    error.value = `Could not get feedback: ${(e as Error).message}`
+    error.value = t('interview.feedbackFailed', { error: (e as Error).message })
   } finally {
     feedbackLoading.value = false
   }
@@ -290,15 +291,15 @@ onBeforeUnmount(() => {
     <div v-else-if="store.error" role="alert" class="alert alert-error">{{ store.error }}</div>
 
     <div v-else-if="store.loaded && !question" role="alert" class="alert alert-warning">
-      <span>This question does not exist.</span>
-      <RouterLink class="btn btn-sm" to="/">Back to questions</RouterLink>
+      <span>{{ t('interview.notFound') }}</span>
+      <RouterLink class="btn btn-sm" to="/">{{ t('interview.backToQuestions') }}</RouterLink>
     </div>
 
     <template v-else-if="question">
       <div class="mb-4 flex items-center justify-between">
-        <RouterLink class="btn btn-ghost btn-sm" :to="backTo">← Questions</RouterLink>
+        <RouterLink class="btn btn-ghost btn-sm" :to="backTo">{{ t('interview.back') }}</RouterLink>
         <span class="badge" :class="isFollowUp ? 'badge-primary' : 'badge-neutral'">
-          {{ isFollowUp ? `Follow-up ${followUps} / ${MAX_FOLLOW_UPS}` : 'Main question' }}
+          {{ isFollowUp ? t('interview.followUp', { n: followUps, total: MAX_FOLLOW_UPS }) : t('interview.main') }}
         </span>
       </div>
 
@@ -312,7 +313,7 @@ onBeforeUnmount(() => {
             <circle cx="60" cy="46" r="20" class="fill-neutral-content/70" />
             <path d="M22 104c4-22 20-32 38-32s34 10 38 32a60 60 0 0 1-76 0z" class="fill-neutral-content/70" />
           </svg>
-          <span class="badge badge-neutral absolute bottom-3 left-3">Interviewer</span>
+          <span class="badge badge-neutral absolute bottom-3 left-3">{{ t('interview.interviewer') }}</span>
         </div>
 
         <div
@@ -326,7 +327,7 @@ onBeforeUnmount(() => {
           <span v-if="phase === 'recording'" class="badge badge-error absolute right-3 top-3 font-semibold">
             <span class="size-2 animate-pulse rounded-full bg-current"></span> REC
           </span>
-          <span class="badge badge-neutral absolute bottom-3 left-3">You</span>
+          <span class="badge badge-neutral absolute bottom-3 left-3">{{ t('interview.you') }}</span>
         </div>
       </div>
 
@@ -334,37 +335,39 @@ onBeforeUnmount(() => {
         <div class="card-body">
           <div class="flex items-start justify-between gap-3">
             <h2 v-if="showPrompt" class="text-2xl font-semibold leading-snug">{{ prompt }}</h2>
-            <p v-else class="text-lg text-base-content/60">Listen to the question, or show its text if you need it.</p>
+            <p v-else class="text-lg text-base-content/60">{{ t('interview.listenFirst') }}</p>
             <button class="btn btn-sm shrink-0" :aria-expanded="showPrompt" @click="showPrompt = !showPrompt">
-              {{ showPrompt ? 'Hide question' : 'Show question' }}
+              {{ showPrompt ? t('interview.hide') : t('interview.show') }}
             </button>
           </div>
 
           <p v-if="phase === 'recording'" class="min-h-6 text-base-content/70">
-            {{ recognition.transcript.value || 'Listening…' }}
+            {{ recognition.transcript.value || t('interview.listening') }}
           </p>
           <p v-if="phase === 'transcribing'" class="flex items-center gap-2 text-base-content/70">
             <span class="loading loading-dots loading-sm"></span>
             <template v-if="recognitionDownload">
-              Downloading the speech recognition model (first time only)<template v-if="percent(recognitionDownload) !== null">
-                — {{ percent(recognitionDownload) }}%</template
-              >… Your answer is transcribed as soon as it is done.
+              {{
+                t('interview.downloadingRecognition', {
+                  percent: percent(recognitionDownload) === null ? '' : ` — ${percent(recognitionDownload)}%`,
+                })
+              }}
             </template>
-            <template v-else>Transcribing your answer…</template>
+            <template v-else>{{ t('interview.transcribing') }}</template>
           </p>
           <p v-if="phase === 'thinking'" class="flex items-center gap-2 text-base-content/70">
-            <span class="loading loading-dots loading-sm"></span> Preparing a follow-up question…
+            <span class="loading loading-dots loading-sm"></span> {{ t('interview.preparing') }}
           </p>
           <div v-if="phase === 'done'" role="alert" class="alert alert-success alert-soft">
-            <span>That's all for this question. Your answers are saved in History.</span>
-            <RouterLink class="btn btn-sm" :to="backTo">Pick another question</RouterLink>
+            <span>{{ t('interview.done') }}</span>
+            <RouterLink class="btn btn-sm" :to="backTo">{{ t('interview.pickAnother') }}</RouterLink>
           </div>
           <div v-if="notice" role="alert" class="alert alert-warning alert-soft">{{ notice }}</div>
           <div v-if="error" role="alert" class="alert alert-error alert-soft">{{ error }}</div>
 
           <div class="card-actions mt-2 justify-end">
             <button class="btn" :disabled="busy" @click="speech.speaking.value ? speech.stop() : speech.speak(prompt)">
-              {{ speech.speaking.value ? 'Stop voice' : 'Replay question' }}
+              {{ speech.speaking.value ? t('interview.stopVoice') : t('interview.replay') }}
             </button>
             <button
               v-if="answered.length && !feedback"
@@ -373,17 +376,17 @@ onBeforeUnmount(() => {
               @click="requestFeedback"
             >
               <span v-if="feedbackLoading" class="loading loading-spinner loading-xs"></span>
-              {{ feedbackLoading ? 'Scoring…' : 'Get feedback' }}
+              {{ feedbackLoading ? t('interview.scoring') : t('interview.getFeedback') }}
             </button>
-            <button v-if="feedback" class="btn" :disabled="busy" @click="retry">Try again</button>
-            <button v-if="phase === 'recording'" class="btn btn-error" @click="stopAnswer">Stop answer</button>
+            <button v-if="feedback" class="btn" :disabled="busy" @click="retry">{{ t('common.tryAgain') }}</button>
+            <button v-if="phase === 'recording'" class="btn btn-error" @click="stopAnswer">{{ t('interview.stopAnswer') }}</button>
             <button
               v-else
               class="btn btn-primary"
               :disabled="phase !== 'idle' || !camera.stream.value"
               @click="startAnswer"
             >
-              Start answer
+              {{ t('interview.startAnswer') }}
             </button>
           </div>
         </div>

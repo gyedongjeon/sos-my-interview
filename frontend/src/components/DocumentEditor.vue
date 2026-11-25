@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
+import { t } from '../i18n'
 
 // Upload-or-paste editor for one document (a résumé or a cover letter).
 const props = defineProps<{
@@ -44,28 +45,28 @@ function saveText() {
       type="file"
       class="file-input file-input-sm w-full"
       accept=".pdf,.txt,.md,application/pdf,text/plain,text/markdown"
-      aria-label="Upload a PDF, .txt, or .md file"
+      :aria-label="t('document.upload')"
       :disabled="disabled"
       @change="upload"
     />
     <textarea
       v-model="draft"
       class="textarea h-48 w-full font-mono text-sm"
-      placeholder="Upload a PDF, .txt, or .md file above, or paste the text here."
+      :placeholder="t('document.placeholder')"
       :disabled="disabled"
     ></textarea>
     <div class="flex flex-wrap items-center justify-between gap-2">
-      <p class="text-sm text-base-content/60">{{ text === null ? '' : (filename ?? 'Pasted text') }}</p>
+      <p class="text-sm text-base-content/60">{{ text === null ? '' : (filename ?? t('common.pastedText')) }}</p>
       <div class="flex gap-2">
         <button v-if="text !== null" class="btn btn-error btn-outline btn-sm" :disabled="disabled" @click="emit('remove')">
-          Remove
+          {{ t('common.remove') }}
         </button>
         <button
           class="btn btn-primary btn-sm"
           :disabled="disabled || !draft.trim() || draft === text"
           @click="saveText"
         >
-          Save
+          {{ t('common.save') }}
         </button>
       </div>
     </div>

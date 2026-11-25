@@ -56,7 +56,8 @@ describe('feedback language', () => {
     await store.load()
     await store.setFeedbackLanguage('French')
     expect(store.feedbackLanguage).toBe('Korean')
-    expect(store.error).toBe('Could not save the language: disk full')
+    // Said in the user's language, which is Korean here.
+    expect(store.error).toBe('언어를 저장하지 못했습니다: disk full')
   })
 })
 

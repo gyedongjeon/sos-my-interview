@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { dayKey, formatDay, formatTime } from '../dates'
+import { t, type MessageKey } from '../i18n'
 import { useInterviewStore } from '../stores/interview'
 import type { AttemptSummary } from '../types'
 import MorseSignal from '../components/MorseSignal.vue'
@@ -35,15 +36,15 @@ function change(attempt: AttemptSummary, key: ScoreKey): number | null {
   return earlier ? score - (earlier[key] as number) : null
 }
 
-const scores: { key: ScoreKey; label: string }[] = [
-  { key: 'english_score', label: 'English' },
-  { key: 'content_score', label: 'Content' },
+const scores: { key: ScoreKey; label: MessageKey }[] = [
+  { key: 'english_score', label: 'score.english' },
+  { key: 'content_score', label: 'score.content' },
 ]
 </script>
 
 <template>
   <main class="mx-auto max-w-3xl p-4 sm:p-8">
-    <h1 class="mb-4 text-2xl font-bold">History</h1>
+    <h1 class="mb-4 text-2xl font-bold">{{ t('nav.history') }}</h1>
 
     <div v-if="loading" class="flex justify-center py-16">
       <MorseSignal animated />
@@ -51,8 +52,8 @@ const scores: { key: ScoreKey; label: string }[] = [
     <div v-else-if="store.error" role="alert" class="alert alert-error">{{ store.error }}</div>
     <div v-else-if="!days.length" class="card bg-base-100 shadow-sm">
       <div class="card-body items-center text-center">
-        <p>No answers yet. Answer a question and it will show up here.</p>
-        <RouterLink class="btn btn-primary btn-sm" to="/">Pick a question</RouterLink>
+        <p>{{ t('history.none') }}</p>
+        <RouterLink class="btn btn-primary btn-sm" to="/">{{ t('history.pick') }}</RouterLink>
       </div>
     </div>
 
@@ -62,12 +63,12 @@ const scores: { key: ScoreKey; label: string }[] = [
         <li v-for="attempt in day" :key="attempt.id" class="list-row items-center">
           <div class="w-14 text-sm tabular-nums opacity-60">{{ formatTime(attempt.created_at) }}</div>
           <div class="list-col-grow">
-            <p class="text-xs text-base-content/60">{{ attempt.posting_title ?? 'Common questions' }}</p>
+            <p class="text-xs text-base-content/60">{{ attempt.posting_title ?? t('common.commonQuestions') }}</p>
             <p class="font-medium">{{ attempt.question }}</p>
             <p class="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-sm">
               <template v-if="attempt.english_score !== null">
                 <span v-for="s in scores" :key="s.key">
-                  <span class="text-base-content/60">{{ s.label }}</span>
+                  <span class="text-base-content/60">{{ t(s.label) }}</span>
                   <span class="ml-1 font-semibold tabular-nums">{{ attempt[s.key] }}</span>
                   <span
                     v-if="change(attempt, s.key)"
@@ -78,10 +79,10 @@ const scores: { key: ScoreKey; label: string }[] = [
                   </span>
                 </span>
               </template>
-              <span v-else class="text-base-content/60">Not scored</span>
+              <span v-else class="text-base-content/60">{{ t('history.notScored') }}</span>
             </p>
           </div>
-          <RouterLink class="btn btn-sm" :to="{ name: 'attempt', params: { id: attempt.id } }">Review</RouterLink>
+          <RouterLink class="btn btn-sm" :to="{ name: 'attempt', params: { id: attempt.id } }">{{ t('history.review') }}</RouterLink>
         </li>
       </ul>
     </section>
