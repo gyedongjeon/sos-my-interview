@@ -4,6 +4,7 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
+from .levels import asking_guide
 from .llm import complete, parse_json_reply
 
 QUESTION_COUNT = 8
@@ -58,7 +59,7 @@ way an interviewer who has read it would.
 
 {difficulty}
 
-Name the company or the role only where it is natural. Write plain spoken English with no
+{level}Name the company or the role only where it is natural. Write plain spoken English with no
 numbering or labels, because each question is read aloud as-is.
 Do not include generic questions that fit any job, such as "Tell me about yourself" or
 "What are your strengths?"; the candidate already practices those separately.
@@ -78,6 +79,7 @@ def generate_questions(
     system = SYSTEM_PROMPT.format(
         count=QUESTION_COUNT,
         difficulty=DIFFICULTY_GUIDE[difficulty],
+        level=asking_guide(),
         schema=TailoredQuestions.model_json_schema(),
     )
     user = f"<job_posting title={title!r}>\n{posting}\n</job_posting>"

@@ -203,6 +203,13 @@ const id: Record<keyof typeof en, string> = {
     'Halaman ditampilkan dan umpan balik dijelaskan dalam bahasa ini. Pertanyaan dan contoh jawaban tetap dalam bahasa Inggris.',
   'settings.yourLanguageNote':
     'Awalnya mengikuti bahasa browser-mu. Langsung tersimpan begitu kamu memilih. Sebagian besar bahasa halaman diterjemahkan oleh AI dan belum diperiksa penutur asli, jadi mungkin ada teks yang terasa agak janggal.',
+  'settings.level': 'Tingkat bahasa Inggrismu',
+  'settings.levelBody': 'Jawaban yang lebih baik dan kalimat yang diperbaiki ditulis di tingkat ini atau satu tingkat di atasnya agar kamu bisa mengucapkannya sendiri, dan pertanyaan disusun untuk tingkat ini. Skor tidak berubah.',
+  'settings.levelNone': 'Belum dipilih',
+  'settings.levelA2': 'A2 · kalimat sederhana tentang hal sehari-hari yang akrab',
+  'settings.levelB1': 'B1 · menjelaskan pengalaman dan alasan pada topik yang akrab',
+  'settings.levelB2': 'B2 · membahas topik pekerjaan secara rinci dan lancar',
+  'settings.levelC1': 'C1 · mengungkapkan pikiran dengan luwes dan tepat',
   'settings.theme': 'Tampilan',
   'settings.themeBody': 'Mengikuti mode terang atau gelap sistem, atau selalu menampilkan halaman terang atau gelap.',
   'settings.themeSystem': 'Ikuti sistem',
@@ -240,6 +247,7 @@ const id: Record<keyof typeof en, string> = {
     'SOS My Interview adalah perangkat lunak open source berlisensi MIT, dan dibuat dengan karya-karya di bawah ini.',
   'settings.licenses': 'Teks lisensi lengkap',
   'settings.voiceFailed': 'Gagal mengganti suara: {error}',
+  'settings.levelFailed': 'Tidak dapat menyimpan tingkat bahasa Inggris: {error}',
   'settings.themeFailed': 'Tidak dapat menyimpan tampilan: {error}',
   'settings.yourLanguageFailed': 'Gagal menyimpan bahasa: {error}',
 }

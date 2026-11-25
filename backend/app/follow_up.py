@@ -1,6 +1,7 @@
 """Follow-up question generation."""
 
 from .background import candidate_background
+from .levels import asking_guide
 from .llm import complete, format_interview
 
 SYSTEM_PROMPT = """\
@@ -18,7 +19,7 @@ fits what the candidate just said. Keep digging into the latest answer either wa
 The answers are speech-recognition transcripts, so they may contain recognition errors
 and no punctuation; read past those without commenting on them.
 
-Keep it easy to follow by ear: one sentence of at most 25 words that asks one thing.
+{level}Keep it easy to follow by ear: one sentence of at most 25 words that asks one thing.
 
 Reply with the question only, with no preamble,
 quotes, or formatting, because your reply is read aloud to the candidate as-is."""
@@ -27,7 +28,7 @@ quotes, or formatting, because your reply is read aloud to the candidate as-is."
 def generate_follow_up(turns: list[tuple[str, str]], question_id: int | None = None) -> str:
     """Return one follow-up question for the (question, answer) turns of a saved question."""
     return complete(
-        SYSTEM_PROMPT,
+        SYSTEM_PROMPT.format(level=asking_guide()),
         format_interview(turns, candidate_background(question_id)),
         max_tokens=4000,
         # A one-line question needs little reasoning; keep the wait short.

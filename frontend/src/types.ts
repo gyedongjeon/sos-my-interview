@@ -120,6 +120,9 @@ export type Phase = 'idle' | 'recording' | 'transcribing' | 'thinking' | 'done'
 /** A theme of the pages by its daisyUI name; empty follows the system's light or dark mode. */
 export type Theme = '' | 'sos' | 'sos-night'
 
+/** The user's English as a CEFR level; empty when not chosen. */
+export type EnglishLevel = '' | 'A2' | 'B1' | 'B2' | 'C1'
+
 /** The AI model in use. The API key never reaches the page, only its last characters. */
 export interface LLMSettings {
   model: string | null

@@ -4,7 +4,7 @@ import { api } from '../api'
 import { useSpeech } from '../composables/useSpeech'
 import { t, voiceLabel } from '../i18n'
 import { LANGUAGES, useSettingsStore } from '../stores/settings'
-import type { LLMSettings, Theme } from '../types'
+import type { EnglishLevel, LLMSettings, Theme } from '../types'
 
 // `prefix` is the provider name LiteLLM expects in front of the model.
 const PROVIDERS = [
@@ -56,6 +56,7 @@ const CREDITS = [
 ]
 
 const store = useSettingsStore()
+const LEVELS = ['A2', 'B1', 'B2', 'C1'] as const
 const providerId = ref<(typeof PROVIDERS)[number]['id']>('gemini')
 const model = ref<string>(PROVIDERS[0].model)
 const apiKey = ref('')
@@ -164,6 +165,24 @@ onMounted(async () => {
           </select>
           <span class="text-xs text-base-content/60">{{ t('settings.yourLanguageNote') }}</span>
         </label>
+      </div>
+    </section>
+
+    <section class="card mt-4 bg-base-100 shadow-sm">
+      <div class="card-body gap-4">
+        <div>
+          <h2 class="card-title">{{ t('settings.level') }}</h2>
+          <p class="text-sm text-base-content/70">{{ t('settings.levelBody') }}</p>
+        </div>
+        <select
+          class="select w-full"
+          :aria-label="t('settings.level')"
+          :value="store.englishLevel"
+          @change="store.setEnglishLevel(($event.target as HTMLSelectElement).value as EnglishLevel)"
+        >
+          <option value="">{{ t('settings.levelNone') }}</option>
+          <option v-for="l in LEVELS" :key="l" :value="l">{{ t(`settings.level${l}`) }}</option>
+        </select>
       </div>
     </section>
 

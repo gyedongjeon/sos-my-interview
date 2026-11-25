@@ -4,7 +4,7 @@ import json
 
 import pytest
 
-from app import evaluate, follow_up
+from app import evaluate, follow_up, tailored
 from app.llm import LLMError
 
 TURNS = [{"question": "Tell me about yourself.", "answer": "I build payment systems."}]
@@ -23,6 +23,7 @@ def model(monkeypatch):
     complete.reply = ""
     monkeypatch.setattr(follow_up, "complete", complete)
     monkeypatch.setattr(evaluate, "complete", complete)
+    monkeypatch.setattr(tailored, "complete", complete)
     return complete
 
 
@@ -71,3 +72,42 @@ def test_speaking_feedback_needs_one_question_and_transcript_per_clip(client):
     )
     assert response.status_code == 422
 
+
+
+def test_without_a_level_no_level_is_given_to_the_model(client, model, feedback):
+    model.reply = json.dumps(feedback)
+    client.post("/api/evaluate", json={"turns": TURNS})
+    assert "CEFR" not in model.system
+    model.reply = "Why payments?"
+    client.post("/api/follow-up", json={"turns": TURNS})
+    assert "CEFR" not in model.system
+
+
+def test_better_sentences_are_written_at_the_level_or_one_step_above(client, model, feedback):
+    client.put("/api/settings", json={"english_level": "B1"})
+    model.reply = json.dumps(feedback)
+    client.post("/api/evaluate", json={"turns": TURNS})
+    assert "CEFR level B1" in model.system
+    assert "at most B2" in model.system
+
+
+def test_c1_has_no_step_above(client, model, feedback):
+    client.put("/api/settings", json={"english_level": "C1"})
+    model.reply = json.dumps(feedback)
+    client.post("/api/evaluate", json={"turns": TURNS})
+    assert "CEFR level C1" in model.system
+    assert "at most" not in model.system
+
+
+def test_follow_ups_are_worded_for_the_level(client, model):
+    client.put("/api/settings", json={"english_level": "A2"})
+    model.reply = "Why payments?"
+    client.post("/api/follow-up", json={"turns": TURNS})
+    assert "CEFR level A2" in model.system
+
+
+def test_tailored_questions_are_worded_for_the_level(client, model):
+    client.put("/api/settings", json={"english_level": "B2"})
+    model.reply = json.dumps({"questions": ["Why this role?"]})
+    assert tailored.generate_questions("Engineer", "We build payments.", None) == ["Why this role?"]
+    assert "CEFR level B2" in model.system

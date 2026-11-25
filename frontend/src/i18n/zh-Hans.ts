@@ -195,6 +195,13 @@ const zhHans: Record<keyof typeof en, string> = {
   'settings.yourLanguageBody': '页面和反馈说明会用这种语言显示。问题和示范回答仍然是英语。',
   'settings.yourLanguageNote':
     '默认跟随浏览器的语言，选择后立即保存。页面的大多数语言版本由 AI 翻译，未经母语者校对，个别文字读起来可能有些别扭。',
+  'settings.level': '英语水平',
+  'settings.levelBody': '更好的回答和修改后的句子会按这个水平或高一级来写，方便你自己说出来；问题也会用适合这个水平的措辞。评分标准不变。',
+  'settings.levelNone': '未选择',
+  'settings.levelA2': 'A2 · 能用简单句谈熟悉的日常事务',
+  'settings.levelB1': 'B1 · 能在熟悉的话题上说明经历和理由',
+  'settings.levelB2': 'B2 · 能详细、流利地讨论工作话题',
+  'settings.levelC1': 'C1 · 能灵活、准确地表达想法',
   'settings.theme': '主题',
   'settings.themeBody': '跟随系统的浅色或深色模式，或将页面固定为浅色或深色。',
   'settings.themeSystem': '跟随系统',
@@ -231,6 +238,7 @@ const zhHans: Record<keyof typeof en, string> = {
   'settings.openSourceBody': 'SOS My Interview 是采用 MIT 许可证的开源软件，基于以下项目构建。',
   'settings.licenses': '许可证全文',
   'settings.voiceFailed': '更换声音失败：{error}',
+  'settings.levelFailed': '无法保存英语水平：{error}',
   'settings.themeFailed': '无法保存主题：{error}',
   'settings.yourLanguageFailed': '保存语言失败：{error}',
 }

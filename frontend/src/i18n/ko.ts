@@ -197,6 +197,13 @@ const ko: Record<keyof typeof en, string> = {
   'settings.yourLanguageBody': '화면과 피드백 설명이 이 언어로 나옵니다. 질문과 모범 답안은 영어 그대로입니다.',
   'settings.yourLanguageNote':
     '처음에는 브라우저 언어로 정해지고, 고르는 즉시 저장됩니다. 화면의 번역은 대부분 AI가 했고 원어민 검수를 거치지 않아 조금 어색한 문구가 있을 수 있습니다.',
+  'settings.level': '영어 수준',
+  'settings.levelBody': '더 좋게 다듬은 답변과 고친 문장을 이 수준이나 한 단계 위로 써서 직접 말할 수 있게 하고, 질문도 이 수준에 맞는 말로 묻습니다. 점수 기준은 바뀌지 않습니다.',
+  'settings.levelNone': '정하지 않음',
+  'settings.levelA2': 'A2 · 익숙한 일상에 대해 간단한 문장으로 말함',
+  'settings.levelB1': 'B1 · 익숙한 주제에서 경험과 이유를 설명함',
+  'settings.levelB2': 'B2 · 업무 주제를 자세하고 유창하게 이야기함',
+  'settings.levelC1': 'C1 · 생각을 유연하고 정확하게 표현함',
   'settings.theme': '화면 테마',
   'settings.themeBody': '시스템의 라이트·다크 모드를 따르거나, 화면을 라이트나 다크로 고정합니다.',
   'settings.themeSystem': '시스템 설정',
@@ -233,6 +240,7 @@ const ko: Record<keyof typeof en, string> = {
   'settings.openSourceBody': 'SOS My Interview는 MIT 라이선스의 오픈 소스입니다. 아래의 작업물로 만들어졌습니다.',
   'settings.licenses': '라이선스 전문',
   'settings.voiceFailed': '목소리를 바꾸지 못했습니다: {error}',
+  'settings.levelFailed': '영어 수준을 저장하지 못했습니다: {error}',
   'settings.themeFailed': '화면 테마를 저장하지 못했습니다: {error}',
   'settings.yourLanguageFailed': '언어를 저장하지 못했습니다: {error}',
 }

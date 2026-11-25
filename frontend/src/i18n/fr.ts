@@ -207,6 +207,13 @@ const fr: Record<keyof typeof en, string> = {
     'Les pages s’affichent et vos commentaires sont expliqués dans cette langue. Les questions et les réponses modèles restent en anglais.',
   'settings.yourLanguageNote':
     'Au départ, c’est la langue de votre navigateur. Votre choix est enregistré aussitôt. La plupart des langues des pages ont été traduites par une IA, sans relecture par un locuteur natif : un texte peut donc sembler un peu étrange.',
+  'settings.level': 'Votre niveau d’anglais',
+  'settings.levelBody': 'Les réponses améliorées et les phrases corrigées sont écrites à ce niveau ou un cran au-dessus, pour que vous puissiez les dire vous-même, et les questions sont formulées pour lui. Les notes ne changent pas.',
+  'settings.levelNone': 'Non choisi',
+  'settings.levelA2': 'A2 · phrases simples sur des sujets familiers du quotidien',
+  'settings.levelB1': 'B1 · expliquer son expérience et ses raisons sur des sujets familiers',
+  'settings.levelB2': 'B2 · parler de sujets professionnels en détail et avec aisance',
+  'settings.levelC1': 'C1 · s’exprimer avec souplesse et précision',
   'settings.theme': 'Apparence',
   'settings.themeBody': 'Suit le mode clair ou sombre du système, ou garde les pages toujours claires ou sombres.',
   'settings.themeSystem': 'Système',
@@ -243,6 +250,7 @@ const fr: Record<keyof typeof en, string> = {
   'settings.openSourceBody': 'SOS My Interview est un logiciel open source sous licence MIT. Il repose sur les projets ci-dessous.',
   'settings.licenses': 'Textes complets des licences',
   'settings.voiceFailed': 'Impossible de changer de voix : {error}',
+  'settings.levelFailed': 'Impossible d’enregistrer le niveau d’anglais : {error}',
   'settings.themeFailed': 'Impossible d’enregistrer l’apparence : {error}',
   'settings.yourLanguageFailed': 'Impossible d’enregistrer la langue : {error}',
 }

@@ -203,6 +203,13 @@ const vi: Record<keyof typeof en, string> = {
     'Các trang được hiển thị và nhận xét được giải thích bằng ngôn ngữ này. Câu hỏi và câu trả lời mẫu vẫn bằng tiếng Anh.',
   'settings.yourLanguageNote':
     'Ban đầu lấy theo ngôn ngữ của trình duyệt. Được lưu ngay khi bạn chọn. Phần lớn các ngôn ngữ hiển thị do AI dịch và chưa được người bản ngữ kiểm tra, nên đôi chỗ đọc có thể hơi lạ.',
+  'settings.level': 'Trình độ tiếng Anh của bạn',
+  'settings.levelBody': 'Câu trả lời tốt hơn và câu đã sửa được viết ở trình độ này hoặc cao hơn một bậc để bạn tự nói được, và câu hỏi cũng dùng lời lẽ hợp với trình độ này. Điểm số không thay đổi.',
+  'settings.levelNone': 'Chưa chọn',
+  'settings.levelA2': 'A2 · câu đơn giản về chuyện quen thuộc hằng ngày',
+  'settings.levelB1': 'B1 · giải thích kinh nghiệm và lý do ở chủ đề quen thuộc',
+  'settings.levelB2': 'B2 · bàn về chủ đề công việc chi tiết và trôi chảy',
+  'settings.levelC1': 'C1 · diễn đạt linh hoạt và chính xác',
   'settings.theme': 'Giao diện',
   'settings.themeBody': 'Theo chế độ sáng hoặc tối của hệ thống, hoặc luôn giữ giao diện sáng hoặc tối.',
   'settings.themeSystem': 'Theo hệ thống',
@@ -240,6 +247,7 @@ const vi: Record<keyof typeof en, string> = {
     'SOS My Interview là phần mềm mã nguồn mở theo Giấy phép MIT. Ứng dụng được xây dựng từ các sản phẩm dưới đây.',
   'settings.licenses': 'Toàn văn các giấy phép',
   'settings.voiceFailed': 'Không đổi được giọng nói: {error}',
+  'settings.levelFailed': 'Không thể lưu trình độ tiếng Anh: {error}',
   'settings.themeFailed': 'Không thể lưu giao diện: {error}',
   'settings.yourLanguageFailed': 'Không lưu được ngôn ngữ: {error}',
 }

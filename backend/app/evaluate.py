@@ -6,6 +6,7 @@ from pydantic import BaseModel, Field
 
 from .background import candidate_background
 from .llm import complete, format_interview, parse_json_reply
+from .levels import writing_guide
 from .settings import feedback_language
 
 Score = Field(ge=0, le=100)
@@ -72,7 +73,7 @@ The message may start with the job posting the candidate is preparing for, their
 and their cover letter. Use them as background: point out relevant experience from the
 résumé or cover letter that the candidate left out, and draw on it (never on invented experience) in better_answer.
 
-Scores are integers from 0 to 100. Calibrate them honestly, because an inflated score hides
+{level}Scores are integers from 0 to 100. Calibrate them honestly, because an inflated score hides
 what to practice: 90+ would impress in a real interview, 75-89 is solid with minor issues,
 60-74 gets the point across with clear weaknesses, 40-59 is hard to follow or thin, and
 below 40 mostly fails to communicate or to answer. A very short answer cannot score high
@@ -93,7 +94,7 @@ Reply with a single JSON object matching this schema, and nothing else:
 def evaluate(turns: list[tuple[str, str]], question_id: int | None = None) -> Feedback:
     """Return English and content feedback for the (question, answer) turns of a saved question."""
     language = feedback_language()
-    system = SYSTEM_PROMPT.format(language=language, schema=Feedback.model_json_schema())
+    system = SYSTEM_PROMPT.format(language=language, level=writing_guide(), schema=Feedback.model_json_schema())
     reply = complete(
         system,
         format_interview(turns, candidate_background(question_id)),

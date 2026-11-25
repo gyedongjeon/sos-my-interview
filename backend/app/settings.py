@@ -18,6 +18,9 @@ class Settings(BaseModel):
     feedback_language: str | None = Field(default=None, min_length=1, max_length=40)
     # The theme of the pages by its daisyUI name; empty follows the system's light or dark mode.
     theme: Literal["", "sos", "sos-night"] = ""
+    # The user's English as a CEFR level; empty when not chosen. Better sentences, corrections, and
+    # the wording of questions are fitted to it (see levels.py); the scores are not.
+    english_level: Literal["", "A2", "B1", "B2", "C1"] = ""
 
 
 def _get(key: str) -> str | None:
@@ -31,9 +34,16 @@ def feedback_language() -> str:
     return _get("feedback_language") or os.environ.get("FEEDBACK_LANGUAGE", "").strip() or "English"
 
 
+def english_level() -> str:
+    """The user's English as a CEFR level ("B1"), or "" when not chosen."""
+    return _get("english_level") or ""
+
+
 @router.get("/settings", response_model=Settings)
 def get_settings() -> Settings:
-    return Settings(feedback_language=_get("feedback_language"), theme=_get("theme") or "")
+    return Settings(
+        feedback_language=_get("feedback_language"), theme=_get("theme") or "", english_level=english_level()
+    )
 
 
 @router.put("/settings", response_model=Settings)

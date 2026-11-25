@@ -199,6 +199,13 @@ export default {
     'The pages are shown and your feedback is explained in this language. Questions and model answers stay in English.',
   'settings.yourLanguageNote':
     "Starts from your browser's language. Saved as soon as you pick one. Most languages of the pages were translated by AI and have not been checked by a native speaker, so a text may read a little oddly.",
+  'settings.level': 'Your English level',
+  'settings.levelBody': 'Better answers and corrected sentences are written at this level or one step above, so you can say them yourself, and questions are worded for it. Scores do not change with it.',
+  'settings.levelNone': 'Not chosen',
+  'settings.levelA2': 'A2 · simple sentences about familiar, everyday things',
+  'settings.levelB1': 'B1 · explain your experience and reasons on familiar topics',
+  'settings.levelB2': 'B2 · discuss work topics in detail and fluently',
+  'settings.levelC1': 'C1 · express yourself flexibly and precisely',
   'settings.theme': 'Appearance',
   'settings.themeBody': 'Follow your system\'s light or dark mode, or keep the pages light or dark.',
   'settings.themeSystem': 'System',
@@ -235,6 +242,7 @@ export default {
   'settings.openSourceBody': 'SOS My Interview is open source under the MIT License. It is built with the work below.',
   'settings.licenses': 'Full license texts',
   'settings.voiceFailed': 'Could not change the voice: {error}',
+  'settings.levelFailed': 'Could not save the English level: {error}',
   'settings.themeFailed': 'Could not save the appearance: {error}',
   'settings.yourLanguageFailed': 'Could not save the language: {error}',
 }

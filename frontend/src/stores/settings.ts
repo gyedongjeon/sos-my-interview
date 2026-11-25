@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { api } from '../api'
 import { t } from '../i18n'
-import type { LLMSettings, Theme, VoiceStatus } from '../types'
+import type { EnglishLevel, LLMSettings, Theme, VoiceStatus } from '../types'
 
 /** The languages a user's own can be: the pages are shown and feedback is explained in it (see `i18n`).
  * The English name the LLM is told, the tag dates are written with, and its own name. */
@@ -40,6 +40,7 @@ export const useSettingsStore = defineStore('settings', {
   state: () => ({
     feedbackLanguage: 'English' as string,
     theme: '' as Theme,
+    englishLevel: '' as EnglishLevel,
     error: null as string | null,
     // null until loaded.
     llm: null as LLMSettings | null,
@@ -52,8 +53,11 @@ export const useSettingsStore = defineStore('settings', {
   actions: {
     async load() {
       try {
-        const saved = await api<{ feedback_language: string | null; theme: Theme }>('/settings')
+        const saved = await api<{ feedback_language: string | null; theme: Theme; english_level: EnglishLevel }>(
+          '/settings',
+        )
         this.theme = saved.theme
+        this.englishLevel = saved.english_level
         if (saved.feedback_language) this.feedbackLanguage = saved.feedback_language
         // First visit: start from the browser's language; the user can change it any time.
         else await this.setFeedbackLanguage(browserLanguage())
@@ -94,6 +98,16 @@ export const useSettingsStore = defineStore('settings', {
         this.theme = theme
       } catch (e) {
         this.error = t('settings.themeFailed', { error: (e as Error).message })
+      }
+    },
+    /** Fits better sentences, corrections, and the wording of questions to a CEFR level, or to none. */
+    async setEnglishLevel(level: EnglishLevel) {
+      this.error = null
+      try {
+        await api('/settings', { method: 'PUT', json: { english_level: level } })
+        this.englishLevel = level
+      } catch (e) {
+        this.error = t('settings.levelFailed', { error: (e as Error).message })
       }
     },
     async setFeedbackLanguage(language: string) {
