@@ -203,6 +203,11 @@ const id: Record<keyof typeof en, string> = {
     'Halaman ditampilkan dan umpan balik dijelaskan dalam bahasa ini. Pertanyaan dan contoh jawaban tetap dalam bahasa Inggris.',
   'settings.yourLanguageNote':
     'Awalnya mengikuti bahasa browser-mu. Langsung tersimpan begitu kamu memilih. Sebagian besar bahasa halaman diterjemahkan oleh AI dan belum diperiksa penutur asli, jadi mungkin ada teks yang terasa agak janggal.',
+  'settings.theme': 'Tampilan',
+  'settings.themeBody': 'Mengikuti mode terang atau gelap sistem, atau selalu menampilkan halaman terang atau gelap.',
+  'settings.themeSystem': 'Ikuti sistem',
+  'settings.themeLight': 'Terang',
+  'settings.themeDark': 'Gelap',
   'settings.voiceTitle': 'Suara pewawancara',
   'settings.voiceBody':
     'Suara yang dipakai pewawancaramu saat berbicara, beraksen Amerika atau Inggris. Semua suara dijalankan di komputer ini dan sudah termasuk dalam unduhan suara, jadi menggantinya tidak mengunduh apa-apa lagi.',
@@ -235,6 +240,7 @@ const id: Record<keyof typeof en, string> = {
     'SOS My Interview adalah perangkat lunak open source berlisensi MIT, dan dibuat dengan karya-karya di bawah ini.',
   'settings.licenses': 'Teks lisensi lengkap',
   'settings.voiceFailed': 'Gagal mengganti suara: {error}',
+  'settings.themeFailed': 'Tidak dapat menyimpan tampilan: {error}',
   'settings.yourLanguageFailed': 'Gagal menyimpan bahasa: {error}',
 }
 

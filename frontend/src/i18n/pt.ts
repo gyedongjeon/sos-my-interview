@@ -203,6 +203,11 @@ const pt: Record<keyof typeof en, string> = {
     'As páginas aparecem e seu feedback é explicado neste idioma. As perguntas e as respostas-modelo continuam em inglês.',
   'settings.yourLanguageNote':
     'Começa pelo idioma do seu navegador e é salvo assim que você escolhe um. A maioria dos idiomas das páginas foi traduzida por IA e não foi revisada por um falante nativo, então um texto ou outro pode soar um pouco estranho.',
+  'settings.theme': 'Aparência',
+  'settings.themeBody': 'Segue o modo claro ou escuro do sistema, ou mantém as páginas sempre claras ou escuras.',
+  'settings.themeSystem': 'Sistema',
+  'settings.themeLight': 'Claro',
+  'settings.themeDark': 'Escuro',
   'settings.voiceTitle': 'Voz do entrevistador',
   'settings.voiceBody':
     'A voz com que seu entrevistador fala, americana ou britânica. Todas as vozes funcionam neste computador e já vêm no download de voz, então mudar de voz não exige nenhum outro download.',
@@ -235,6 +240,7 @@ const pt: Record<keyof typeof en, string> = {
     'O SOS My Interview é um software de código aberto sob a licença MIT. Ele foi construído com os projetos abaixo.',
   'settings.licenses': 'Textos completos das licenças',
   'settings.voiceFailed': 'Não foi possível mudar a voz: {error}',
+  'settings.themeFailed': 'Não foi possível salvar a aparência: {error}',
   'settings.yourLanguageFailed': 'Não foi possível salvar o idioma: {error}',
 }
 

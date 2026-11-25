@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { onMounted, watchEffect } from 'vue'
 import { useRouter } from 'vue-router'
 import BrandMark from './components/BrandMark.vue'
 import ModelDownloads from './components/ModelDownloads.vue'
@@ -10,6 +10,11 @@ import { useSettingsStore } from './stores/settings'
 const settings = useSettingsStore()
 const router = useRouter()
 const LINK = 'hover:bg-neutral-content/10'
+// The chosen theme, or none to let daisyUI follow the system's light or dark mode.
+watchEffect(() => {
+  if (settings.theme) document.documentElement.dataset.theme = settings.theme
+  else delete document.documentElement.dataset.theme
+})
 onMounted(async () => {
   // Fetch the speech models in the background, so they are there before the first answer.
   void useModelsStore().start()

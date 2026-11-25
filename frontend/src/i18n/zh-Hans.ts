@@ -195,6 +195,11 @@ const zhHans: Record<keyof typeof en, string> = {
   'settings.yourLanguageBody': '页面和反馈说明会用这种语言显示。问题和示范回答仍然是英语。',
   'settings.yourLanguageNote':
     '默认跟随浏览器的语言，选择后立即保存。页面的大多数语言版本由 AI 翻译，未经母语者校对，个别文字读起来可能有些别扭。',
+  'settings.theme': '主题',
+  'settings.themeBody': '跟随系统的浅色或深色模式，或将页面固定为浅色或深色。',
+  'settings.themeSystem': '跟随系统',
+  'settings.themeLight': '浅色',
+  'settings.themeDark': '深色',
   'settings.voiceTitle': '面试官的声音',
   'settings.voiceBody':
     '面试官说话时使用的声音，有美式和英式可选。所有声音都在这台电脑上运行，并已包含在语音下载中，更换声音不需要再下载。',
@@ -226,6 +231,7 @@ const zhHans: Record<keyof typeof en, string> = {
   'settings.openSourceBody': 'SOS My Interview 是采用 MIT 许可证的开源软件，基于以下项目构建。',
   'settings.licenses': '许可证全文',
   'settings.voiceFailed': '更换声音失败：{error}',
+  'settings.themeFailed': '无法保存主题：{error}',
   'settings.yourLanguageFailed': '保存语言失败：{error}',
 }
 

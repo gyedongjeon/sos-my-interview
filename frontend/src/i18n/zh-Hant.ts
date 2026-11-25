@@ -195,6 +195,11 @@ const zhHant: Record<keyof typeof en, string> = {
   'settings.yourLanguageBody': '頁面會以這個語言顯示，回饋的說明也是。問題和示範回答仍然是英文。',
   'settings.yourLanguageNote':
     '預設為瀏覽器的語言，選好後會立即儲存。大部分的頁面語言是由 AI 翻譯的，未經母語人士檢查，有些文字讀起來可能不太自然。',
+  'settings.theme': '主題',
+  'settings.themeBody': '跟隨系統的淺色或深色模式，或將頁面固定為淺色或深色。',
+  'settings.themeSystem': '跟隨系統',
+  'settings.themeLight': '淺色',
+  'settings.themeDark': '深色',
   'settings.voiceTitle': '面試官的聲音',
   'settings.voiceBody':
     '面試官說話時使用的聲音，有美式和英式可選。所有聲音都在這台電腦上執行，而且已包含在語音下載中，更換聲音不需要再下載任何東西。',
@@ -226,6 +231,7 @@ const zhHant: Record<keyof typeof en, string> = {
   'settings.openSourceBody': 'SOS My Interview 是以 MIT 授權條款釋出的開放原始碼軟體，並採用了下列專案的成果。',
   'settings.licenses': '授權條款全文',
   'settings.voiceFailed': '無法更換聲音：{error}',
+  'settings.themeFailed': '無法儲存主題：{error}',
   'settings.yourLanguageFailed': '無法儲存語言：{error}',
 }
 

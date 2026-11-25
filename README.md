@@ -92,7 +92,8 @@ your interviews and settings kept. You can also choose **SOS My Interview → Ch
 The app opens on the Settings page the first time.
 
 1. **Your language**: pick the language the pages are shown and your feedback is explained in. It
-   starts from your system language.
+   starts from your system language. **Appearance**, the card after it, follows your system's light
+   or dark mode, or keeps the pages light or dark.
 2. **AI model and API key**: choose a provider and model and paste that provider's API key. It is
    saved and checked with a test request.
 

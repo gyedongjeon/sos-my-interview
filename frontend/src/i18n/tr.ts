@@ -201,6 +201,11 @@ const tr: Record<keyof typeof en, string> = {
     'Sayfalar bu dilde gösterilir, geri bildirim de bu dilde açıklanır. Sorular ve örnek cevaplar İngilizce kalır.',
   'settings.yourLanguageNote':
     'Başlangıçta tarayıcının dili kullanılır. Bir dil seçtiğin anda kaydedilir. Sayfaların çoğu dildeki çevirisi yapay zekâ ile yapıldı ve ana dili o dil olan biri tarafından kontrol edilmedi; bu yüzden bazı metinler biraz tuhaf gelebilir.',
+  'settings.theme': 'Görünüm',
+  'settings.themeBody': 'Sistemin açık veya koyu modunu izler ya da sayfaları hep açık veya koyu gösterir.',
+  'settings.themeSystem': 'Sistem',
+  'settings.themeLight': 'Açık',
+  'settings.themeDark': 'Koyu',
   'settings.voiceTitle': 'Mülakatçının sesi',
   'settings.voiceBody':
     'Mülakatçının konuşurken kullandığı ses: Amerikan ya da İngiliz aksanlı. Bütün sesler bu bilgisayarda çalışır ve ses modeliyle birlikte indirilir; sesi değiştirdiğinde ek bir şey indirilmez.',
@@ -233,6 +238,7 @@ const tr: Record<keyof typeof en, string> = {
     'SOS My Interview, MIT Lisansı altında açık kaynaklı bir uygulamadır. Aşağıdaki çalışmalar kullanılarak geliştirilmiştir.',
   'settings.licenses': 'Lisans metinlerinin tamamı',
   'settings.voiceFailed': 'Ses değiştirilemedi: {error}',
+  'settings.themeFailed': 'Görünüm kaydedilemedi: {error}',
   'settings.yourLanguageFailed': 'Dil kaydedilemedi: {error}',
 }
 
