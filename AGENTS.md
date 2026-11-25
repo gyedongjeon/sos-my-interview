@@ -50,6 +50,7 @@ Follow Kent Beck's Test-Driven Development and Tidy First.
     - **Frontend**: Vue 3 + TypeScript + Vite, with Vue Router and Pinia. Styling uses Tailwind CSS with daisyUI as the design system; prefer daisyUI component classes and theme colors over custom CSS.
     - **Desktop**: Electron shell (`desktop/`, TypeScript) that runs the backend, which serves the built frontend.
 - **Scope**: Runs locally for a single user. Do not add deployment, authentication, or multi-user features unless explicitly requested.
+- **Texts of the pages**: the frontend shows its pages in the user's own language (every language of `LANGUAGES` in `frontend/src/stores/settings.ts`; all but English and Korean are AI translations). No page or store may contain a fixed text for the user: add a key to `frontend/src/i18n/en.ts` and to every other language file, and use `t('key')`. Messages of the backend's errors are in English for now.
 
 ## Operational Preferences
 - **Conciseness**: Be concise and technical in your responses.
