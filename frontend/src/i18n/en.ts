@@ -199,6 +199,11 @@ export default {
     'The pages are shown and your feedback is explained in this language. Questions and model answers stay in English.',
   'settings.yourLanguageNote':
     "Starts from your browser's language. Saved as soon as you pick one. Most languages of the pages were translated by AI and have not been checked by a native speaker, so a text may read a little oddly.",
+  'settings.theme': 'Appearance',
+  'settings.themeBody': 'Follow your system\'s light or dark mode, or keep the pages light or dark.',
+  'settings.themeSystem': 'System',
+  'settings.themeLight': 'Light',
+  'settings.themeDark': 'Dark',
   'settings.voiceTitle': "Interviewer's voice",
   'settings.voiceBody':
     'The voice your interviewer speaks with, American or British. Every voice runs on this computer and comes with the voice download, so changing it downloads nothing more.',
@@ -230,5 +235,6 @@ export default {
   'settings.openSourceBody': 'SOS My Interview is open source under the MIT License. It is built with the work below.',
   'settings.licenses': 'Full license texts',
   'settings.voiceFailed': 'Could not change the voice: {error}',
+  'settings.themeFailed': 'Could not save the appearance: {error}',
   'settings.yourLanguageFailed': 'Could not save the language: {error}',
 }

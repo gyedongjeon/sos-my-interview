@@ -197,6 +197,11 @@ const ko: Record<keyof typeof en, string> = {
   'settings.yourLanguageBody': '화면과 피드백 설명이 이 언어로 나옵니다. 질문과 모범 답안은 영어 그대로입니다.',
   'settings.yourLanguageNote':
     '처음에는 브라우저 언어로 정해지고, 고르는 즉시 저장됩니다. 화면의 번역은 대부분 AI가 했고 원어민 검수를 거치지 않아 조금 어색한 문구가 있을 수 있습니다.',
+  'settings.theme': '화면 테마',
+  'settings.themeBody': '시스템의 라이트·다크 모드를 따르거나, 화면을 라이트나 다크로 고정합니다.',
+  'settings.themeSystem': '시스템 설정',
+  'settings.themeLight': '라이트',
+  'settings.themeDark': '다크',
   'settings.voiceTitle': '면접관 목소리',
   'settings.voiceBody':
     '면접관이 말할 때 쓰는 목소리입니다. 미국식과 영국식이 있습니다. 모든 목소리는 이 컴퓨터에서 실행되고 음성 모델에 함께 들어 있어, 바꿔도 더 내려받는 것은 없습니다.',
@@ -228,6 +233,7 @@ const ko: Record<keyof typeof en, string> = {
   'settings.openSourceBody': 'SOS My Interview는 MIT 라이선스의 오픈 소스입니다. 아래의 작업물로 만들어졌습니다.',
   'settings.licenses': '라이선스 전문',
   'settings.voiceFailed': '목소리를 바꾸지 못했습니다: {error}',
+  'settings.themeFailed': '화면 테마를 저장하지 못했습니다: {error}',
   'settings.yourLanguageFailed': '언어를 저장하지 못했습니다: {error}',
 }
 

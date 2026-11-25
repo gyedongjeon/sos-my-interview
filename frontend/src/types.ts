@@ -117,6 +117,9 @@ export type Difficulty = 'easy' | 'standard' | 'hard'
 
 export type Phase = 'idle' | 'recording' | 'transcribing' | 'thinking' | 'done'
 
+/** A theme of the pages by its daisyUI name; empty follows the system's light or dark mode. */
+export type Theme = '' | 'sos' | 'sos-night'
+
 /** The AI model in use. The API key never reaches the page, only its last characters. */
 export interface LLMSettings {
   model: string | null

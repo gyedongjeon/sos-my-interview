@@ -202,6 +202,11 @@ const bn: Record<keyof typeof en, string> = {
     'পাতাগুলো এই ভাষায় দেখানো হয়, ফিডব্যাকের ব্যাখ্যাও এই ভাষায় দেওয়া হয়। প্রশ্ন আর আদর্শ উত্তর ইংরেজিতেই থাকে।',
   'settings.yourLanguageNote':
     'শুরুতে আপনার ব্রাউজারের ভাষা ধরা হয়। একটি বেছে নিলেই তা সংরক্ষিত হয়ে যায়। পাতাগুলোর বেশির ভাগ ভাষার অনুবাদ AI দিয়ে করা, কোনো মাতৃভাষী তা যাচাই করেননি; তাই কোনো কোনো লেখা একটু অদ্ভুত লাগতে পারে।',
+  'settings.theme': 'থিম',
+  'settings.themeBody': 'সিস্টেমের লাইট বা ডার্ক মোড অনুসরণ করুন, অথবা পেজ সবসময় লাইট বা ডার্ক রাখুন।',
+  'settings.themeSystem': 'সিস্টেম অনুযায়ী',
+  'settings.themeLight': 'লাইট',
+  'settings.themeDark': 'ডার্ক',
   'settings.voiceTitle': 'ইন্টারভিউয়ারের কণ্ঠ',
   'settings.voiceBody':
     'ইন্টারভিউয়ার যে কণ্ঠে কথা বলেন, আমেরিকান বা ব্রিটিশ। সব কণ্ঠই এই কম্পিউটারে চলে এবং কণ্ঠের ডাউনলোডের সঙ্গেই আসে, তাই বদলালে নতুন করে কিছু ডাউনলোড হয় না।',
@@ -233,6 +238,7 @@ const bn: Record<keyof typeof en, string> = {
   'settings.openSourceBody': 'SOS My Interview MIT লাইসেন্সের অধীনে ওপেন সোর্স। নিচের কাজগুলো ব্যবহার করে এটি তৈরি।',
   'settings.licenses': 'লাইসেন্সের পূর্ণ পাঠ',
   'settings.voiceFailed': 'কণ্ঠ বদলানো যায়নি: {error}',
+  'settings.themeFailed': 'থিম সংরক্ষণ করা যায়নি: {error}',
   'settings.yourLanguageFailed': 'ভাষা সংরক্ষণ করা যায়নি: {error}',
 }
 

@@ -203,6 +203,11 @@ const vi: Record<keyof typeof en, string> = {
     'Các trang được hiển thị và nhận xét được giải thích bằng ngôn ngữ này. Câu hỏi và câu trả lời mẫu vẫn bằng tiếng Anh.',
   'settings.yourLanguageNote':
     'Ban đầu lấy theo ngôn ngữ của trình duyệt. Được lưu ngay khi bạn chọn. Phần lớn các ngôn ngữ hiển thị do AI dịch và chưa được người bản ngữ kiểm tra, nên đôi chỗ đọc có thể hơi lạ.',
+  'settings.theme': 'Giao diện',
+  'settings.themeBody': 'Theo chế độ sáng hoặc tối của hệ thống, hoặc luôn giữ giao diện sáng hoặc tối.',
+  'settings.themeSystem': 'Theo hệ thống',
+  'settings.themeLight': 'Sáng',
+  'settings.themeDark': 'Tối',
   'settings.voiceTitle': 'Giọng của người phỏng vấn',
   'settings.voiceBody':
     'Giọng mà người phỏng vấn dùng khi nói, giọng Mỹ hoặc giọng Anh. Mọi giọng đều chạy trên máy tính này và đã có sẵn trong gói giọng nói đã tải, nên đổi giọng không cần tải thêm gì.',
@@ -235,6 +240,7 @@ const vi: Record<keyof typeof en, string> = {
     'SOS My Interview là phần mềm mã nguồn mở theo Giấy phép MIT. Ứng dụng được xây dựng từ các sản phẩm dưới đây.',
   'settings.licenses': 'Toàn văn các giấy phép',
   'settings.voiceFailed': 'Không đổi được giọng nói: {error}',
+  'settings.themeFailed': 'Không thể lưu giao diện: {error}',
   'settings.yourLanguageFailed': 'Không lưu được ngôn ngữ: {error}',
 }
 

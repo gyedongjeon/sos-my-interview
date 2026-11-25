@@ -4,7 +4,7 @@ import { api } from '../api'
 import { useSpeech } from '../composables/useSpeech'
 import { t, voiceLabel } from '../i18n'
 import { LANGUAGES, useSettingsStore } from '../stores/settings'
-import type { LLMSettings } from '../types'
+import type { LLMSettings, Theme } from '../types'
 
 // `prefix` is the provider name LiteLLM expects in front of the model.
 const PROVIDERS = [
@@ -164,6 +164,25 @@ onMounted(async () => {
           </select>
           <span class="text-xs text-base-content/60">{{ t('settings.yourLanguageNote') }}</span>
         </label>
+      </div>
+    </section>
+
+    <section class="card mt-4 bg-base-100 shadow-sm">
+      <div class="card-body gap-4">
+        <div>
+          <h2 class="card-title">{{ t('settings.theme') }}</h2>
+          <p class="text-sm text-base-content/70">{{ t('settings.themeBody') }}</p>
+        </div>
+        <select
+          class="select w-full"
+          :aria-label="t('settings.theme')"
+          :value="store.theme"
+          @change="store.setTheme(($event.target as HTMLSelectElement).value as Theme)"
+        >
+          <option value="">{{ t('settings.themeSystem') }}</option>
+          <option value="sos">{{ t('settings.themeLight') }}</option>
+          <option value="sos-night">{{ t('settings.themeDark') }}</option>
+        </select>
       </div>
     </section>
 
