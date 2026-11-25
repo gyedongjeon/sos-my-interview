@@ -4,8 +4,8 @@ import { useSettingsStore } from './settings'
 
 // A tiny backend: remembers the feedback language and the theme like the real `/api/settings`,
 // which saves only the settings it is sent.
-function fakeBackend(saved: string | null, browserLanguage: string, failSaving = false, theme = '') {
-  const state = { saved, theme, puts: 0 }
+function fakeBackend(saved: string | null, browserLanguage: string, failSaving = false, theme = '', level = '') {
+  const state = { saved, theme, level, puts: 0 }
   vi.stubGlobal('navigator', { language: browserLanguage })
   vi.stubGlobal('fetch', async (_url: string, init?: RequestInit) => {
     if (init?.method === 'PUT') {
@@ -14,8 +14,10 @@ function fakeBackend(saved: string | null, browserLanguage: string, failSaving =
       const sent = JSON.parse(init.body as string)
       if ('feedback_language' in sent) state.saved = sent.feedback_language
       if ('theme' in sent) state.theme = sent.theme
+      if ('english_level' in sent) state.level = sent.english_level
     }
-    return new Response(JSON.stringify({ feedback_language: state.saved, theme: state.theme }), { status: 200 })
+    const body = { feedback_language: state.saved, theme: state.theme, english_level: state.level }
+    return new Response(JSON.stringify(body), { status: 200 })
   })
   return state
 }
@@ -61,6 +63,40 @@ describe('feedback language', () => {
     expect(store.feedbackLanguage).toBe('Korean')
     // Said in the user's language, which is Korean here.
     expect(store.error).toBe('언어를 저장하지 못했습니다: disk full')
+  })
+})
+
+describe('English level', () => {
+  it('is unset until one is chosen', async () => {
+    fakeBackend('Korean', 'ko-KR')
+    const store = useSettingsStore()
+    await store.load()
+    expect(store.englishLevel).toBe('')
+  })
+
+  it('is the saved one', async () => {
+    fakeBackend('Korean', 'ko-KR', false, '', 'B1')
+    const store = useSettingsStore()
+    await store.load()
+    expect(store.englishLevel).toBe('B1')
+  })
+
+  it('is saved on its own when chosen', async () => {
+    const backend = fakeBackend('Korean', 'ko-KR', false, 'sos-night')
+    const store = useSettingsStore()
+    await store.load()
+    await store.setEnglishLevel('B2')
+    expect(store.englishLevel).toBe('B2')
+    expect(backend).toMatchObject({ level: 'B2', theme: 'sos-night', saved: 'Korean' })
+  })
+
+  it('keeps the previous level and reports an error when saving fails', async () => {
+    fakeBackend('Korean', 'ko-KR', true, '', 'A2')
+    const store = useSettingsStore()
+    await store.load()
+    await store.setEnglishLevel('C1')
+    expect(store.englishLevel).toBe('A2')
+    expect(store.error).toBe('영어 수준을 저장하지 못했습니다: disk full')
   })
 })
 

@@ -210,6 +210,13 @@ const de: Record<keyof typeof en, string> = {
     'In dieser Sprache werden die Seiten angezeigt und dein Feedback erklärt. Fragen und Musterantworten bleiben auf Englisch.',
   'settings.yourLanguageNote':
     'Voreingestellt ist die Sprache deines Browsers. Deine Auswahl wird sofort gespeichert. Die meisten Sprachen der Seiten wurden von einer KI übersetzt und nicht von Muttersprachlern geprüft, manches kann daher etwas ungewohnt klingen.',
+  'settings.level': 'Dein Englischniveau',
+  'settings.levelBody': 'Bessere Antworten und korrigierte Sätze werden auf diesem Niveau oder eine Stufe darüber geschrieben, damit du sie selbst sagen kannst, und die Fragen werden dafür formuliert. Die Bewertung ändert sich nicht.',
+  'settings.levelNone': 'Nicht gewählt',
+  'settings.levelA2': 'A2 · einfache Sätze über vertraute Alltagsdinge',
+  'settings.levelB1': 'B1 · Erfahrungen und Gründe zu vertrauten Themen erklären',
+  'settings.levelB2': 'B2 · berufliche Themen ausführlich und flüssig besprechen',
+  'settings.levelC1': 'C1 · sich flexibel und präzise ausdrücken',
   'settings.theme': 'Erscheinungsbild',
   'settings.themeBody': 'Folgt dem hellen oder dunklen Modus des Systems oder zeigt die Seiten immer hell oder dunkel.',
   'settings.themeSystem': 'System',
@@ -248,6 +255,7 @@ const de: Record<keyof typeof en, string> = {
     'SOS My Interview ist Open Source unter der MIT-Lizenz. Die App baut auf den folgenden Projekten auf.',
   'settings.licenses': 'Vollständige Lizenztexte',
   'settings.voiceFailed': 'Die Stimme konnte nicht gewechselt werden: {error}',
+  'settings.levelFailed': 'Das Englischniveau konnte nicht gespeichert werden: {error}',
   'settings.themeFailed': 'Das Erscheinungsbild konnte nicht gespeichert werden: {error}',
   'settings.yourLanguageFailed': 'Die Sprache konnte nicht gespeichert werden: {error}',
 }

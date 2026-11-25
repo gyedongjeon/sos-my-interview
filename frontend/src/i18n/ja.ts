@@ -201,6 +201,13 @@ const ja: Record<keyof typeof en, string> = {
     '画面の表示とフィードバックの説明がこの言語になります。質問と模範回答は英語のままです。',
   'settings.yourLanguageNote':
     '最初はブラウザーの言語に合わせて設定され、選ぶとすぐに保存されます。画面の翻訳の多くはAIによるもので、ネイティブスピーカーの確認を受けていないため、少し不自然な表現があるかもしれません。',
+  'settings.level': '英語レベル',
+  'settings.levelBody': '改善した回答と修正文をこのレベルか一段上で書き、自分で言えるようにします。質問もこのレベルに合わせた言葉で聞きます。採点基準は変わりません。',
+  'settings.levelNone': '選択しない',
+  'settings.levelA2': 'A2 · 身近な日常について簡単な文で話せる',
+  'settings.levelB1': 'B1 · 身近な話題で経験や理由を説明できる',
+  'settings.levelB2': 'B2 · 仕事の話題を詳しく流暢に話せる',
+  'settings.levelC1': 'C1 · 考えを柔軟かつ正確に表現できる',
   'settings.theme': 'テーマ',
   'settings.themeBody': 'システムのライト・ダークモードに合わせるか、画面をライトかダークに固定します。',
   'settings.themeSystem': 'システム設定に合わせる',
@@ -238,6 +245,7 @@ const ja: Record<keyof typeof en, string> = {
     'SOS My Interview は MIT ライセンスのオープンソースです。以下のソフトウェアを利用して作られています。',
   'settings.licenses': 'ライセンス全文',
   'settings.voiceFailed': '声を変更できませんでした: {error}',
+  'settings.levelFailed': '英語レベルを保存できませんでした: {error}',
   'settings.themeFailed': 'テーマを保存できませんでした: {error}',
   'settings.yourLanguageFailed': '言語を保存できませんでした: {error}',
 }

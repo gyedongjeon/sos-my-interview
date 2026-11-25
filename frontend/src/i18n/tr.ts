@@ -201,6 +201,13 @@ const tr: Record<keyof typeof en, string> = {
     'Sayfalar bu dilde gösterilir, geri bildirim de bu dilde açıklanır. Sorular ve örnek cevaplar İngilizce kalır.',
   'settings.yourLanguageNote':
     'Başlangıçta tarayıcının dili kullanılır. Bir dil seçtiğin anda kaydedilir. Sayfaların çoğu dildeki çevirisi yapay zekâ ile yapıldı ve ana dili o dil olan biri tarafından kontrol edilmedi; bu yüzden bazı metinler biraz tuhaf gelebilir.',
+  'settings.level': 'İngilizce seviyen',
+  'settings.levelBody': 'Daha iyi cevaplar ve düzeltilmiş cümleler bu seviyede ya da bir üstünde yazılır, böylece onları kendin söyleyebilirsin; sorular da bu seviyeye göre sorulur. Puanlar değişmez.',
+  'settings.levelNone': 'Seçilmedi',
+  'settings.levelA2': 'A2 · tanıdık, günlük konularda basit cümleler',
+  'settings.levelB1': 'B1 · tanıdık konularda deneyimini ve nedenlerini anlatma',
+  'settings.levelB2': 'B2 · iş konularını ayrıntılı ve akıcı konuşma',
+  'settings.levelC1': 'C1 · kendini esnek ve net ifade etme',
   'settings.theme': 'Görünüm',
   'settings.themeBody': 'Sistemin açık veya koyu modunu izler ya da sayfaları hep açık veya koyu gösterir.',
   'settings.themeSystem': 'Sistem',
@@ -238,6 +245,7 @@ const tr: Record<keyof typeof en, string> = {
     'SOS My Interview, MIT Lisansı altında açık kaynaklı bir uygulamadır. Aşağıdaki çalışmalar kullanılarak geliştirilmiştir.',
   'settings.licenses': 'Lisans metinlerinin tamamı',
   'settings.voiceFailed': 'Ses değiştirilemedi: {error}',
+  'settings.levelFailed': 'İngilizce seviyesi kaydedilemedi: {error}',
   'settings.themeFailed': 'Görünüm kaydedilemedi: {error}',
   'settings.yourLanguageFailed': 'Dil kaydedilemedi: {error}',
 }

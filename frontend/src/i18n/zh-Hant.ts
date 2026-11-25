@@ -195,6 +195,13 @@ const zhHant: Record<keyof typeof en, string> = {
   'settings.yourLanguageBody': '頁面會以這個語言顯示，回饋的說明也是。問題和示範回答仍然是英文。',
   'settings.yourLanguageNote':
     '預設為瀏覽器的語言，選好後會立即儲存。大部分的頁面語言是由 AI 翻譯的，未經母語人士檢查，有些文字讀起來可能不太自然。',
+  'settings.level': '英語程度',
+  'settings.levelBody': '更好的回答和修改後的句子會依這個程度或高一級來寫，方便你自己說出口；問題也會用適合這個程度的措辭。評分標準不變。',
+  'settings.levelNone': '未選擇',
+  'settings.levelA2': 'A2 · 能用簡單句談熟悉的日常事務',
+  'settings.levelB1': 'B1 · 能在熟悉的話題上說明經歷和理由',
+  'settings.levelB2': 'B2 · 能詳細、流利地討論工作話題',
+  'settings.levelC1': 'C1 · 能靈活、準確地表達想法',
   'settings.theme': '主題',
   'settings.themeBody': '跟隨系統的淺色或深色模式，或將頁面固定為淺色或深色。',
   'settings.themeSystem': '跟隨系統',
@@ -231,6 +238,7 @@ const zhHant: Record<keyof typeof en, string> = {
   'settings.openSourceBody': 'SOS My Interview 是以 MIT 授權條款釋出的開放原始碼軟體，並採用了下列專案的成果。',
   'settings.licenses': '授權條款全文',
   'settings.voiceFailed': '無法更換聲音：{error}',
+  'settings.levelFailed': '無法儲存英語程度：{error}',
   'settings.themeFailed': '無法儲存主題：{error}',
   'settings.yourLanguageFailed': '無法儲存語言：{error}',
 }

@@ -6,7 +6,7 @@ import litellm
 import pytest
 
 from app.llm import LLMError, complete, format_interview, llm_config, parse_json_reply
-from app.settings import Settings, feedback_language
+from app.settings import Settings, english_level, feedback_language
 
 
 def test_feedback_language_is_unset_at_first(client):
@@ -30,10 +30,15 @@ def test_a_chosen_theme_is_saved_and_leaves_the_language_alone(client):
     assert client.put("/api/settings", json={"theme": "sos-night"}).json() == {
         "feedback_language": "Korean",
         "theme": "sos-night",
+        "english_level": "",
     }
     # Choosing the language again keeps the theme.
     client.put("/api/settings", json={"feedback_language": "Japanese"})
-    assert client.get("/api/settings").json() == {"feedback_language": "Japanese", "theme": "sos-night"}
+    assert client.get("/api/settings").json() == {
+        "feedback_language": "Japanese",
+        "theme": "sos-night",
+        "english_level": "",
+    }
 
 
 def test_an_unknown_theme_is_refused(client):
@@ -146,3 +151,20 @@ def test_interview_is_rendered_after_the_background():
     turns = [("Why us?", "I like the product.")]
     assert format_interview(turns) == "Interviewer: Why us?\nCandidate: I like the product."
     assert format_interview(turns, "<resume>cv</resume>").startswith("<resume>cv</resume>\n\n<interview>\n")
+
+
+def test_the_english_level_is_unset_at_first(client):
+    assert client.get("/api/settings").json()["english_level"] == ""
+    assert english_level() == ""
+
+
+def test_a_chosen_english_level_is_saved_and_cleared(client):
+    assert client.put("/api/settings", json={"english_level": "B1"}).json()["english_level"] == "B1"
+    assert english_level() == "B1"
+    client.put("/api/settings", json={"english_level": ""})
+    assert english_level() == ""
+
+
+@pytest.mark.parametrize("level", ["A1", "C2", "b1"])
+def test_a_level_outside_a2_to_c1_is_refused(client, level):
+    assert client.put("/api/settings", json={"english_level": level}).status_code == 422
